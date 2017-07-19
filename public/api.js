@@ -1,8 +1,12 @@
 
 
-module.exports = function (comm, data) {
-    console.log("Api called" + comm + data);
-    //var gpioService = require('../gpioConfig/gpioService');
+module.exports = function (command, data) {
+    console.log("Api called" + command + data);
+    var gpioService = require('../gpioConfig/gpioService.js');
+    var ramWriter = require('../gpioConfig/writingToRamHelper');
+    var compiler = require('../gpioConfig/compiler');
+    var assembler = require('../gpioConfig/assembler');
+
     var fs = require("fs");
 
     var lastCommand = "";
@@ -12,35 +16,36 @@ module.exports = function (comm, data) {
      * to control the signals being send to the machine via i2c.
      */
      //a bit of logic so speed commands write on top of each other but no one else
-    if (comm === 'speed' && lastCommand === 'speed') {
+    if (command === 'speed' && lastCommand === 'speed') {
         process.stdout.write('\r');
     } else {
         process.stdout.write('\n');
     }
+
     lastCommand = command;
     process.stdout.write( 'command recieved: ' + command );
 
     if(command === 'speed'){
-        clockSpeed = req.query.data;
+        var clockSpeed = data;
         //clear the line
         process.stdout.write('\r'+repeat(' ', process.stdout.columns)+'\r')
         process.stdout.write('command recieved: speed: ' + formatSpeed(clockSpeed));
         gpioService.setSpeed(clockSpeed);
     }
-    else if(req.query.command === 'start'){
+    else if(command === 'start'){
         gpioService.startClock();
     }
-    else if(req.query.command === 'stop'){
+    else if(command === 'stop'){
         gpioService.stopClock();
     }
-    else if(req.query.command === 'step'){
+    else if(command === 'step'){
         gpioService.stepClock();
     }
-    else if(req.query.command === 'reset'){
+    else if(command === 'reset'){
         gpioService.resetClock();
     }
-    else if (req.query.command === 'load') {
-        var xCode = req.query.data;
+    else if (command === 'load') {
+        var xCode = data;
         console.log("Recieved Code");
         compiler.compile(xCode, console.log,
             function(hexuArray, hexlArray){
@@ -48,8 +53,8 @@ module.exports = function (comm, data) {
             });
 
     }
-    else if (req.query.command === 'loadassembly') {
-        var assembly = req.query.data;
+    else if (command === 'loadassembly') {
+        var assembly = data;
         console.log("Recieved Assembly: "+assembly);
         assembler.assemble(assembly, console.log,
             function(hexuArray, hexlArray){
@@ -59,27 +64,27 @@ module.exports = function (comm, data) {
                 ramWriter.writeToRam(hexuArray, hexlArray, gpioService);
             });
     }
-    else if (req.query.command === 'screen') {
+    else if (command === 'screen') {
         console.log("Recieved Screen Command");
         compiler.runScreenTest(
             function(hexuArray, hexlArray){
                 ramWriter.writeToRam(hexuArray, hexlArray, gpioService);
             });
     }
-    else if(req.query.command === 'runInstr') {
-        var instr = parseInt(req.query.data);
+    else if(command === 'runInstr') {
+        var instr = parseInt(data);
         process.stdout.write('\r'+repeat(' ', process.stdout.columns)+'\r');
         process.stdout.write('command recieved: run Instruction: ' + (instr>>4) + ' ' + (instr%4));
         gpioService.runInstruction(instr);
     }
-    else if(req.query.command === 'getprog')
+    else if(command === 'getprog')
     {
-        var prog = fs.readFileSync(__dirname + '/src/' + req.query.data).toString();
-        process.stdout.write('command recieved: loadprog: ' + req.query.data);
+        var prog = fs.readFileSync(__dirname + '/src/' + data).toString();
+        process.stdout.write('command recieved: loadprog: ' + data);
 
         
-    };
-}
+    }
+};
     function repeat(s,n) {
         if (n==0) { return '' }
         else { return s+repeat(s,n-1) }
@@ -98,5 +103,3 @@ module.exports = function (comm, data) {
             return kspeed + 'Khz';
         }
     }
-
-    //gpioService.setSpeed(1);
