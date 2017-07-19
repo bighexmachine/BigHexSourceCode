@@ -11,6 +11,7 @@ module.exports = function (command, data) {
 
     var lastCommand = "";
     console.log(formatSpeed(5));
+    
     /*
      * If a GET request is made to /api we need to execute a command
      * to control the signals being send to the machine via i2c.
