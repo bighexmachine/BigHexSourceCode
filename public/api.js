@@ -2,7 +2,7 @@
 
 module.exports = function (command, data) {
     console.log("Api called" + command + data);
-    var gpioService = require('../gpioConfig/gpioService.js');
+    var gpioService = require('../gpioConfig/gpioService');
     var ramWriter = require('../gpioConfig/writingToRamHelper');
     var compiler = require('../gpioConfig/compiler');
     var assembler = require('../gpioConfig/assembler');
