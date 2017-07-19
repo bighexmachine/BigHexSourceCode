@@ -6,7 +6,7 @@ $(document).ready(function(){
 
     //Use jQuery to bind to the relevant actions. The send correct relevant command.
 
-    $('#start').click(function(){ updateClock('start', undefined) });
+    $('#start').click(function(){ updateClock('start', undefined); console.log("asasfsdfdsf")});
     $('#stop').click(function(){ updateClock('stop', undefined) });
 
     $('#step').click( function(){ updateClock('step' , undefined) });
