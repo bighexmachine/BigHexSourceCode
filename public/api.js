@@ -2,7 +2,7 @@
 
 module.exports = function (comm, data) {
     console.log("Api called" + comm + data);
-    //var gpioService = require('./gpioService');
+    //var gpioService = require('../gpioConfig/gpioService');
     var fs = require("fs");
 
     var lastCommand = "";
@@ -12,7 +12,7 @@ module.exports = function (comm, data) {
      * to control the signals being send to the machine via i2c.
      */
      //a bit of logic so speed commands write on top of each other but no one else
- /*   if (comm === 'speed' && lastCommand === 'speed') {
+    if (comm === 'speed' && lastCommand === 'speed') {
         process.stdout.write('\r');
     } else {
         process.stdout.write('\n');
@@ -77,9 +77,9 @@ module.exports = function (comm, data) {
         var prog = fs.readFileSync(__dirname + '/src/' + req.query.data).toString();
         process.stdout.write('command recieved: loadprog: ' + req.query.data);
 
-        */
+        
     };
-
+}
     function repeat(s,n) {
         if (n==0) { return '' }
         else { return s+repeat(s,n-1) }
