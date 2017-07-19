@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+<meta name = "viewport" content= "width=device-width, initial-scale=1">
+<title>WallComp</title>
+
+<link rel="stylesheet" href="resources/bootstrap.min.css">
+<link rel="stylesheet" href="resources/styles.css">
+<script type="text/javascript" src="resources/jquery.js"></script>
+<script src="resources/bootstrap.min.js"></script>
+<script type="text/javascript" src="resources/loadassemblyScript.js"></script>
+
+    <body>
+        <div id="container" class="container-fluid">
+
+            <div class="jumbotron">
+              <h1>Run your own program</h1>
+              <p>Type some code in <a href="assemblySpec.pdf">X Assembly Language</a> and press submit.
+              <p>It will be assembled and written to the machines RAM.
+            </div>
+
+            <form method="get" action="/api">
+                <div class="col-sm-10">
+                  <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important"></textarea>
+                </div>
+                  <div id = "submitProgram" class="col-sm-2 button" style = "background-color:green;">Submit Program</div>
+                  <a href = "/" class="col-sm-2 button control" style="outline:none">Control Panel</a>
+            </form>
+        </div>
+    </body>
+
+</html>

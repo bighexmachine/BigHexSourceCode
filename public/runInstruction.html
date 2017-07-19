@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+  <meta name = "viewport" content= "width=device-width, initial-scale=1">
+  <title>WallComp</title>
+  <link rel="stylesheet" href="resources/bootstrap.min.css">
+  <link rel="stylesheet" href="resources/styles.css">
+  <script type="text/javascript" src="resources/jquery.js"></script>
+  <script src="resources/bootstrap.min.js"></script>
+  <script type="text/javascript" src="resources/scripts.js"></script>
+  <body>
+    <div id="container" class="container-fluid">
+
+      <a href = "/" class="col-sm-2 button control" style="outline:none">Control Panel</a>
+
+      <div class="jumbotron">
+        <h1>Run an Instruction</h1>
+      </div>
+      <form method="get" action="/api">
+        <div class="col-sm-4" style = "background-color:green; padding:5%">
+          <div>
+            <label for="runInstr">Select an Instruction </label><br>
+            <select style="height: 50px; font-size:20px" id="instr" name="instr">
+              <option value="0">0-LDAM</option>
+              <option value="1">1-LDBM</option>
+              <option value="2">2-STAM</option>
+              <option value="3">3-LDAC</option>
+              <option value="4">4-LDBC</option>
+              <option value="5">5-LDAP</option>
+              <option value="6">6-LDAI</option>
+              <option value="7">7-LDBI</option>
+              <option value="8">8-STAI</option>
+              <option value="9">9-BR</option>
+              <option value="10">A-BRZ</option>
+              <option value="11">B-BRN</option>
+              <option value="12">C-BRB</option>
+              <option value="13">D-OPR</option>
+              <option value="14">E-PFIX</option>
+              <option value="15">F-NFIX</option>
+            </select>
+          </div>
+          <div>
+            <label for="opr">Input an Operand</label><br>
+            <input type="number" min=0 max=15 style="width: 100px; height: 50px; font-size:20px" value="0" id="opr" name="opr">
+          </div>
+        </div>
+        <div id = "execInst" class = "col-sm-8 button" style = "background-color:black;">Execute Instruction</div>
+      </form>
+      <div id = "speed" class = "col-sm-12 button" style = "background-color:orange;">
+          Speed
+          <input disabled id="speedSlider" type="range" name="speed" min="0" max="196"><div id="speedOut"></div>
+      </div>
+      <div id = "step" disabled class="col-sm-6 button" style = "background-color:black;">Step</div>
+      <div id = "reset" class = "col-sm-6 button" style = "background-color:blue;">Reset</div>
+    </div>
+  </body>
+</html>

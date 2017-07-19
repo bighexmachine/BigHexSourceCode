@@ -7,6 +7,6 @@ var path = require('path');
 module.exports = function (app) {
     app.get('/', function (req, res) {
         console.log("get request to homepage");
-        res.sendFile('homepage.html', {root: './public'});
+        res.sendFile('gui.html', {root: './public'});
     });
 };
