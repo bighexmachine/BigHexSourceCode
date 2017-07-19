@@ -12,7 +12,7 @@ var path = require('path');
 var fs = require("fs");
 
 //var compiler = require('./compiler');
-//var gpioService = require('./gpioService');
+
 //var ramWriter = require('./writingToRamHelper');
 //var assembler = require('./assembler');
 
