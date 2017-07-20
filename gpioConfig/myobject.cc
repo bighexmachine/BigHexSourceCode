@@ -57,7 +57,7 @@ void MyObject::Init(Handle<Object> target) {
 void MyObject::New(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = new MyObject();
   obj->Wrap(args.This());
-  args.GetReturnValue().Set(This())
+  args.GetReturnValue().Set(args.This());
 }
 
 void writeClock(int val)
