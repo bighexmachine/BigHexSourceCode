@@ -9,15 +9,6 @@ using namespace v8;
 using namespace std;
 
 
-using v8::Exception;
-using v8::FunctionCallbackInfo;
-using v8::Isolate;
-using v8::Local;
-using v8::Number;
-using v8::Object;
-using v8::String;
-using v8::Value;
-
 class MyObject : public node::ObjectWrap {
  public:
   static void Init(v8::Handle<v8::Object> target);
@@ -26,14 +17,14 @@ class MyObject : public node::ObjectWrap {
   MyObject();
   ~MyObject();
 
-  static Handle<Value> New(const FunctionCallbackInfo<Value>& args);
-  static Handle<Value> WriteData(const FunctionCallbackInfo<Value>& args);
-  static Handle<Value> RamPiSel(const FunctionCallbackInfo<Value>& args);
-  static Handle<Value> StartClock(const FunctionCallbackInfo<Value>& args);
-  static Handle<Value> StopClock(const FunctionCallbackInfo<Value>& args);
-  static Handle<Value> StepClock(const FunctionCallbackInfo<Value>& args);
-  static Handle<Value> SetSpeed(const FunctionCallbackInfo<Value>& args);
-  static Handle<Value> Reset(const FunctionCallbackInfo<Value>& args);
+  static Handle<v8::Value> New(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Handle<v8::Value> WriteData(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Handle<v8::Value> RamPiSel(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Handle<v8::Value> StartClock(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Handle<v8::Value> StopClock(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Handle<v8::Value> StepClock(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Handle<v8::Value> SetSpeed(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Handle<v8::Value> Reset(const v8::FunctionCallbackInfo<v8::Value>& args);
   static v8::Persistent<v8::Function> constructor;
   double value_;
   std::thread clockThread;
