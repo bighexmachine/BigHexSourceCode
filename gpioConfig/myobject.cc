@@ -55,8 +55,6 @@ void MyObject::Init(Handle<Object> target) {
 }
 
 void MyObject::New(const FunctionCallbackInfo<Value>& args) {
-  HandleScope scope;
-
   MyObject* obj = new MyObject();
   obj->Wrap(args.This());
   return args.This();
@@ -91,7 +89,6 @@ void MyObject::Clock()
 
 void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
-  HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   obj->clockIsRunning = 1;
   obj->pauseClockLock.unlock();
@@ -100,7 +97,6 @@ void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 }
 
 void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
-  HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if(obj->clockIsRunning != 0)
   {
@@ -112,7 +108,6 @@ void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
 }
 
 void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
-  HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
   writeClock( obj->signals[obj->state] );
@@ -120,9 +115,8 @@ void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
   return;
 }
 
-void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args)
-{
-  HandleScope scope;
+void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
+
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   double inputSpeed = args[0]->NumberValue();
   int period = 1000000 / inputSpeed; 
@@ -130,9 +124,8 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args)
   return;
 }
 
-void MyObject::WriteData(const FunctionCallbackInfo<Value>& args)
-{
-  HandleScope scope;
+void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
+
   int byte = args[0]->NumberValue();
   int base = 4;
   int i;
@@ -144,18 +137,16 @@ void MyObject::WriteData(const FunctionCallbackInfo<Value>& args)
   return;
 }
 
-void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args)
-{
-  HandleScope scope;
+void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
+  
   int input = args[0]->NumberValue();
   int bit = input & 1;
   digitalWrite (12, bit);
   return;
 }
 
-void MyObject::Reset(const FunctionCallbackInfo<Value>& args)
-{
-  HandleScope scope;
+void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
+
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
   obj->state = 0;
