@@ -39,7 +39,7 @@ void MyObject::Init(Handle<Object> target) {
   }
 
   // Prepare constructor template
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, Init);
   tpl->SetClassName(String::NewSymbol("MyObject"));
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   // Prototype
@@ -54,7 +54,7 @@ void MyObject::Init(Handle<Object> target) {
   target->Set(String::NewSymbol("MyObject"), constructor);
 }
 
-void MyObject::New(const FunctionCallbackInfo<Value>& args) {
+Handle<v8::Value> MyObject::New(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = new MyObject();
   obj->Wrap(args.This());
   return args.This();
