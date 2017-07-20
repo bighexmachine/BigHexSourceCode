@@ -40,7 +40,7 @@ void MyObject::Init(Handle<Object> target) {
 
   // Prepare constructor template
   Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
-  tpl->SetClassName(String::NewSymbol("MyObject"));
+  tpl->SetClassName(String::NewFromUtf8(isolate, "MyObject"));
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   // Prototype
   NODE_SET_PROTOTYPE_METHOD(tpl, "writeData", WriteData);
@@ -50,14 +50,14 @@ void MyObject::Init(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "setSpeed", SetSpeed);
   NODE_SET_PROTOTYPE_METHOD(tpl, "ramPiSel", RamPiSel);
   NODE_SET_PROTOTYPE_METHOD(tpl, "reset", Reset);
-  constructor = Persistent<Function>::New(tpl->GetFunction());
-  target->Set(String::NewSymbol("MyObject"), constructor);
+  constructor.Reset(isolate, tpl->GetFunction());
+  target->Set(String::NewFromUtf8(isolate, "MyObject"), tpl->GetFunction());
 }
 
-Handle<v8::Value> MyObject::New(const FunctionCallbackInfo<Value>& args) {
+void MyObject::New(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = new MyObject();
   obj->Wrap(args.This());
-  return args.This();
+  //return args.This();
 }
 
 void writeClock(int val)
@@ -93,6 +93,7 @@ void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
   obj->clockIsRunning = 1;
   obj->pauseClockLock.unlock();
   obj->clockLock.unlock();
+	printf("started");
   return;
 }
 
