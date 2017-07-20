@@ -17,14 +17,14 @@ class MyObject : public node::ObjectWrap {
   MyObject();
   ~MyObject();
 
-  static Handle<v8::Value> New(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static Handle<v8::Value> WriteData(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static Handle<v8::Value> RamPiSel(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static Handle<v8::Value> StartClock(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static Handle<v8::Value> StopClock(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static Handle<v8::Value> StepClock(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static Handle<v8::Value> SetSpeed(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static Handle<v8::Value> Reset(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void WriteData(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void RamPiSel(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void StartClock(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void StopClock(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void StepClock(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void SetSpeed(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void Reset(const v8::FunctionCallbackInfo<v8::Value>& args);
   static v8::Persistent<v8::Function> constructor;
   double value_;
   std::thread clockThread;
