@@ -2,6 +2,8 @@
 #define MYOBJECT_H
 #include <thread>
 #include <node.h>
+#include <mutex>
+#include <node_object_wrap.h>
 
 using namespace v8;
 using namespace std;
@@ -24,16 +26,14 @@ class MyObject : public node::ObjectWrap {
   MyObject();
   ~MyObject();
 
-  //static v8::Handle<v8::Value> New(const v8::Arguments& args);
-  static New(const v8::FunctionCallbackInfo<value>& args);
-
-  static Handle<Value> WriteData(const Arguments& args);
-  static Handle<Value> RamPiSel(const Arguments& args);
-  static v8::Handle<v8::Value> StartClock(const v8::Arguments& args);
-  static v8::Handle<v8::Value> StopClock(const v8::Arguments& args);
-  static v8::Handle<v8::Value> StepClock(const v8::Arguments& args);
-  static v8::Handle<v8::Value> SetSpeed(const v8::Arguments& args);
-  static v8::Handle<v8::Value> Reset(const v8::Arguments& args);
+  static Handle<Value> New(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> WriteData(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> RamPiSel(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> StartClock(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> StopClock(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> StepClock(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> SetSpeed(const FunctionCallbackInfo<Value>& args);
+  static Handle<Value> Reset(const FunctionCallbackInfo<Value>& args);
   static v8::Persistent<v8::Function> constructor;
   double value_;
   std::thread clockThread;
