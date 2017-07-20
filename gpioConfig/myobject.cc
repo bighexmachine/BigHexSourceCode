@@ -39,7 +39,7 @@ void MyObject::Init(Handle<Object> target) {
   target->Set(String::NewSymbol("MyObject"), constructor);
 }
 
-Handle<Value> MyObject::New(const Arguments& args) {
+Handle<Value> MyObject::New(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope;
 
   MyObject* obj = new MyObject();
@@ -74,7 +74,7 @@ void MyObject::Clock()
   }
 }
 
-Handle<Value> MyObject::StartClock(const Arguments& args)
+Handle<Value> MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
@@ -84,7 +84,7 @@ Handle<Value> MyObject::StartClock(const Arguments& args)
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::StopClock(const Arguments& args) {
+Handle<Value> MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if(obj->clockIsRunning != 0)
@@ -96,7 +96,7 @@ Handle<Value> MyObject::StopClock(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::StepClock(const Arguments& args) {
+Handle<Value> MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
   HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
@@ -105,7 +105,7 @@ Handle<Value> MyObject::StepClock(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::SetSpeed(const Arguments& args)
+Handle<Value> MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args)
 {
   HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
@@ -115,7 +115,7 @@ Handle<Value> MyObject::SetSpeed(const Arguments& args)
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::WriteData(const Arguments& args)
+Handle<Value> MyObject::WriteData(const FunctionCallbackInfo<Value>& args)
 {
   HandleScope scope;
   int byte = args[0]->NumberValue();
@@ -129,7 +129,7 @@ Handle<Value> MyObject::WriteData(const Arguments& args)
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::RamPiSel(const Arguments& args)
+Handle<Value> MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args)
 {
   HandleScope scope;
   int input = args[0]->NumberValue();
@@ -138,7 +138,7 @@ Handle<Value> MyObject::RamPiSel(const Arguments& args)
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::Reset(const Arguments& args)
+Handle<Value> MyObject::Reset(const FunctionCallbackInfo<Value>& args)
 {
   HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
