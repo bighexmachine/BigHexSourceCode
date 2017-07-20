@@ -6,8 +6,7 @@
 
 Persistent<Function> MyObject::constructor;
 
-MyObject::MyObject(): state(0), delay(10), signals{1, 0, 16, 0}, clockIsRunning(0)
-{
+MyObject::MyObject(): state(0), delay(10), signals{1, 0, 16, 0}, clockIsRunning(0) {
   clockLock.lock();
   clockThread = thread(&MyObject::Clock, this);
 }
@@ -85,8 +84,7 @@ Handle<Value> MyObject::StartClock(const Arguments& args)
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::StopClock(const Arguments& args)
-{
+Handle<Value> MyObject::StopClock(const Arguments& args) {
   HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if(obj->clockIsRunning != 0)
@@ -98,8 +96,7 @@ Handle<Value> MyObject::StopClock(const Arguments& args)
   return scope.Close(Undefined());
 }
 
-Handle<Value> MyObject::StepClock(const Arguments& args)
-{
+Handle<Value> MyObject::StepClock(const Arguments& args) {
   HandleScope scope;
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
