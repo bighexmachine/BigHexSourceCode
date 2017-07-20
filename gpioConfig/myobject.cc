@@ -57,7 +57,7 @@ void MyObject::Init(Handle<Object> target) {
 void MyObject::New(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = new MyObject();
   obj->Wrap(args.This());
-  //return args.This();
+  args.GetReturnValue().Set(This())
 }
 
 void writeClock(int val)
@@ -117,7 +117,6 @@ void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
 }
 
 void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
-
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   double inputSpeed = args[0]->NumberValue();
   int period = 1000000 / inputSpeed; 
@@ -126,7 +125,6 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
 }
 
 void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
-
   int byte = args[0]->NumberValue();
   int base = 4;
   int i;
@@ -139,7 +137,6 @@ void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
 }
 
 void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
-  
   int input = args[0]->NumberValue();
   int bit = input & 1;
   digitalWrite (12, bit);
@@ -147,7 +144,6 @@ void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
 }
 
 void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
-
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
   obj->state = 0;
