@@ -28,7 +28,7 @@ MyObject::~MyObject() {
 
 }
 
-void MyObject::Init(Handle<Object> target) {
+void MyObject::Init(Local<Object> target) {
   //setting up gpio pins
   wiringPiSetup () ;
   Isolate* isolate = target->GetIsolate();
