@@ -31,7 +31,7 @@ MyObject::~MyObject() {
 void MyObject::Init(Handle<Object> target) {
   //setting up gpio pins
   wiringPiSetup () ;
-
+  Isolate* isolate = target->GetIsolate();
   int i;
   for(i=0;i<13;i++)
   {
@@ -39,7 +39,7 @@ void MyObject::Init(Handle<Object> target) {
   }
 
   // Prepare constructor template
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, Init);
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
   tpl->SetClassName(String::NewSymbol("MyObject"));
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
   // Prototype
