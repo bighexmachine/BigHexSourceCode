@@ -1,5 +1,5 @@
 var path = require('path');
-const apifunc = require('../public/api.js');
+const apifunc = require('../configure/api.js');
 
 
 module.exports = function (app) {
@@ -62,6 +62,7 @@ module.exports = function (app) {
         res.sendFile('assemblySpec.pdf', {root: './public'});
     });
 
+    //api function calls
     app.get('/api', function (req, res) {
         var comm = req.query.command;
         var data = req.query.data;
