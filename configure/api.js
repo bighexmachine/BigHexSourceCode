@@ -77,17 +77,19 @@ module.exports = function (command, data) {
         process.stdout.write('command recieved: run Instruction: ' + (instr>>4) + ' ' + (instr%4));
         gpioService.runInstruction(instr);
     }
-    else if(command === 'getprog')
-    {
+    else if(command === 'getprog') {
         var prog = fs.readFileSync('./xPrograms/' + data).toString();
         process.stdout.write('command recieved: loadprog: ' + data);
-
-        
+        return prog      
     }
 };
     function repeat(s,n) {
-        if (n==0) { return '' }
-        else { return s+repeat(s,n-1) }
+        if (n==0) { 
+            return ''
+        }
+        else { 
+            return s+repeat(s,n-1) 
+        }
 
     }
 
@@ -95,10 +97,12 @@ module.exports = function (command, data) {
         if (speed < 10) {
             speed = Math.round(speed*10)/10;
             return speed + 'hz';
-        } else if(speed <1000) {
+        } 
+        else if(speed <1000) {
             speed = Math.round(speed);
             return speed + 'hz';
-        } else {
+        }
+        else {
             var kspeed = Math.round(speed/100)/10;
             return kspeed + 'Khz';
         }
