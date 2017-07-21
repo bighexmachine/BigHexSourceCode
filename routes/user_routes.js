@@ -62,10 +62,11 @@ module.exports = function (app) {
         res.sendFile('assemblySpec.pdf', {root: './public'});
     });
 
-    app.get('/api', function (req, res) {
+    app.put('/api', function (req, res) {
         var comm = req.query.command;
         var data = req.query.data;
         apifunc(comm, data);
-    });
+        res.send("request to api success");
+    })
 };
 

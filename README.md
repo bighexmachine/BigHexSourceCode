@@ -7,7 +7,7 @@ Pin 13 is clock
 
 
 
-#NPM modules#
+-NPM modules-
 
 sleep
 bindings
@@ -38,5 +38,4 @@ gpioConfig:
     myobject.h
     myobject.cc
 
--Build comes from node-gyp again.
--
+-Build comes from node-gyp again.-

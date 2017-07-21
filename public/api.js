@@ -23,7 +23,7 @@ module.exports = function (command, data) {
     }
 
     lastCommand = command;
-    process.stdout.write( 'command recieved: ' + command );
+    process.stdout.write( 'command recieved: ' + command + "\n");
 
     if(command === 'speed'){
         var clockSpeed = data;
