@@ -1,7 +1,7 @@
 
 
 module.exports = function (command, data) {
-    console.log("Api called" + command + data);
+    console.log("Api called" + command + data + "\n");
     var gpioService = require('../gpioConfig/gpioService');
     var ramWriter = require('../gpioConfig/writingToRamHelper');
     var compiler = require('../gpioConfig/compiler');
@@ -29,7 +29,7 @@ module.exports = function (command, data) {
         var clockSpeed = data;
         //clear the line
         process.stdout.write('\r'+repeat(' ', process.stdout.columns)+'\r')
-        process.stdout.write('command recieved: speed: ' + formatSpeed(clockSpeed));
+        process.stdout.write('command recieved: speed: ' + formatSpeed(clockSpeed) + '\n');
         gpioService.setSpeed(clockSpeed);
     }
     else if(command === 'start'){
