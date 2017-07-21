@@ -66,7 +66,7 @@ function updateSpeed() {
 function updateClock(command, data) {
     $.ajax({
     url:'/api',
-    type:'PUT',
+    type:'GET',
     data:{'command':command, 'data':data},
     success: function(res){}
     });
