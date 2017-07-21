@@ -10,7 +10,6 @@ module.exports = function (command, data) {
     var fs = require("fs");
 
     var lastCommand = "";
-    console.log(formatSpeed(5));
     
     /*
      * If a GET request is made to /api we need to execute a command
