@@ -80,8 +80,9 @@ module.exports = function (command, data) {
     else if(command === 'getprog') {
         var prog = fs.readFileSync('./xPrograms/' + data).toString();
         process.stdout.write('command recieved: loadprog: ' + data);
-        return prog      
+        return prog;
     }
+    return "";
 };
     function repeat(s,n) {
         if (n==0) { 

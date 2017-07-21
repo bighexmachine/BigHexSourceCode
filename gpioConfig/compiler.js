@@ -10,7 +10,7 @@ var currentDir = path.join()
 module.exports = {}
 
 var compile = function(Xsource, errorFunction, postCall){
-  //writes code passed in to file
+  //writes code passed in to file source.x
   var SOURCEFILE = __dirname + '/'+  'source.x';
   console.log("writing file to " + SOURCEFILE);
   fs.writeFileSync(SOURCEFILE, Xsource);

@@ -67,12 +67,7 @@ module.exports = function (app) {
         var comm = req.query.command;
         var data = req.query.data;
         rep = apifunc(comm, data);
-        if("undefined" === typeof rep) {
-            res.send("api call success")
-        }
-        else {
-            res.send(rep);
-        }
+        res.send(rep);
     })
 };
 
