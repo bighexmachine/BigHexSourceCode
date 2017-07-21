@@ -66,7 +66,6 @@ module.exports = function (app) {
         var comm = req.query.command;
         var data = req.query.data;
         apifunc(comm, data);
-	console.log("got a put req " + comm + data);
         res.send("request to api success");
     })
 };
