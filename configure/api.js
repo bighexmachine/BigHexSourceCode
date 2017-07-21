@@ -79,7 +79,7 @@ module.exports = function (command, data) {
     }
     else if(command === 'getprog')
     {
-        var prog = fs.readFileSync(__dirname + '/src/' + data).toString();
+        var prog = fs.readFileSync('./xPrograms/' + data).toString();
         process.stdout.write('command recieved: loadprog: ' + data);
 
         
