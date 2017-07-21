@@ -11,11 +11,12 @@ module.exports = {}
 
 var compile = function(Xsource, errorFunction, postCall){
   //writes code passed in to file source.x
-  var SOURCEFILE = __dirname + '/'+  'source.x';
+  var SOURCEFILE = path.normalize(__dirname + '/../xPrograms/source.x');
+  var COMPILERFILES = path.normalize(__dirname + '/../xCompiler');
   console.log("writing file to " + SOURCEFILE);
   fs.writeFileSync(SOURCEFILE, Xsource);
   // executes compile on file
-  var COMPILECMD = 'sudo '+ __dirname + '/simulator < ' + __dirname + '/source.x';
+  var COMPILECMD = 'sudo ' + COMPILERFILES + '/a.out' + ' < ' + SOURCEFILE;
   console.log(COMPILECMD);
   exec(COMPILECMD,
     function (error, stdout, stderr) {
@@ -24,10 +25,10 @@ var compile = function(Xsource, errorFunction, postCall){
       errorFunction("StdError: " + stderr);
       errorFunction("STDOUT:" + stdout);
 
-      var hexu = fs.readFileSync(__dirname + '/sim3').toString();
+      var hexu = fs.readFileSync(COMPILERFILES + '/sim3').toString();
       var hexuArray = hexu.split(" ");
 
-      var hexl = fs.readFileSync(__dirname + '/sim2').toString();
+      var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
       var hexlArray = hexl.split(" ");
 
       console.log(hexuArray + '\n');

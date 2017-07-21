@@ -23,7 +23,7 @@ $(document).ready(function(){
 	}
 
 	$('#factorial').click(
-		function(){sendReq('getprog', 'factorial.x')}
+		function(){sendReq('getprog', 'fact.x')}
 	);
 	
 	$('#wink').click(
