@@ -1,6 +1,15 @@
 Hello. This is an attempt on documentation.
 I have chosen this folder structure to try keep everything tidy, but it's JS so it's probably in vein.
 
+
+------------------------R-Pi---------------------------------------------
+
+Pin 13 is clock
+
+
+
+------------------------Folder Structure---------------------------------
+
 Build:
 
 #Configure is used for any npde packages that need to be configured (who would've guessed?).

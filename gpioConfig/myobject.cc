@@ -93,7 +93,7 @@ void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
   obj->clockIsRunning = 1;
   obj->pauseClockLock.unlock();
   obj->clockLock.unlock();
-	printf("started");
+	printf("started\n");
   return;
 }
 
