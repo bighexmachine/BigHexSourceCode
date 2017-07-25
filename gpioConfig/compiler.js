@@ -1,13 +1,11 @@
 
 //using util instead of sys since sys is deprecated.
 var sys = require('util')
-var exec = require('child_process').exec;
+var execs = require('child_process').exec;
 var fs = require("fs");
 
 var path = require('path');
-var currentDir = path.join()
 
-module.exports = {}
 
 var compile = function(Xsource, errorFunction, postCall){
   //writes code passed in to file source.x
@@ -15,10 +13,12 @@ var compile = function(Xsource, errorFunction, postCall){
   var COMPILERFILES = path.normalize(__dirname + '/../xCompiler');
   console.log("writing file to " + SOURCEFILE);
   fs.writeFileSync(SOURCEFILE, Xsource);
+  
   // executes compile on file
   var COMPILECMD = 'sudo ' + COMPILERFILES + '/a.out' + ' < ' + SOURCEFILE;
   console.log(COMPILECMD);
-  exec(COMPILECMD,
+  execs("cd ~/Documents/serverV2/xCompiler/ && ./a.out < " + SOURCEFILE, 
+
     function (error, stdout, stderr) {
       console.log("Trying to compile X code");
       errorFunction("Errors: " + error);

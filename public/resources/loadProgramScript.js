@@ -27,7 +27,7 @@ $(document).ready(function(){
 	);
 	
 	$('#wink').click(
-		function(){sendReq('getprog', 'wink.x')}
+		function(){sendReq('getprog', 'test.x')}
 	);
 
 	$('#welcome').click(
