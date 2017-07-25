@@ -46,7 +46,7 @@ Configure:
 -Other potential packages like sql or Angular should be configured here to avoid spaghetti code.
 
 
-``gpioConfig:
+> gpioConfig:
 ├──   build:
 |└── 
 ├──   assembler.js
@@ -54,7 +54,7 @@ Configure:
 ├──    gpioService.js
 ├──    gpioService.cc
 ├──    myobject.h
-└──    myobject.cc``
+└──    myobject.cc
 
 Build comes from node-gyp again.
 
