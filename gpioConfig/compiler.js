@@ -17,7 +17,7 @@ var compile = function(Xsource, errorFunction, postCall){
   // executes compile on file
   var COMPILECMD = 'sudo ' + COMPILERFILES + '/a.out' + ' < ' + SOURCEFILE;
   console.log(COMPILECMD);
-  execs("cd ~/Documents/serverV2/xCompiler/ && ./a.out < " + SOURCEFILE, 
+  execs("cd ~/Documents/serverV2/xCompiler/oldCompiler/ && ./a.out < " + SOURCEFILE, 
 
     function (error, stdout, stderr) {
       console.log("Trying to compile X code");

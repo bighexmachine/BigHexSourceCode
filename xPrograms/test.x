@@ -1,6 +1,4 @@
 
-
-
 val framebuff = #7FF0;
 
 proc main() is
