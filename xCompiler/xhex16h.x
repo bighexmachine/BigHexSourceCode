@@ -19,7 +19,7 @@ val t3            = 3;
 val s_null        = 0;
 val s_name        = 1;
 val s_number      = 2;
-val s_lbracket    = 3; 
+val s_lbracket    = 3;
 val s_rbracket    = 4;
 val s_lparen      = 6;
 val s_rparen      = 7;
@@ -88,12 +88,12 @@ val i_ldac        = #3;
 val i_ldbc        = #4;
 val i_ldap        = #5;
 
-val i_ldai        = #6; 
+val i_ldai        = #6;
 val i_ldbi        = #7;
 val i_stai        = #8;
 
 val i_br          = #9;
-val i_brz         = #A; 
+val i_brz         = #A;
 val i_brn         = #B;
 val i_brb         = #C;
 
@@ -181,7 +181,7 @@ var stringsize;
 ||
 val labval_size  = 2000;
 array labval[labval_size];
-var labelcount; 
+var labelcount;
 ||
 val cb_size      = 15000;
 ||
@@ -189,7 +189,7 @@ val cb_size      = 15000;
 val cbf_inst     = 1;
 
 val cbf_lab      = 2;
-val cbf_fwdref   = 3; 
+val cbf_fwdref   = 3;
 val cbf_bwdref   = 4;
 
 val cbf_stack    = 5;
@@ -235,17 +235,17 @@ val maxaddr      = 32000;
 
 proc main() is
   var t;
-{ 
-  selectoutput(messagestream);  
+{
+  selectoutput(messagestream);
 
   t := formtree();
 
-  prints("tree size: "); printn(treep - tree); newline(); 
-  
+  prints("tree size: "); printn(treep - tree); newline();
+
   translate(t);
 
   prints("program size: "); printn(codesize); newline();
-  
+
   prints("size: "); printn(codesize + mul((maxaddr - arraybase), 2)); newline()
 
 }
@@ -259,7 +259,7 @@ proc newline() is putval('\n')
 
 func lsu(x, y) is
   if (x < 0) = (y < 0)
-  then 
+  then
     return x < y
   else
     return y < 0
@@ -279,7 +279,7 @@ func mul_step(b, y) is
   else
     skip;
   return r
-}  
+}
 
 func mul(n, m) is
 { mul_x := m;
@@ -288,12 +288,12 @@ func mul(n, m) is
 
 func div_step(b, y) is
   var r;
-{ if (y < 0) or (~lsu(y, div_x)) 
+{ if (y < 0) or (~lsu(y, div_x))
   then
     r := 0
   else
     r := div_step(b + b, y + y);
-  if ~lsu(div_x, y) 
+  if ~lsu(div_x, y)
   then
   { div_x := div_x - y;
     r := r + b
@@ -301,17 +301,17 @@ func div_step(b, y) is
   else
     skip;
   return r
-}  
+}
 
 func div(n, m) is
 { div_x := n;
-  if lsu(n, m) 
-  then 
+  if lsu(n, m)
+  then
     return 0
   else
     return div_step(1, m)
 }
-  
+
 func rem(n, m) is
   var x;
 { x := div(n, m);
@@ -323,7 +323,7 @@ func mul2(x, y) is
   var r;
 { r := x;
   n := 1;
-  while  n ~= y do 
+  while  n ~= y do
   { r := r + r;
     n := n + n
   };
@@ -341,8 +341,8 @@ func exp2(n) is
   };
   return r
 }
-    
-func packstring(s,  v) is 
+
+func packstring(s,  v) is
   var n;
   var si;
   var vi;
@@ -356,24 +356,24 @@ func packstring(s,  v) is
   while si <= n do
   { w :=  w + mul(s[si], exp2(mul2(b, 8)));
     b := b + 1;
-    if (b = bytesperword) 
+    if (b = bytesperword)
     then
     { v[vi] := w;
       vi := vi + 1;
       w := 0;
-      b := 0  
+      b := 0
     }
     else skip;
     si := si + 1
-  };  
+  };
   if (b = 0)
   then
     vi := vi - 1
   else
-    v[vi] := w; 
+    v[vi] := w;
   return vi
 }
-  
+
 proc unpackstring(s,  v) is
   var si;
   var vi;
@@ -390,13 +390,13 @@ proc unpackstring(s,  v) is
     w := div(w, 256);
     vi := vi + 1;
     b := b + 1;
-    if b = bytesperword 
-    then 
+    if b = bytesperword
+    then
     { b := 0;
-      si := si + 1; 
+      si := si + 1;
       w := s[si]
     }
-    else skip  
+    else skip
   }
 }
 
@@ -410,11 +410,11 @@ proc prints(s) is
   p := 0;
   w := s[p];
   l := rem(w, 256);
-  w := div(w, 256);  
+  w := div(w, 256);
   b := 1;
-  while (n <= l) do 
+  while (n <= l) do
   { putval(rem(w, 256));
-    w := div(w, 256); 
+    w := div(w, 256);
     n := n + 1;
     b := b + 1;
     if (b = bytesperword)
@@ -424,34 +424,34 @@ proc prints(s) is
       w := s[p]
     }
     else skip
-  }  
+  }
 }
 
 proc printn(n) is
-  if n < 0 
+  if n < 0
   then
   { putval('-');
     printn(-n)
   }
   else
-  { if n > 9 
-    then 
-      printn(div(n, 10)) 
+  { if n > 9
+    then
+      printn(div(n, 10))
     else skip;
     putval(rem(n, 10) + '0')
   }
 
 proc printhex(n) is
-  var d := div(n, 16); 
+  var d := div(n, 16);
 { if d = 0 then skip else printhex(d);
   d := rem(n, 16);
-  if d < 10 
+  if d < 10
   then putval(d + '0')
   else putval((d - 10) + 'a')
 }
 
 func formtree() is
-  
+
 { linep := 0;
   wordp := 0;
   charp := 0;
@@ -465,31 +465,31 @@ func formtree() is
   var i := 0;
   while i < nametablesize do
   { nametable[i] := nullnode;
-    i := i + 1    
+    i := i + 1
   };
 
   declsyswords();
 
   linecount := 0;
-  
+
   rdline();
   rch();
-   
+
   nextsymbol();
- 
+
   return rprogram()
-}  
- 
-proc cmperror(s) is 
+}
+
+proc cmperror(s) is
 { prints("error near line ");
   printn(linecount); prints(": ");
   prints(s);
-  newline() 
+  newline()
 }
 
 | tree node constructors |
 
-func newvec(n) is 
+func newvec(n) is
   var t := treep;
 { treep := treep + n
 ; if treep > (tree + treemax) then cmperror("out of space") else skip
@@ -537,7 +537,7 @@ func lookupword() is
 { namenode := nametable[hashval];
   while searching do
   { if namenode = nullnode
-    then 
+    then
     { found := false;
       searching := false
     }
@@ -546,14 +546,14 @@ func lookupword() is
     { while (i <= wordsize) and (namenode[i+2] = wordv[i]) do
         i := i + 1;
       if i <= wordsize
-      then 
+      then
         namenode := namenode[1]
-      else 
+      else
       { op := namenode[t0];
         found := true;
         searching := false
       }
-    }   
+    }
   };
   if found
   then
@@ -563,12 +563,12 @@ func lookupword() is
     namenode[t0] := s_name;
     namenode[1] := nametable[hashval];
     var i := 0;
-    while i <= wordsize do 
+    while i <= wordsize do
     { namenode[i+2] := wordv[i];
       i := i + 1
     };
     nametable[hashval] := namenode;
-    op := s_name   
+    op := s_name
   };
   return op
 }
@@ -602,9 +602,9 @@ proc declsyswords() is
   declare("val", s_val);
   declare("var", s_var);
   declare("while", s_while)
- }  
+ }
 
-func getchar() is 
+func getchar() is
   return get(instream)
 
 proc rdline() is
@@ -617,18 +617,18 @@ proc rdline() is
   { ch := getchar();
     linelength := linelength + 1;
     linev[linelength] := ch
-  }  
+  }
 }
 
 proc rch() is
-{ if (linep > linelength) then rdline() else skip; 
+{ if (linep > linelength) then rdline() else skip;
   ch := linev[linep];
   linep := linep + 1
 }
 
 proc rdtag() is
 { charp := 0;
-  while ((ch>='A') and (ch<='Z')) or ((ch>='a') and (ch<='z')) or ((ch>='0') and (ch<='9')) or (ch = '_') do 
+  while ((ch>='A') and (ch<='Z')) or ((ch>='a') and (ch<='z')) or ((ch>='0') and (ch<='9')) or (ch = '_') do
   { charp := charp + 1;
     charv[charp] := ch;
     rch()
@@ -653,7 +653,7 @@ proc readnumber(base) is
 func value(c) is
   if (c >= '0') and (c <= '9')
   then
-    return c - '0' 
+    return c - '0'
   else
   if (c >= 'A') and (c <= 'Z')
   then
@@ -667,7 +667,7 @@ func readcharco() is
   then
   { rch();
     if (ch = '\\')
-    then 
+    then
      v := '\\'
     else
     if (ch = '\'')
@@ -676,18 +676,18 @@ func readcharco() is
     else
     if (ch = '\"')
     then
-      v := '\"' 
+      v := '\"'
     else
     if (ch = 'n')
     then
       v := '\n'
-    else 
+    else
     if (ch = 'r')
-    then 
+    then
       v := '\r'
     else
     if (ch = 't')
-    then 
+    then
       v := '\t'
     else
       cmperror("error in character constant")
@@ -713,21 +713,21 @@ proc readstring() is
   wordsize := packstring(charv, wordv)
 }
 
-| lexical analyser main procedure | 
+| lexical analyser main procedure |
 
 proc nextsymbol() is
 { while (ch = '\n') or (ch = '\r') or (ch = '\t') or (ch = ' ') do
-    rch();   
-  if (ch = '|') 
+    rch();
+  if (ch = '|')
   then
   { rch();
     while (ch ~= '|') do
-      rch(); 
+      rch();
     rch();
     nextsymbol()
   }
   else
-  if ((ch >= 'A') and (ch <= 'Z')) or ((ch >= 'a') and (ch <= 'z')) 
+  if ((ch >= 'A') and (ch <= 'Z')) or ((ch >= 'a') and (ch <= 'z'))
   then
   { rdtag();
     symbol := lookupword()
@@ -744,64 +744,64 @@ proc nextsymbol() is
   { rch();
     symbol := s_number;
     if ch = 'b'
-    then 
+    then
     { rch();
       readnumber(2)
     }
     else
       readnumber(16)
   }
-  else 
+  else
   if (ch = '[')
-  then 
+  then
   { rch();
     symbol := s_lbracket
-  }  
-  else 
+  }
+  else
   if (ch = ']')
   then
   { rch();
     symbol := s_rbracket
-  }  
-  else 
+  }
+  else
   if (ch = '(')
   then
   { rch();
     symbol := s_lparen
-  }  
-  else 
+  }
+  else
   if (ch = ')')
-  then 
+  then
   { rch();
     symbol := s_rparen
-  }  
-  else 
+  }
+  else
   if (ch = '{')
   then
   { rch();
     symbol := s_begin
-  }  
-  else 
+  }
+  else
   if (ch = '}')
   then
   { rch();
     symbol := s_end
-  }  
-  else 
+  }
+  else
   if (ch = ';')
   then
   { rch();
     symbol := s_semicolon
-  }  
-  else 
+  }
+  else
   if (ch = ',')
   then
   { rch();
     symbol := s_comma
-  }  
-  else 
+  }
+  else
   if (ch = '.')
-  then 
+  then
   { rch();
     symbol := s_dot
   }
@@ -810,19 +810,19 @@ proc nextsymbol() is
   then
   { rch();
     symbol := s_plus
-  }  
-  else 
+  }
+  else
   if (ch = '-')
   then
   { rch();
     symbol := s_minus
-  }  
-  else 
+  }
+  else
   if (ch = '=')
   then
   { rch();
     symbol := s_eq
-  }  
+  }
   else
   if (ch = '<')
   then
@@ -834,7 +834,7 @@ proc nextsymbol() is
     }
     else
       symbol := s_ls
-  }  
+  }
   else
   if (ch = '>')
   then
@@ -846,8 +846,8 @@ proc nextsymbol() is
     }
     else
       symbol := s_gr
-  }  
-  else 
+  }
+  else
   if (ch = '~')
   then
   { rch();
@@ -858,7 +858,7 @@ proc nextsymbol() is
     }
     else
       symbol := s_not
-  }  
+  }
   else
   if (ch = ':')
   then
@@ -870,7 +870,7 @@ proc nextsymbol() is
     }
     else
       cmperror("\'=\' expected")
-  }  
+  }
   else
    if (ch = '?')
   then
@@ -892,7 +892,7 @@ proc nextsymbol() is
     then
       rch()
     else
-      cmperror("error in character constant");      
+      cmperror("error in character constant");
     symbol := s_number
   }
   else
@@ -904,9 +904,9 @@ proc nextsymbol() is
     then
       rch()
     else
-      cmperror("error in string constant");      
+      cmperror("error in string constant");
     symbol := s_string
-  }   
+  }
   else
   if (ch = EOF)
   then
@@ -922,7 +922,7 @@ proc checkfor(s,  m) is
   then
     nextsymbol()
   else
-    cmperror(m) 
+    cmperror(m)
 
 func rname() is
   var a;
@@ -930,13 +930,13 @@ func rname() is
   then
   { a := namenode;
     nextsymbol()
-  } 
-  else 
+  }
+  else
     cmperror("name expected");
   return a
 }
-  
-func relement() is 
+
+func relement() is
   var a;
   var b;
   var i;
@@ -945,9 +945,9 @@ func relement() is
   { a := rname();
     if (symbol = s_lbracket)
     then
-    { nextsymbol(); 
-      b := rexpression(); 
-      checkfor(s_rbracket, "\']\' expected"); 
+    { nextsymbol();
+      b := rexpression();
+      checkfor(s_rbracket, "\']\' expected");
       a := cons3(s_sub, a, b)
     }
     else
@@ -956,16 +956,16 @@ func relement() is
     { nextsymbol();
       if (symbol = s_rparen)
       then
-        b := nullnode 
+        b := nullnode
       else
         b := rexplist();
       checkfor(s_rparen, "\')\' expected");
       a := cons3(s_fncall, a, b)
     }
-    else 
+    else
       skip
   }
-  else 
+  else
   if (symbol = s_number)
   then
   {  a := cons2(s_number, numval);
@@ -976,11 +976,11 @@ func relement() is
   then
   { a := namenode;
     nextsymbol()
-  }  
+  }
   else
-  if (symbol = s_string) 
+  if (symbol = s_string)
   then
-  { a := newvec(wordsize + 2); 
+  { a := newvec(wordsize + 2);
     a[t0] := s_string;
     i := 0;
     while i <= wordsize do
@@ -989,22 +989,22 @@ func relement() is
     };
     nextsymbol()
   }
-  else 
+  else
   if (symbol = s_lbracket)
   then
   { nextsymbol();
     a := rexplist();
     checkfor(s_rbracket, "\']\' expected")
   }
-  else   
+  else
   if (symbol = s_lparen)
   then
   {  nextsymbol();
      a := rexpression();
-     checkfor(s_rparen, "\')\' expected") 
-  } 
+     checkfor(s_rparen, "\')\' expected")
+  }
   else
-    cmperror("error in expression"); 
+    cmperror("error in expression");
   return a
 }
 
@@ -1024,7 +1024,7 @@ func rexpression() is
   {  nextsymbol();
      b := relement();
      return cons2(s_not, b)
-  }  
+  }
   else
   { a := relement();
     if diadic(symbol)
@@ -1033,26 +1033,26 @@ func rexpression() is
       nextsymbol();
       return cons3(s, a, rright(s))
     }
-    else   
+    else
       return a
   }
 }
 
 func rright(s) is
-  var b := relement(); 
+  var b := relement();
   if (associative(s) and (symbol = s))
   then
   { nextsymbol();
     return cons3(s, b, rright(s))
   }
-  else 
+  else
     return b
-    
 
-func associative(s) is 
-  return (s = s_and) or (s = s_or) or (s = s_plus) 
 
-  
+func associative(s) is
+  return (s = s_and) or (s = s_or) or (s = s_plus)
+
+
 func rexplist() is
   var a;
 { a := rexpression();
@@ -1061,10 +1061,10 @@ func rexplist() is
   { nextsymbol();
     return cons3(s_comma, a, rexplist())
   }
-  else 
+  else
     return a
 }
-      
+
 func rstatement() is
   var a;
   var b;
@@ -1077,10 +1077,10 @@ func rstatement() is
   else
   if (symbol = s_skip)
   then
-  { nextsymbol(); 
+  { nextsymbol();
     return cons1(s_skip)
   }
-  else  
+  else
   if (symbol = s_stop)
   then
   { nextsymbol();
@@ -1112,11 +1112,11 @@ func rstatement() is
     b := rstatement();
     return cons3(s_while, a, b)
   }
-  else 
+  else
   if (symbol = s_begin)
   then
   { nextsymbol();
-    a := rstatements();    
+    a := rstatements();
     checkfor(s_end, "\'}\' expected");
     return a
   }
@@ -1129,26 +1129,26 @@ func rstatement() is
     { a.t0 := s_pcall;
       return a
     }
-    else 
-    if (symbol = s_ass) 
+    else
+    if (symbol = s_ass)
     then
       if ((a.t0) = s_name) or ((a.t0) = s_sub) or ((a.t0) = s_dot)
       then
       { nextsymbol();
         return cons3(s_ass, a, rexpression())
       }
-      else 
-      { cmperror("error in destination");    
+      else
+      { cmperror("error in destination");
         return cons1(s_stop)
       }
     else
-    if (symbol = s_input) 
+    if (symbol = s_input)
     then
     { nextsymbol();
       return cons3(s_input, a, rexpression())
     }
     else
-    if (symbol = s_output) 
+    if (symbol = s_output)
     then
     { nextsymbol();
       return cons3(s_output, a, rexpression())
@@ -1159,10 +1159,10 @@ func rstatement() is
     }
   }
   else
-  { cmperror("error in command");    
+  { cmperror("error in command");
     return cons1(s_stop)
   }
-}      
+}
 
 func rstatements() is
   var a := rstatement();
@@ -1171,10 +1171,10 @@ func rstatements() is
   { nextsymbol();
     return cons3(s_semicolon, a, rstatements())
   }
-  else 
+  else
     return a
 
-func rprocdecls() is 
+func rprocdecls() is
   var a := rprocdecl();
   if (symbol = s_proc) or (symbol = s_func)
   then
@@ -1190,18 +1190,18 @@ func rprocdecl() is
 { s := symbol;
   nextsymbol();
   a := rname();
-  checkfor(s_lparen, "\'(\' expected"); 
+  checkfor(s_lparen, "\'(\' expected");
   if symbol = s_rparen
   then
     b := nullnode
   else
     b := rformals();
   checkfor(s_rparen, "\')\' expected");
-  checkfor(s_is, "\'is\' expected"); 
+  checkfor(s_is, "\'is\' expected");
   return cons4(s, a, b, rstatement())
 }
 
-func rformals() is 
+func rformals() is
   var a := cons2(s_var, rname());
   if (symbol = s_comma)
   then
@@ -1217,11 +1217,11 @@ func rprogram() is
   if symbol = s_module
   then
   { nextsymbol();
-    checkfor(s_lparen, "\'(\' expected"); 
+    checkfor(s_lparen, "\'(\' expected");
     a := rformals();
     checkfor(s_rparen, "\')\' expected");
     checkfor(s_is, "\'is\' expected");
-    b := rmodule(); 
+    b := rmodule();
     checkfor(s_in, "\'in\' expected");
     return cons4(s_module, a, b, rprogram())
   }
@@ -1243,7 +1243,7 @@ func rdecl() is
   var b;
 { if (symbol = s_var)
   then
-  { nextsymbol(); 
+  { nextsymbol();
     a := rname();
     if (symbol = s_ass)
     then
@@ -1262,10 +1262,10 @@ func rdecl() is
     checkfor(s_lbracket, "\'[\' expected");
     b := rexpression();
     checkfor(s_rbracket, "\']\' expected");
-    a := cons3(s_array, a, b) 
+    a := cons3(s_array, a, b)
   }
   else
-  if (symbol = s_val) 
+  if (symbol = s_val)
   then
   { nextsymbol();
     a := rname();
@@ -1278,7 +1278,7 @@ func rdecl() is
   checkfor(s_semicolon, "\';\' expected");
   return a
 }
-  
+
 proc namemessage(s, x) is
   var n;
   var p;
@@ -1292,11 +1292,11 @@ proc namemessage(s, x) is
     p := 2;
     w := x[p];
     l := rem(w, 256);
-    w := div(w, 256);   
+    w := div(w, 256);
     b := 1;
-    while (n <= l) do 
+    while (n <= l) do
     { putval(rem(w, 256));
-      w := div(w, 256); 
+      w := div(w, 256);
       n := n + 1;
       b := b + 1;
       if (b = bytesperword)
@@ -1306,7 +1306,7 @@ proc namemessage(s, x) is
         w := x[p]
       }
       else skip
-    }  
+    }
   }
   else skip;
   newline()
@@ -1334,7 +1334,7 @@ proc declprocs(x) is
           found := true
         else
           n := n - 1;
-      if found 
+      if found
       then
       { names_d[n] := x;
         addname(x, names_v[n])
@@ -1350,7 +1350,7 @@ proc declexports(x) is
     declexports(x.t2)
   }
   else
-    addname(x, getlabel()) 
+    addname(x, getlabel())
 
 
 proc declformals(x) is
@@ -1372,7 +1372,7 @@ proc declformals(x) is
 func numgvars(n) is
   var op := n.t0;
   if op = s_module
-  then 
+  then
     return numgvars(n.t2) + numgvars(n.t3)
   else
   if op = s_scope
@@ -1397,11 +1397,11 @@ proc declglobal(x) is
   if (op = s_vari)
   then
     generror("error in global declaration")
-  else 
-  if (op = s_val) 
+  else
+  if (op = s_val)
   then
   { x.t2 := optimiseexpr(x.t2);
-    if isval(x.t2) 
+    if isval(x.t2)
     then
       addname(x, getval(x.t2))
     else
@@ -1411,7 +1411,7 @@ proc declglobal(x) is
   if (op = s_array)
   then
   { x.t2 := optimiseexpr(x.t2);
-    if isval(x.t2) 
+    if isval(x.t2)
     then
     { arraybase := arraybase - getval(x.t2);
       geng(arraybase);
@@ -1424,10 +1424,10 @@ proc declglobal(x) is
   else
     skip
 
-proc addname(x, v) is 
+proc addname(x, v) is
 { names_d[namep] := x;
   names_v[namep] := v;
-  namep := namep + 1 
+  namep := namep + 1
 }
 
 
@@ -1441,7 +1441,7 @@ func findname(x) is
     else
       n := n - 1
   };
-  if found 
+  if found
   then
     skip
   else
@@ -1466,13 +1466,13 @@ proc optimise(x) is
     if (d.t0) = s_val
     then
     { d.t2 := optimiseexpr(d.t2);
-      if isval(d.t2) 
+      if isval(d.t2)
       then
         addname(d, getval(d.t2))
       else
         generror("constant expression expected")
     }
-    else 
+    else
     if (d.t0) = s_vari
     then
     { d.t2 := optimiseexpr(d.t2);
@@ -1490,7 +1490,7 @@ proc optimise(x) is
     }
     else
       skip;
-    optimise(x.t2); 
+    optimise(x.t2);
     namep := np
   }
   else
@@ -1513,7 +1513,7 @@ proc optimise(x) is
   then
   { x.t1 := optimiseexpr(x.t1);
     optimise(x.t2)
-  }  
+  }
   else
   if (op = s_ass)
   then
@@ -1525,7 +1525,7 @@ proc optimise(x) is
   then
   { x.t2 := optimiseexpr(x.t2);
     x.t1 := optimiseexpr(x.t1)
-  }   
+  }
   else
   if (op = s_semicolon)
   then
@@ -1550,7 +1550,7 @@ func optimiseexpr(x) is
   then
   { name := findname(x);
     if (names_d[name].t0) = s_val
-    then 
+    then
       r := names_d[name].t2
     else skip
   }
@@ -1575,7 +1575,7 @@ func optimiseexpr(x) is
   then
   { x.t2 := optimiseexpr(x.t2);
     x.t1 := optimiseexpr(x.t1)
-  }   
+  }
   else
   if (diadic(op))
   then
@@ -1601,27 +1601,27 @@ func optimiseexpr(x) is
       then
       { x.t1 := left.t1;
         x.t2 := right.t1
-      }    
-      else skip 
-    }   
+      }
+      else skip
+    }
     else
     if (op = s_ne)
     then
     { x.t0 := s_eq;
       r := cons2(s_not, x);
       if (leftop = s_not) and (rightop = s_not)
-      then 
+      then
       { x.t1 := left.t1;
         x.t2 := right.t1
-      }     
+      }
       else skip
-    } 
+    }
     else
     if (op = s_ge)
     then
     { x.t0 := s_ls;
       r := cons2(s_not, x)
-    } 
+    }
     else
     if (op = s_gr)
     then
@@ -1642,13 +1642,13 @@ func optimiseexpr(x) is
     else
     if ((op = s_or) or (op = s_and))
     then
-    { if (leftop = s_not) and (rightop = s_not) 
+    { if (leftop = s_not) and (rightop = s_not)
       then
       { r := cons2(s_not, x);
         if (x.t0) = s_and
         then
           x.t0 := s_or
-        else 
+        else
           x.t0 := s_and;
         x.t1 := left.t1;
         x.t2 := right.t1
@@ -1656,7 +1656,7 @@ func optimiseexpr(x) is
       else
         skip
     }
-    else     
+    else
     if ((op = s_plus) or (op = s_or)) and (iszero(x.t1) or iszero(x.t2))
     then
     { if (iszero(x.t1))
@@ -1672,9 +1672,9 @@ func optimiseexpr(x) is
     if (op = s_minus) and iszero(x.t2)
     then
       r := x.t1
-    else skip    
+    else skip
   }
-  else  
+  else
   if (op = s_comma)
   then
   { x.t2 := optimiseexpr(x.t2);
@@ -1706,14 +1706,14 @@ func getval(x) is
     return x.t1
   else
     return 0
-}  
+}
 
 func evalmonadic(x) is
   var op;
   var opd;
 { op := x.t0;
   opd := getval(x.t1);
-  if (op = s_neg) 
+  if (op = s_neg)
   then
     return - opd
   else
@@ -1780,7 +1780,7 @@ func evaldiadic(x) is
 
 
 proc translate(t) is
-  
+
 { namep := 0;
   nameb := 0;
 
@@ -1809,16 +1809,16 @@ proc tprog(x) is
   }
   else
     tmain(x)
-  
+
 
 proc tmodule(x) is
   if (x.t0) = s_scope
   then
-  { declglobal(x.t1); 
+  { declglobal(x.t1);
     tmodule(x.t2)
   }
   else
-  { declprocs(x); 
+  { declprocs(x);
     nameb := namep;
     genprocs(x)
   }
@@ -1830,7 +1830,7 @@ proc tmain(x) is
     tmain(x.t2)
   }
   else
-  { initsp(arraybase - 2); 
+  { initsp(arraybase - 2);
     gen(cbf_constp, 0, 0);
     genmain(x)
   }
@@ -1840,18 +1840,18 @@ proc genmain(x) is
   var mainlab;
 { declprocs(x);
   nameb := namep;
-  entrylab := getlabel(); 
+  entrylab := getlabel();
   mainlab := getlabel();
   link := getlabel();
   setlab(entrylab);
   genref(i_ldap, link);
   genref(i_br, mainlab);
   setlab(link);
-  
-  geni(i_ldac, 0);
-  geni(i_opr, o_svc);
 
-  setlab(mainlab);  
+  geni(i_ldai, 1);
+  geni(i_br, -2);
+
+  setlab(mainlab);
 
   genprocs(x)
 }
@@ -1868,20 +1868,20 @@ proc genprocs(x) is
   else
   { savetreep := treep;
     namep := nameb;
-    pn := findname(x.t1); 
+    pn := findname(x.t1);
     proclabel := names_v[pn];
     procdef := names_d[pn];
     infunc := (procdef.t0) = s_func;
-    body := x.t3; 
+    body := x.t3;
     stk_init(1);
     declformals(x.t2);
     setlab(proclabel);
     genentry();
     stk_init(1);
     setstack();
-    optimise(body);   
-    genstatement(body, true, 0, true); 
-    genexit();   
+    optimise(body);
+    genstatement(body, true, 0, true);
+    genexit();
     treep := savetreep
   }
 }
@@ -1902,10 +1902,10 @@ proc genstatement(x, seq, clab, tail) is
   if (op = s_scope)
   then
   { np := namep;
-    sp := stackp; 
+    sp := stackp;
     op1 := x.t1;
     if (op1.t0) = s_val
-    then 
+    then
       skip
     else
     if (op1.t0) = s_var
@@ -1914,7 +1914,7 @@ proc genstatement(x, seq, clab, tail) is
       stackp := stackp + 1;
       setstack()
     }
-    else 
+    else
     if (op1.t0) = s_vari
     then
     { texp(op1.t2);
@@ -1934,13 +1934,13 @@ proc genstatement(x, seq, clab, tail) is
       addname(op1, stackp);
       stackp := stackp + getval(op1.t1) + 1;
       setstack()
-    }     
+    }
     else cmperror("error in declaration");
     genstatement(x.t2, seq, clab, tail);
     stackp := sp;
     namep := np
   }
-  else 
+  else
   if (op = s_semicolon)
   then
   { genstatement(x.t1, true, 0, false);
@@ -1960,16 +1960,16 @@ proc genstatement(x, seq, clab, tail) is
     elsepart := x.t3;
     if (~ funtail(tail)) and (((thenpart.t0)=s_skip) or ((elsepart.t0)=s_skip))
     then
-    { gencondjump(x.t1, (thenpart.t0) = s_skip, clab); 
+    { gencondjump(x.t1, (thenpart.t0) = s_skip, clab);
       if (thenpart.t0) = s_skip
       then
         genstatement(elsepart, seq, clab, tail)
       else
         genstatement(thenpart, seq, clab, tail)
-    }   
+    }
     else
     { elselab := getlabel();
-      gencondjump(x.t1, false, elselab);       
+      gencondjump(x.t1, false, elselab);
       genstatement(thenpart, false, clab, tail);
       setlab(elselab);
       genstatement(elsepart, seq, clab, tail)
@@ -1981,7 +1981,7 @@ proc genstatement(x, seq, clab, tail) is
     if op = s_return
     then
     { texp(x.t1);
-      genbr(seq, clab) 
+      genbr(seq, clab)
     }
     else
       generror("\"return\" expected")
@@ -2003,15 +2003,15 @@ proc genstatement(x, seq, clab, tail) is
   else
   if (op = s_stop)
   then
-  { geni(i_ldac, 0);
-    geni(i_opr, o_svc)
+  { geni(i_ldai, 1);
+    geni(i_br, -2)
   }
   else
-  { if (op = s_skip) 
+  { if (op = s_skip)
     then
       skip
     else
-    if (op = s_ass) 
+    if (op = s_ass)
     then
       genassign(x.t1, x.t2)
     else
@@ -2019,10 +2019,10 @@ proc genstatement(x, seq, clab, tail) is
     then
       tcall(x, false)
     else
-    if op = s_return 
-    then 
+    if op = s_return
+    then
       generror("misplaced \"return\"")
-    else 
+    else
       skip;
     genbr(seq, clab)
   }
@@ -2032,7 +2032,7 @@ proc tbool(x, cond) is
   var op;
   var lab;
 { op := x.t0;
-  if (op = s_not) 
+  if (op = s_not)
   then
     tbool(x.t1, ~cond)
   else
@@ -2048,7 +2048,7 @@ proc tbool(x, cond) is
   else
   if op = s_eq
   then
-  { if iszero(x.t1) 
+  { if iszero(x.t1)
     then
       texp(x.t2)
     else
@@ -2072,7 +2072,7 @@ proc tbool(x, cond) is
   else
   if op = s_ls
   then
-  { if iszero(x.t2) 
+  { if iszero(x.t2)
     then
       texp(x.t1)
     else
@@ -2094,7 +2094,7 @@ proc tbool(x, cond) is
   else
   { texp(x);
     if cond
-    then 
+    then
       skip
     else
     { geni(i_brz, 2);
@@ -2109,14 +2109,14 @@ proc gencondjump(x, cond, target) is
   var op;
   var lab;
 { op := x.t0;
-  if (op = s_not) 
+  if (op = s_not)
   then
     gencondjump(x.t1, ~cond, target)
   else
   if (op = s_and) or (op = s_or)
   then
-    if ((op = s_and) and cond) or ((op = s_or) and (~cond)) 
-    then 
+    if ((op = s_and) and cond) or ((op = s_or) and (~cond))
+    then
     { lab := getlabel();
       gencondjump(x.t1, ~cond, lab);
       gencondjump(x.t2, cond, target);
@@ -2124,12 +2124,12 @@ proc gencondjump(x, cond, target) is
     }
     else
     { gencondjump(x.t1, cond, target);
-      gencondjump(x.t2, cond, target)     
+      gencondjump(x.t2, cond, target)
     }
   else
   if op = s_eq
   then
-  { if iszero(x.t1) 
+  { if iszero(x.t1)
     then
       texp(x.t2)
     else
@@ -2143,7 +2143,7 @@ proc gencondjump(x, cond, target) is
   else
   if op = s_ls
   then
-  { if iszero(x.t2) 
+  { if iszero(x.t2)
     then
       texp(x.t1)
     else
@@ -2153,7 +2153,7 @@ proc gencondjump(x, cond, target) is
   else
   { texp(x);
     genjump(i_brz, ~cond, target)
-  }  
+  }
 }
 
 proc genjump(inst, cond, target) is
@@ -2168,7 +2168,7 @@ proc genjump(inst, cond, target) is
     setlab(lab)
   }
 }
- 
+
 proc tcall(x, fncall) is
   var sp;
   var entry;
@@ -2179,30 +2179,30 @@ proc tcall(x, fncall) is
   actuals := x.t2;
   n := numps(actuals);
   if (n = 0) and fncall
-  then 
+  then
     tactuals(actuals, 1)
   else
     tactuals(actuals, n);
   if isval(x.t1)
-  then 
+  then
   { texp(x.t1);
     geni(i_opr, o_svc);
     if fncall
-    then 
+    then
     { geni(i_ldam, m_sp);
-      geni(i_ldai, 1) 
+      geni(i_ldai, 1)
     }
-    else 
+    else
       skip
   }
   else
   { entry := findname(x.t1);
     gencall(entry, actuals);
     if fncall
-    then   
-      geni(i_ldai, 1)   
+    then
+      geni(i_ldai, 1)
     else
-      skip  
+      skip
   };
   stackp := sp
 }
@@ -2226,7 +2226,7 @@ func numps(x) is
   else
   if (x.t0) = s_comma
   then
-    return 1 + numps(x.t2) 
+    return 1 + numps(x.t2)
   else
     return 1
 
@@ -2242,14 +2242,14 @@ proc gencall(entry, actuals) is
   }
   else
   { def := names_d[entry];
-    checkps(def.t2, actuals); 
+    checkps(def.t2, actuals);
     genref(i_br, names_v[entry])
   };
   setlab(link)
 }
 
 proc preparecalls(x) is
-  if (x.t0) = s_comma 
+  if (x.t0) = s_comma
   then
   { preparecalls(x.t2);
     preparecall(x.t1)
@@ -2258,16 +2258,16 @@ proc preparecalls(x) is
     preparecall(x)
 
 proc preparecall(x) is
-  var op; 
+  var op;
   var vn;
   var sp;
 { op := x.t0;
-  if op = s_null 
+  if op = s_null
   then
     skip
   else
-  if containscall(x) 
-  then     
+  if containscall(x)
+  then
   { sp := stackp;
     texp(x);
     stackp := stackp + 1;
@@ -2276,11 +2276,11 @@ proc preparecall(x) is
     gensref(i_stai, sp)
   }
   else
-    skip  
+    skip
 }
 
 proc loadcalls(x, n) is
-  if (x.t0) = s_comma 
+  if (x.t0) = s_comma
   then
   { loadcalls(x.t2, n + 1);
     loadcall(x.t1, n)
@@ -2289,28 +2289,28 @@ proc loadcalls(x, n) is
     loadcall(x, n)
 
 proc loadcall(x, n) is
-  var op; 
+  var op;
   var vn;
   var sp;
 { op := x.t0;
-  if op = s_null 
+  if op = s_null
   then
     skip
   else
-  if containscall(x) 
-  then     
+  if containscall(x)
+  then
   { geni(i_ldam, m_sp);
     gensref(i_ldai, stackp);
     stackp := stackp + 1;
     geni(i_ldbm, m_sp);
-    geni(i_stai, n)    
-  } 
+    geni(i_stai, n)
+  }
   else
-    skip  
+    skip
 }
 
 proc loadaps(x, n) is
-  if (x.t0) = s_comma 
+  if (x.t0) = s_comma
   then
   { loadaps(x.t2, n + 1);
     loadap(x.t1, n)
@@ -2319,11 +2319,11 @@ proc loadaps(x, n) is
     loadap(x, n)
 
 proc loadap(x, n) is
-  var op; 
+  var op;
   var vn;
   var aptype;
 { op := x.t0;
-  if op = s_null 
+  if op = s_null
   then
     skip
   else
@@ -2334,12 +2334,12 @@ proc loadap(x, n) is
   { texp(x);
     geni(i_ldbm, m_sp);
     geni(i_stai, n)
-  } 
+  }
 }
 
 proc checkps(ax, fx) is
   if ((fx.t0) = s_comma) and ((ax.t0) = s_comma)
-  then 
+  then
     checkps(fx.t2, ax.t2)
   else
   if ((fx.t0) = s_comma) or ((ax.t0) = s_comma)
@@ -2348,7 +2348,7 @@ proc checkps(ax, fx) is
   else
     skip
 
-func containscall(x) is 
+func containscall(x) is
   var op;
 { op := x.t0;
   if op = s_null
@@ -2361,10 +2361,10 @@ func containscall(x) is
   else
   if diadic(op)
   then
-    return containscall(x.t1) or containscall(x.t2)  
+    return containscall(x.t1) or containscall(x.t2)
   else
    return op = s_fncall
-}    
+}
 
 func iszero(x) is
   return isval(x) and (getval(x) = 0)
@@ -2379,17 +2379,17 @@ func viabreg(x) is
   var op;
 { op := x.t0;
   if (op = s_sub) or (op = s_dot)
-  then 
+  then
     if isval(x.t2)
-    then 
+    then
       return viabreg(x.t1)
     else
       return false
   else
     return isval(x) or (op = s_string) or (op = s_name)
 }
-    
-func regsfor(x) is 
+
+func regsfor(x) is
   var op;
   var rleft;
   var rright;
@@ -2404,21 +2404,21 @@ func regsfor(x) is
   else
   if diadic(op)
   then
-  { rleft := regsfor(x.t1);  
+  { rleft := regsfor(x.t1);
     rright := regsfor(x.t2);
-    if rleft = rright 
+    if rleft = rright
     then
       return 1 + rleft
     else
     if rleft > rright
     then
       return rleft
-    else 
+    else
       return rright
   }
   else
     return 1
-}    
+}
 
 proc loadbase(reg, base) is
   var name;
@@ -2440,7 +2440,7 @@ proc loadbase(reg, base) is
       else
         geni(i_ldbi, offset)
     }
-    else  
+    else
     { name := findname(base);
       loadvar(reg, name)
     }
@@ -2464,14 +2464,14 @@ proc genassign(left, right) is
   else
   { base := left.t1;
     offset := left.t2;
-    if viabreg(left)  
+    if viabreg(left)
     then
     { value := getval(offset);
       texp(right);
       loadbase(r_breg, base);
       geni(i_stai, value)
     }
-    else  
+    else
     { sp := stackp;
       texp2(s_plus, base, offset);
       stackp := stackp + 1;
@@ -2513,7 +2513,7 @@ proc geninput(ch, right) is
       loadbase(r_breg, base);
       geni(i_stai, value)
     }
-    else  
+    else
     { sp := stackp;
       texp2(s_plus, base, offset);
       stackp := stackp + 1;
@@ -2524,7 +2524,7 @@ proc geninput(ch, right) is
       geni(i_opr, o_in);
       geni(i_ldbm, m_sp);
       gensref(i_ldbi, sp);
-      geni(i_stai, 0); 
+      geni(i_stai, 0);
       stackp := sp
     }
   }
@@ -2552,7 +2552,7 @@ proc genoutput(ch, x) is
     stackp := sp
   }
 }
-  
+
 proc texp(x) is
   var op;
   var left;
@@ -2567,7 +2567,7 @@ proc texp(x) is
   { value := getval(x);
     loadconst(r_areg, value)
   }
-  else   
+  else
   if op = s_string
   then
     genstring(x)
@@ -2575,11 +2575,11 @@ proc texp(x) is
   if op = s_comma
   then
     gentable(x)
-  else 
-  if (op = s_name)  
-  then 
+  else
+  if (op = s_name)
+  then
   { left := findname(x);
-    def := names_d[left]; 
+    def := names_d[left];
     if (def.t0) = s_val
     then
       loadconst(r_areg, names_v[left])
@@ -2592,10 +2592,10 @@ proc texp(x) is
     then
       genref(i_ldap, names_v[left])
     else
-      skip  
-  } 
+      skip
+  }
   else
-  if (op = s_not) or (op = s_and) or (op = s_or) or (op = s_eq) or (op = s_ls)  
+  if (op = s_not) or (op = s_and) or (op = s_or) or (op = s_eq) or (op = s_ls)
   then
     tbool(x, true)
   else
@@ -2620,10 +2620,10 @@ proc texp(x) is
   else
     texp2(op, x.t1, x.t2)
 }
- 
+
 proc texp2(op, op1, op2) is
   var left;
-  var right;  
+  var right;
   var sp;
 { left := op1;
   right := op2;
@@ -2644,7 +2644,7 @@ proc texp2(op, op1, op2) is
     texp(right);
     stackp := stackp + 1;
     setstack();
-    geni(i_ldbm, m_sp);        
+    geni(i_ldbm, m_sp);
     gensref(i_stai, sp);
     texp(left);
     geni(i_ldbm, m_sp);
@@ -2655,9 +2655,9 @@ proc texp2(op, op1, op2) is
   then
     geni(i_opr, o_add)
   else
-  if (op = s_minus) 
+  if (op = s_minus)
   then
-    geni(i_opr, o_sub) 
+    geni(i_opr, o_sub)
   else
     skip
 }
@@ -2673,7 +2673,7 @@ proc tbexp(x) is
   { value := getval(x);
     loadconst(r_breg, value)
   }
-  else   
+  else
   if op = s_string
   then
     genstring(x)
@@ -2683,30 +2683,30 @@ proc tbexp(x) is
   { loadbase(r_breg, x.t1);
     geni(i_ldbi, getval(x.t2))
   }
-  else 
-  if (op = s_name)  
-  then 
+  else
+  if (op = s_name)
+  then
   { left := findname(x);
-    def := names_d[left]; 
+    def := names_d[left];
     if (def.t0) = s_val
     then
       loadconst(r_breg, names_v[left])
     else
       loadvar(r_breg, left)
-    
-  } 
+
+  }
   else
     skip
 }
 
-proc stk_init(n) is 
+proc stk_init(n) is
 { stackp := n;
   stk_max := n
 }
-  
+
 proc setstack() is
   if stk_max < stackp
-  then 
+  then
     stk_max := stackp
   else
     skip
@@ -2721,16 +2721,16 @@ proc loadconst(reg, value) is
     geni(i_ldbc, value)
   else
     gen(cbf_const, reg, genconst(value))
- 
+
 proc loadvar(reg, vn) is
   var offs;
 { offs := names_v[vn];
-  if islocal(vn) 
-  then 
+  if islocal(vn)
+  then
     if reg = r_areg
     then
     { geni(i_ldam, m_sp);
-      gensref(i_ldai, offs) 
+      gensref(i_ldai, offs)
     }
     else
     { geni(i_ldbm, m_sp);
@@ -2743,23 +2743,23 @@ proc loadvar(reg, vn) is
     else
       geni(i_ldbm, offs)
 }
- 
+
 proc storevar(vn) is
   var offs;
 { offs := names_v[vn];
-  if islocal(vn) 
+  if islocal(vn)
   then
-  { geni(i_ldbm, m_sp); 
+  { geni(i_ldbm, m_sp);
     gensref(i_stai, offs)
-  } 
+  }
   else
     geni(i_stam, offs)
 }
- 
+
 func monadic(op) is
   return (op = s_not) or (op = s_neg)
 
-func diadic(op) is 
+func diadic(op) is
   return (div(op, s_diadic) ~= 0)
 
 proc geni(i, opd) is
@@ -2776,7 +2776,7 @@ proc gensref(i, offs) is
   gen(cbf_stack, i, offs)
 
 proc genbr(seq, lab) is
-  if seq 
+  if seq
   then
     skip
   else
@@ -2790,20 +2790,20 @@ func genconst(n) is
 { found := false;
   i := 0;
   while ((i < constp) and (found = false)) do
-    if (consts[i] = n) 
+    if (consts[i] = n)
     then
     { found := true;
       cp := i
     }
     else
       i := i + 1;
-  if found 
+  if found
   then
     skip
   else
   { consts[constp] := n;
     cp := constp;
-    constp := constp + 1 
+    constp := constp + 1
   };
   return cp
 }
@@ -2812,7 +2812,7 @@ proc genstring(x) is
   var i;
   var sa;
   var sl;
-{ sa := stringsize; 
+{ sa := stringsize;
   sl := rem(x[1], 256);
   i := 0;
   while i <= div(sl, 4) do
@@ -2820,14 +2820,14 @@ proc genstring(x) is
     stringp := stringp + 1;
     i := i + 1
   };
-  stringsize := stringsize + div(sl + 2, 2); 
+  stringsize := stringsize + div(sl + 2, 2);
   gen(cbf_string, 0, sa)
 }
 
 proc gentable(x) is
   var tp;
 { tp := tablep;
-  tablep := tablep + 1; 
+  tablep := tablep + 1;
   gen(cbf_table, 0, tablesize);
   gentabvals(x);
   tables[tp] := tablep
@@ -2847,11 +2847,11 @@ proc gentabvals(x) is
     tablep := tablep + 1
   }
   else
-    cmperror("non-constant in table") 
-      
-     
+    cmperror("non-constant in table")
+
+
 proc gen(t, h, l) is
-{ cb_loadpoint := cb_loadpoint + 1; 
+{ cb_loadpoint := cb_loadpoint + 1;
   codebuffer[cb_bufferp] := mul2(t, cb_flag) + mul2(h, cb_high) + (l + 65536);
   cb_bufferp := cb_bufferp + 1;
   if (cb_bufferp = cb_size)
@@ -2865,10 +2865,10 @@ proc geng(gv) is
   cb_buffergp := cb_buffergp + 1
 }
 
-proc initsp(gv) is 
+proc initsp(gv) is
   codebuffer[0] := mul2(cbf_var, cb_flag) + (gv + 65536)
-  
-  
+
+
 proc initlabels() is
   var l;
 { l := 0;
@@ -2895,8 +2895,8 @@ proc setlab(l) is
 proc genentry() is
 { cb_entryinstp := cb_bufferp;
   gen(cbf_entry, 0, 0)
-}  
-   
+}
+
 proc genexit() is
 { cb_setlow(cb_entryinstp, stk_max);
   if (procdef.t0) = s_proc
@@ -2930,7 +2930,7 @@ proc cb_unpack(p) is
 proc cb_setlow(p, f) is
   var t;
 { t := div(codebuffer[p], cb_high);
-  codebuffer[p] := mul2(t, cb_high) + (f + 65536) 
+  codebuffer[p] := mul2(t, cb_high) + (f + 65536)
 }
 
 func instlength(opd) is
@@ -2941,7 +2941,7 @@ func instlength(opd) is
     n := 1
   else
   { n := 8;
-    if opd < 0 
+    if opd < 0
     then
     { v := mul2(div(opd, 256), 256);
       while div(v, #10000000) = #F do
@@ -2977,9 +2977,9 @@ func cb_stackoffset(p, stksize) is
   var offs;
 { offs := cbv_low;
   if (offs - pflag) < 0
-    then 
+    then
       return (stksize - offs)
-    else 
+    else
       return stksize + (offs - pflag)
 }
 
@@ -2988,10 +2988,10 @@ proc expand() is
   var offset;
   var stksize;
   var flag;
-{ bufferp := 0; 
+{ bufferp := 0;
   while bufferp < cb_bufferp do
   { cb_unpack(bufferp);
-    flag := cbv_flag; 
+    flag := cbv_flag;
     if flag = cbf_constp
     then
     { cb_conststart := div(cb_loadpoint, 2);
@@ -3000,7 +3000,7 @@ proc expand() is
       cb_loadpoint := cb_loadpoint + mul2(constp, 2) + mul2(tablesize, 2) + mul2(stringsize, 2)
     }
     else
-    if flag = cbf_entry 
+    if flag = cbf_entry
     then
     { stksize := cbv_low;
       cb_loadpoint := cb_loadpoint + instlength(- stksize) + 4
@@ -3020,10 +3020,10 @@ proc expand() is
     else
     if flag = cbf_stack
     then
-    { offset := cb_stackoffset(bufferp, stksize); 
+    { offset := cb_stackoffset(bufferp, stksize);
       cb_loadpoint := cb_loadpoint + instlength(offset)
     }
-    else 
+    else
     if flag = cbf_lab
     then
       labval[cbv_low] := cb_loadpoint
@@ -3042,16 +3042,16 @@ proc expand() is
         cb_loadpoint := cb_loadpoint + 1
     }
     else
-    if flag = cbf_const 
+    if flag = cbf_const
     then
     { offset := cbv_low + cb_conststart;
-      cb_loadpoint := cb_loadpoint + instlength(offset) 
+      cb_loadpoint := cb_loadpoint + instlength(offset)
     }
     else
     if flag = cbf_table
     then
     { offset := cbv_low + cb_tablestart;
-      cb_loadpoint := cb_loadpoint + instlength(offset) 
+      cb_loadpoint := cb_loadpoint + instlength(offset)
     }
     else
     if flag = cbf_string
@@ -3064,9 +3064,9 @@ proc expand() is
     then
       cb_loadpoint := cb_loadpoint + 2
     else
-    { cmperror("code buffer error "); 
+    { cmperror("code buffer error ");
       printn(bufferp); newline()
-    };      
+    };
     bufferp := bufferp + 1
   }
 }
@@ -3080,7 +3080,7 @@ proc flushbuffer() is
   var loadstart;
 { loadstart := mul2(m_sp, 2);
   cb_loadpoint := loadstart;
-  last := 0; 
+  last := 0;
   expand();
   while cb_loadpoint ~= last do
   { last := cb_loadpoint;
@@ -3090,7 +3090,7 @@ proc flushbuffer() is
   codesize := cb_loadpoint;
   lowbyte := true;
   outhdr();
-  bufferp := 0; 
+  bufferp := 0;
   cb_loadpoint := loadstart;
   while bufferp < cb_bufferp do
   { cb_unpack(bufferp);
@@ -3102,42 +3102,42 @@ proc flushbuffer() is
       cb_stringstart := cb_tablestart + tablesize;
       cb_loadpoint := cb_loadpoint + mul2(constp, 2) + mul2(tablesize, 2) + mul2(stringsize, 2);
       outconsts();
-      outtables(); 
+      outtables();
       outstrings()
     }
     else
-    if flag = cbf_entry 
+    if flag = cbf_entry
     then
     { stksize := cbv_low;
       outinst(i_ldbm, m_sp);
       outinst(i_stai, 0);
-      outinst(i_ldac, (-stksize)); 
+      outinst(i_ldac, (-stksize));
       outinst(i_opr, o_add);
       outinst(i_stam, m_sp);
       cb_loadpoint := cb_loadpoint + instlength(- stksize) + 4
     }
     else
-    if flag = cbf_pexit 
+    if flag = cbf_pexit
     then
     { outinst(i_ldbm, m_sp);
-      outinst(i_ldac, stksize); 
+      outinst(i_ldac, stksize);
       outinst(i_opr, o_add);
       outinst(i_stam, m_sp);
       outinst(i_ldbi, stksize);
-      outinst(i_brb, 0); 
+      outinst(i_brb, 0);
       cb_loadpoint := cb_loadpoint + mul2(instlength(stksize), 2) + 4
     }
     else
-    if flag = cbf_fnexit 
+    if flag = cbf_fnexit
     then
     { outinst(i_ldbm, m_sp);
       outinst(i_stai, stksize + 1);
-      outinst(i_ldac, stksize); 
+      outinst(i_ldac, stksize);
       outinst(i_opr, o_add);
       outinst(i_stam, m_sp);
       outinst(i_ldbi, stksize);
-      outinst(i_brb, 0); 
-      cb_loadpoint := cb_loadpoint + mul2(instlength(stksize), 2) + instlength(stksize + 1) + 4 
+      outinst(i_brb, 0);
+      cb_loadpoint := cb_loadpoint + mul2(instlength(stksize), 2) + instlength(stksize + 1) + 4
     }
     else
     if flag = cbf_inst
@@ -3148,13 +3148,13 @@ proc flushbuffer() is
     else
     if flag = cbf_stack
     then
-    { offset := cb_stackoffset(bufferp, stksize); 
+    { offset := cb_stackoffset(bufferp, stksize);
       outinst(cbv_high, offset);
       cb_loadpoint := cb_loadpoint + instlength(offset)
     }
-    else 
+    else
       if flag = cbf_lab
-    then 
+    then
       skip
     else
     if (flag = cbf_bwdref) or (flag = cbf_fwdref)
@@ -3177,18 +3177,18 @@ proc flushbuffer() is
     else
     if flag = cbf_table
     then
-    { offset := cbv_low + cb_tablestart; 
+    { offset := cbv_low + cb_tablestart;
       outinst(i_ldac, offset);
       cb_loadpoint := cb_loadpoint + instlength(offset)
     }
     else
     if flag = cbf_string
     then
-    { offset := cbv_low + cb_stringstart; 
+    { offset := cbv_low + cb_stringstart;
       outinst(i_ldac, offset);
       cb_loadpoint := cb_loadpoint + instlength(offset)
     }
-    else 
+    else
     if flag = cbf_var
     then
     { outvar(cbv_low);
@@ -3208,7 +3208,7 @@ proc outinst(inst, opd) is
     out1(inst, opd)
   else
   { n := 28;
-    if opd < 0 
+    if opd < 0
     then
     { v := mul2(div(opd, 256), 256);
       while div(v, #10000000) = #F do
@@ -3236,7 +3236,7 @@ proc outinst(inst, opd) is
 proc outconsts() is
   var count;
 { count := 0;
-  while (count < constp) do 
+  while (count < constp) do
   { out2(consts[count]);
     count := count + 1
   }
@@ -3245,8 +3245,8 @@ proc outconsts() is
 proc outtables() is
   var count;
   var top;
-{ count := 0; 
-  while (count < tablep) do 
+{ count := 0;
+  while (count < tablep) do
   { top := tables[count];
     count := count + 1;
     while count < top do
@@ -3260,20 +3260,20 @@ proc outtables() is
 proc outstrings() is
   var count;
   var bytes;
-  var b;  
-{ while (count < stringp) do 
+  var b;
+{ while (count < stringp) do
   { bytes := rem(strings[count], 256) + 1;
     b := 0;
     while b < bytes do
     { out2(strings[count]);
       b := b + 2;
-      if b < bytes 
-      then 
+      if b < bytes
+      then
       { out2(div(strings[count], 65536));
         b := b + 2
       }
       else
-        skip; 
+        skip;
       count := count + 1
     }
   }
@@ -3294,7 +3294,7 @@ proc outbin(d) is
   var b;
 { if lowbyte
   then selectoutput(binstreaml)
-  else selectoutput(binstreamh); 
+  else selectoutput(binstreamh);
   b := rem(d, 256);
   puthex(div(b, 16));
   puthex(rem(b, 16));
@@ -3304,8 +3304,8 @@ proc outbin(d) is
 }
 
 proc puthex(d) is
-  if d < 10 
-  then 
+  if d < 10
+  then
     putval(d + '0')
   else
     putval((d - 10) + 'A')
@@ -3315,7 +3315,7 @@ proc outhdr() is
   var entrypoint;
   var offset;
 { entrypoint := labval[entrylab];
-  offset := entrypoint - 4;  
+  offset := entrypoint - 4;
   out1(i_pfix, div(offset, #1000));
   out1(i_pfix, div(offset, #100));
   out1(i_pfix, div(offset, #10));
@@ -3323,6 +3323,6 @@ proc outhdr() is
 }
 
 
- 
+
 
    

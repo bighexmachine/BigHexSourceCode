@@ -10,14 +10,14 @@ var path = require('path');
 var compile = function(Xsource, errorFunction, postCall){
   //writes code passed in to file source.x
   var SOURCEFILE = path.normalize(__dirname + '/../xPrograms/source.x');
-  var COMPILERFILES = path.normalize(__dirname + '/../xCompiler/oldCompiler');
+  var COMPILERFILES = path.normalize(__dirname + '/../xCompiler');
   console.log("writing file to " + SOURCEFILE);
   fs.writeFileSync(SOURCEFILE, Xsource);
 
   // executes compile on file
-  var COMPILECMD = 'sudo ' + COMPILERFILES + '/a.out' + ' < ' + SOURCEFILE;
-  console.log(COMPILECMD);
-  execs("cd ~/Documents/serverV2/xCompiler/oldCompiler/ && ./a.out < " + SOURCEFILE,
+  //var COMPILECMD = 'sudo ' + COMPILERFILES + './a.out' + ' < ' + SOURCEFILE;
+  //console.log(COMPILECMD);
+  execs("cd ~/Documents/serverV2/xCompiler/ && ./a.out < " + SOURCEFILE,
 
     function (error, stdout, stderr) {
       console.log("Trying to compile X code");

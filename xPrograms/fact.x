@@ -1,23 +1,15 @@
+module (times) is
+
 var mul_x;
 
-func main() is
-  return factorial(6)
-
-func lsu(val x, val y) is
-  if (x < 0) = (y < 0)
-  then
-    return x < y
-  else
-    return y < 0
-
-func mul_step(val b, val y) is
+func mul_step(b, y) is
   var r;
-{ if (b < 0) or (~lsu(b, mul_x))
+{ if b < mul_x
   then
-    r := 0
+    r := mul_step(b + b, y + y)
   else
-    r := mul_step(b + b, y + y);
-  if ~lsu(mul_x, b)
+    r := 0;
+  if b <= mul_x
   then
   { mul_x := mul_x - b;
     r := r + y
@@ -27,14 +19,28 @@ func mul_step(val b, val y) is
   return r
 }
 
-func mul(val n, val m) is
-{ mul_x := m;
-  return mul_step(1, n)
+func times(n, m) is
+  var y;
+{ if n < m
+  then
+  { mul_x := n;
+    y := m
+  }
+  else
+  { mul_x := m;
+    y := n
+  };
+  return mul_step(1, y)
 }
 
-func factorial(val n) is
+in
+
+func main() is
+  return factorial(5)
+
+func factorial(n) is
   if n = 0
   then
     return 1
   else
-    return mul(n, factorial(n-1))
+    return times(n, factorial(n-1))
