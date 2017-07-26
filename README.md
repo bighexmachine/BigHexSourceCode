@@ -10,7 +10,27 @@ The hostspot was created using this doc: https://www.raspberrypi.org/documentati
 
 node version: 6.11.0
 
+###Compiing the X compiler
+If the compiler gets corrupted or overritten etc. `cd` to compiler director,
+Run all these commands:
 
+`
+ gcc hexsimb.c
+
+ cp xhexb.bin a.bin
+ 
+ ./a.out < xhexb.x
+ 
+ cp sim2 a.bin
+ 
+ ./a.out < xhexb.x
+ 
+ ./a.out < xhex16h.x
+ 
+ cp sim2 a.bin 
+ 
+ ./a.out < fact.x 
+`
 
 ## Working on the R-Pi
 There are a couple of ways to work on the Pi remotely. First and foremost it has ssh capability so you can interact 
