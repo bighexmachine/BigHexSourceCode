@@ -48,7 +48,7 @@ $(document).ready(function(){
 	
 	$('#faces').click(
                 function(){sendReq('getprog', 'inputFaces.x')}
-        );
+    );
 
 	$('#nyan').click(
 		function(){sendReq('getprog','nyan.x')}
@@ -60,11 +60,11 @@ $(document).ready(function(){
 
 	$('#christmas').click(
                 function(){sendReq('getprog','christmas.x')}
-        );
+    );
 
-        $('#tree').click(
-                function(){sendReq('getprog','tree.x')}
-        );
+    $('#tree').click(
+            function(){sendReq('getprog','tree.x')}
+    );
 	
 });
 

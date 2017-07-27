@@ -24,6 +24,11 @@ module.exports = function (app) {
     app.get('/loadassembly', function(req, res) {
         res.sendFile('loadassembly.html', {root: './public'});
     });
+    
+    app.get('/returnAndRun', function (req, res) {
+        console.log("get request to return and run");
+        res.redirect('/');
+    });
 
     /**
      * js files

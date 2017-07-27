@@ -15,10 +15,9 @@ var compile = function(Xsource, errorFunction, postCall){
   fs.writeFileSync(SOURCEFILE, Xsource);
 
   // executes compile on file
-  //var COMPILECMD = 'sudo ' + COMPILERFILES + './a.out' + ' < ' + SOURCEFILE;
-  //console.log(COMPILECMD);
-  execs("cd ~/Documents/serverV2/xCompiler/ && ./a.out < " + SOURCEFILE,
-
+  var COMPILECMD = "cd ~/Documents/serverV2/xCompiler/ && ./a.out < " + SOURCEFILE;
+  console.log(COMPILECMD);
+  execs(COMPILECMD,
     function (error, stdout, stderr) {
       console.log("Trying to compile X code");
       errorFunction("Errors: " + error);
