@@ -83,27 +83,28 @@ module.exports = function (command, data) {
     }
     return "";
 };
-    function repeat(s,n) {
-        if (n==0) { 
-            return ''
-        }
-        else { 
-            return s+repeat(s,n-1) 
-        }
 
+function repeat(s,n) {
+    if (n==0) { 
+        return ''
+    }
+    else { 
+        return s+repeat(s,n-1) 
     }
 
-    function formatSpeed(speed) {
-        if (speed < 10) {
-            speed = Math.round(speed*10)/10;
-            return speed + 'hz';
-        } 
-        else if(speed <1000) {
-            speed = Math.round(speed);
-            return speed + 'hz';
-        }
-        else {
-            var kspeed = Math.round(speed/100)/10;
-            return kspeed + 'Khz';
-        }
+}
+
+function formatSpeed(speed) {
+    if (speed < 10) {
+        speed = Math.round(speed*10)/10;
+        return speed + 'hz';
+    } 
+    else if(speed <1000) {
+        speed = Math.round(speed);
+        return speed + 'hz';
     }
+    else {
+        var kspeed = Math.round(speed/100)/10;
+        return kspeed + 'Khz';
+    }
+}

@@ -9,7 +9,7 @@ module.exports = function (app) {
      */
 
     app.get('/', function (req, res) {
-        console.log("get request to homepage");
+        console.log("get request to homepagae\n" + req);
         res.sendFile('gui.html', {root: './public'});
     });
 
