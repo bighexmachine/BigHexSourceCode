@@ -111,7 +111,7 @@ proc frown() is
  framebuff[5] := #b0110111111110110
 }
 
-proc smile(array s) is
+proc smile(s) is
   var n;
 { n := 0;
   while n < 16 do

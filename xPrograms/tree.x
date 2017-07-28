@@ -56,7 +56,7 @@ proc bubbleSort() is
      }
   }
 
-proc copyImage(array s, array dest) is
+proc copyImage(s, dest) is
    var n;
    {
      n := 0;
@@ -67,7 +67,7 @@ proc copyImage(array s, array dest) is
      }
    }
 
-proc delay(val t) is
+proc delay(t) is
  var n;
  {
    n := 0;

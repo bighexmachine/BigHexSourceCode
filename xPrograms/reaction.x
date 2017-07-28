@@ -85,7 +85,7 @@ proc main() is
    }
  }
 
-func getfirstResponce(val button) is
+func getfirstResponce(button) is
  var i;
  var x;
  var pressed;
@@ -106,7 +106,7 @@ func getfirstResponce(val button) is
    return winner
  }
 
- proc copyImage(array s) is
+ proc copyImage(s) is
    var n;
  { n := 0;
    while n < 16 do
@@ -115,7 +115,7 @@ func getfirstResponce(val button) is
    }
  }
 
-func getbit(val bitPattern, val index) is
+func getbit(bitPattern, index) is
  var i;
  var x;
  var res;
@@ -129,7 +129,7 @@ func getbit(val bitPattern, val index) is
    return res
  }
 
-func getRandomNumberUpto(val max) is
+func getRandomNumberUpto(max) is
  var i;
  var rand;
  var pressed;
@@ -156,7 +156,7 @@ func getRandomNumberUpto(val max) is
  }
 
 
-proc delay(val x) is
+proc delay(x) is
   var n;
 { n := 0;
   while n < x do n := n + 1

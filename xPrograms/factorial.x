@@ -3,14 +3,14 @@ var mul_x;
 func main() is
   return factorial(6)
 
-func lsu(val x, val y) is
+func lsu(x, y) is
   if (x < 0) = (y < 0)
   then
     return x < y
   else
     return y < 0
 
-func mul_step(val b, val y) is
+func mul_step(b, y) is
   var r;
 { if (b < 0) or (~lsu(b, mul_x))
   then
@@ -27,7 +27,7 @@ func mul_step(val b, val y) is
   return r
 }
 
-func mul(val n, val m) is
+func mul(n, m) is
 { mul_x := m;
   return mul_step(1, n)
 }

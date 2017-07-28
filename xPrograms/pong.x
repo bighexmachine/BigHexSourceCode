@@ -152,14 +152,14 @@ proc main() is
   }
   
   
-func lsu(val x, val y) is
+func lsu(x, y) is
   if (x < 0) = (y < 0)
   then 
     return x < y
   else
     return y < 0
 
-func mul_step(val b, val y) is
+func mul_step(b, y) is
   var r;
 { 
   
@@ -180,12 +180,12 @@ func mul_step(val b, val y) is
   return r
 }  
 
-func mul(val n, val m) is
+func mul(n,m) is
 { mul_x := m;
   return mul_step(1, n)
 }
 
-proc displayImage(array s) is
+proc displayImage(s) is
   var n;
 { n := 0;
   while n < 16 do
@@ -203,7 +203,7 @@ proc clearDisplay() is
   }
 }
 
-proc delay(val t) is
+proc delay(t) is
   var n;
 { n := 0;
   while n < t do n := n + 1
@@ -224,7 +224,7 @@ proc rotateFrameBuff() is
   }
 }
 
-func isOdd(val x) is
+func isOdd(x) is
  var i;
  var sum;
   {
@@ -237,10 +237,10 @@ func isOdd(val x) is
     return sum < 0
   }
 
-func isEven(val x) is return ~(isOdd(x))
+func isEven(x) is return ~(isOdd(x))
 
 
-func mod(val modulus, val divisor) is
+func mod(modulus, divisor) is
 var m;
 {
     if (divisor < (modulus+1)) and (divisor < #7FFF )
@@ -259,14 +259,14 @@ var m;
 }
 
 
-func randGen(val s) is
+func randGen(s) is
  {
     seed := mod( mul(169, seed) + 13, 193 );
     return mod(seed, s)
  }
 
 
-func lsh(val x, val n) is 
+func lsh(x, n) is 
  var i;
  var y;
   {
@@ -278,7 +278,7 @@ func lsh(val x, val n) is
 
 
 
-func rotateWord(val x, val n) is 
+func rotateWord(x, n) is 
   var i;
   var w; 
 { i := 0;
@@ -296,7 +296,7 @@ func rotateWord(val x, val n) is
 }
 
 
-func rsh(val x, val n) is 
+func rsh(x, n) is 
  var w;
   {
     w:=rotateWord(x,n);

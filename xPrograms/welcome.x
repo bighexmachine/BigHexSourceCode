@@ -296,7 +296,7 @@ proc main() is
   }
 }
 
-proc displayLetter(array s) is 
+proc displayLetter(s) is 
 {
   copyImage(s);
   delay();
@@ -305,7 +305,7 @@ proc displayLetter(array s) is
 }
 
 
-proc copyImage(array s) is
+proc copyImage(s) is
   var n;
 { 
   n := 0;

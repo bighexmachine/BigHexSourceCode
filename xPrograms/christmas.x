@@ -278,7 +278,7 @@ proc rotateThroughWord() is
     }
   }
 
-proc swapInNextLetter(val nextLetterIndex) is
+proc swapInNextLetter(nextLetterIndex) is
   var columnCounter;
   var rowCounter;
   var rowTmp;
@@ -299,7 +299,7 @@ proc swapInNextLetter(val nextLetterIndex) is
     }
   }
 
-proc copyImage(array s, array dest) is
+proc copyImage(s, dest) is
   var n;
   {
     n := 0;

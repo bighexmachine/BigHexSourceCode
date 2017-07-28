@@ -48,14 +48,14 @@ proc main() is
   }
 }
 
-proc displayBitmap(array s) is 
+proc displayBitmap(s) is 
 {
   copyImage(s);
   delay()
 }
 
 
-proc copyImage(array s) is
+proc copyImage(s) is
   var n;
 { 
   n := 0;

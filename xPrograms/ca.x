@@ -42,7 +42,7 @@ proc main() is
    }
 }
 
-proc updaterule(array x) is
+proc updaterule(x) is
 var loop;
 var ex;
 {
@@ -54,14 +54,14 @@ var ex;
     loop:=loop+1
    }
 }
-func invert(val a)is
+func invert(a)is
 var ret;
 { if(a=0)
   then {ret:=1}
   else ret:=0;
   return ret
 }
-func readrule(array x) is
+func readrule(x) is
 var num0;
 var ret;
 {
@@ -97,7 +97,7 @@ var ret;
   else skip;
   return ret
 }
-proc drawrule(array x) is
+proc drawrule(x) is
   var bcode1;
   var bcode2;
 {
@@ -130,7 +130,7 @@ proc drawrule(array x) is
   0!bcode1; 
   1!bcode2
 }
-proc getrule(array x, val rule) is
+proc getrule(x, rule) is
  var bcode1;
  var bcode2;
 {
@@ -162,7 +162,7 @@ proc getrule(array x, val rule) is
   1!bcode1; 
   0!bcode2
 }
-proc addone(array x) is
+proc addone(x) is
 {
   if(x[0]=0)
   then {x[0]:=1}
@@ -190,14 +190,14 @@ proc addone(array x) is
   else x[7]:=0
 }
 
-func lsu(val x, val y) is
+func lsu(x, y) is
   if (x < 0) = (y < 0)
   then 
     return x < y
   else
     return y < 0
 
-func mul_step(val b, val y) is
+func mul_step(b, y) is
   var r;
 { if (b < 0) or (~lsu(b, mul_x))
   then
@@ -214,11 +214,11 @@ func mul_step(val b, val y) is
   return r
 }  
 
-func mul(val n, val m) is
+func mul(n, m) is
 { mul_x := m;
   return mul_step(1, n)
 }
-proc CA(array a, array b, array rul) is
+proc CA(a, b, rul) is
    var n;
    {
    n:=1;
@@ -277,7 +277,7 @@ proc CA(array a, array b, array rul) is
    }
 }
 
-proc merge(array s, array q, val i) is
+proc merge(s, q, i) is
   var n;
   var p;
   {n:=1;
@@ -295,7 +295,7 @@ proc merge(array s, array q, val i) is
   }
   }
 
-proc draw(array s) is
+proc draw(s) is
   var n;
   var p;
 { n := 0; p:=1;
@@ -305,7 +305,7 @@ proc draw(array s) is
   }
 }
 
-proc empty(array s) is
+proc empty(s) is
   var n;
 { n:=0;
  while n < 16 do
@@ -314,7 +314,7 @@ proc empty(array s) is
   n := n + 1
  }
 }
-proc empty2(array s) is
+proc empty2(s) is
   var n;
 { n:=0;
  while n < 18 do

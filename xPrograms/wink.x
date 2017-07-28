@@ -46,7 +46,7 @@ proc wink() is
   delay()
 }
 
-proc smile(array s) is
+proc smile(s) is
   var n;
 { n := 0;
   while n < 16 do
