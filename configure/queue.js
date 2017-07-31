@@ -2,17 +2,26 @@ var jsdom = require('node-jsdom');
 var window = jsdom.jsdom().parentWindow;
 var Cookies = require('cookies-js')(window);
 
+var queue = []
 
-function getUserNum() {
-    return Cookies.get('BIGHEX');
+
+exports.getUserNum = function() {
+    return (Cookies.get('BIGHEX'));
 }
 
-function setUserNum() {
-    var dateTime = new Date(month, day, hours, minutes, seconds)
+exports.setUserNum = function() {
+    var dateTime = new Date();
     console.log(dateTime);
-    console.log(dateTime+1);
+    d2 = dateTime+1;
+    console.log(d2);
     Cookies.set('BIGHEX', dateTime);
+    queue.push(dateTime);
+};
+
+exports.getAllCurrentUsers = function() {
+    return queue;
 }
 
 
-module.exports = setUserNum();
+//update queue
+//

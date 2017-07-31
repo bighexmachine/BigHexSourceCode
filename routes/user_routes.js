@@ -8,7 +8,11 @@ module.exports = function (app) {
      */
     app.get('/', function (req, res) {
         console.log("get request to homepage\n");
-        queue.setUserNum();
+        if(queue.getUserNum() === undefined) {
+            queue.setUserNum();
+            console.log("set\n");
+        }
+        console.log(queue.getAllCurrentUsers());
         res.sendFile('gui.html', {root: './public'});
     });
 
