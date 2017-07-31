@@ -1,24 +1,14 @@
 var path = require('path');
 const apifunc = require('../configure/api.js');
-var jsdom = require('node-jsdom');
-var window = jsdom.jsdom().parentWindow;
-var Cookies = require('cookies-js')(window);
+const queue = require('../configure/queue.js');
 
 module.exports = function (app) {
-    var x =0;
     /**
      * html files
      */
-
     app.get('/', function (req, res) {
         console.log("get request to homepage\n");
-        if(x === 0) {
-            Cookies.set('ND', 5, /*{expires: }*/);
-            x=1;
-        }
-        else {
-            console.log(Cookies.get('ND'));
-        }
+        queue.setUserNum();
         res.sendFile('gui.html', {root: './public'});
     });
 
