@@ -16,6 +16,9 @@ var gpioService = require('./gpioConfig/gpioService.js');
 const app = configureExpress();
 gpioService.setSpeed(1);
 
+
+
+
 app.listen(3000, function () {
     console.log('Example app listening on port 3000')
 });

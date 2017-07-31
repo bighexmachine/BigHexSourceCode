@@ -1,15 +1,24 @@
 var path = require('path');
 const apifunc = require('../configure/api.js');
-
+var jsdom = require('node-jsdom');
+var window = jsdom.jsdom().parentWindow;
+var Cookies = require('cookies-js')(window);
 
 module.exports = function (app) {
-
+    var x =0;
     /**
      * html files
      */
 
     app.get('/', function (req, res) {
-        console.log("get request to homepagae\n" + req);
+        console.log("get request to homepage\n");
+        if(x === 0) {
+            Cookies.set('ND', 5, /*{expires: }*/);
+            x=1;
+        }
+        else {
+            console.log(Cookies.get('ND'));
+        }
         res.sendFile('gui.html', {root: './public'});
     });
 
@@ -78,3 +87,31 @@ module.exports = function (app) {
         res.send(rep);
     })
 };
+
+
+
+function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+    console.log("cookiefound " + ca);
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+function eraseCookie(name) {
+	createCookie(name,"",-1);
+}
