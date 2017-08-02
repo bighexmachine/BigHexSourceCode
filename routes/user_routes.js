@@ -1,6 +1,6 @@
 var path = require('path');
 const apifunc = require('../configure/api.js');
-const queue = require('../configure/queue.js');
+const queue = require('../configure/queue.js')
 
 module.exports = function (app) {
     /**
@@ -8,11 +8,6 @@ module.exports = function (app) {
      */
     app.get('/', function (req, res) {
         console.log("get request to homepage\n");
-        if(queue.getUserNum() === undefined) {
-            queue.setUserNum();
-            console.log("set\n");
-        }
-        console.log(queue.getAllCurrentUsers());
         res.sendFile('gui.html', {root: './public'});
     });
 
@@ -66,6 +61,10 @@ module.exports = function (app) {
         res.sendFile('resources/jquery.js', {root: './public'});
     });
 
+    app.get('/cookies.js', function(req, res) {
+        res.sendFile('cookies.js', { root: './configure' });
+    });
+
     //pdf
     app.get('/assemblySpec.pdf', function(req, res) {
         res.sendFile('assemblySpec.pdf', {root: './public'});
@@ -80,4 +79,16 @@ module.exports = function (app) {
         rep = apifunc(comm, data);
         res.send(rep);
     })
+
+
+    app.get('/nextqueuenum', function(req, res) {
+        var nextNum = queue.getNextUserNum()
+        res.send(nextNum.toString());
+    });
+
+    app.get('/placeinqueue', function(req, res) {
+        var queuePos = queue.checkUserInQueue(req.query.userNum);
+        res.send(queuePos.toString());
+    });
+
 };

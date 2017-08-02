@@ -6,18 +6,39 @@ $(document).ready(function() {
 
     //Use jQuery to bind to the relevant actions. The send correct relevant command.
 
-    $('#start').click(function() { updateClock('start', undefined) });
-    $('#stop').click(function() { updateClock('stop', undefined) });
-
-    $('#step').click( function() { updateClock('step' , undefined) });
-    $('#reset').click( function() { updateClock('reset', undefined) });
+    $('#start').click(function() {
+        //check place in queue
+        //-get cookie num
+        //-send to server to get ok
+        askServerForAccessToAPI( function() {
+            updateClock('start', undefined);
+        });
+    });
+    $('#stop').click(function() {
+        askServerForAccessToAPI( function()
+            updateClock('stop', undefined);
+        });
+    });
+    $('#step').click( function() {
+        askServerForAccessToAPI( function() {
+            updateClock('step' , undefined);
+        });
+    });
+    $('#reset').click( function() {
+        askServerForAccessToAPI( function() {
+            updateClock('reset', undefined);
+        });
+    });
     $('#load').click( function() {
 		    updateClock('load' , $('#text').val());
 	  }
     );
 
-    $('#screentest').click(function() { updateClock('screen', undefined) });
-
+    $('#screentest').click(function() {
+        askServerForAccessToAPI( function() {
+            updateClock('screen', undefined);
+        });
+    });
     $('#execInst').click(
       function(e) {
           e.preventDefault();
@@ -28,10 +49,12 @@ $(document).ready(function() {
     $('#speedSlider').val(12);
 
     $('#speedSlider').on('input change', function(){
-        updateSpeed();
+        askServerForAccessToAPI( function() {
+            updateSpeed();
+        });
     });
 
-    updateSpeed();
+    askServerForAccessToAPI(function() {updateSpeed();});
 
 });
 
@@ -71,4 +94,46 @@ function updateClock(command, data) {
     success: function(res){}
     });
 
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+//Copied from cookie.js, needs to be refactored at some point
+function checkPlaceAndRunFunc(num, callbackFunc) {
+    $.ajax({
+        type: 'GET',
+        url: '/placeinqueue',
+        data: {'userNum': num},
+        success: function(data){
+            var $response=$(data);
+            num = $response.selector;
+            console.log("Your place in queue " + num);
+            console.log("type = " + typeof num);
+            if(num == '0') {
+                callbackFunc();
+            }
+            else {
+                alert("You are not first in the queue. Wait your turn.");
+            }
+        }
+    });
+}
+
+function askServerForAccessToAPI(callbackFunc) {
+    var userNum = getCookie("BIG_HEX");
+    checkPlaceAndRunFunc(userNum, callbackFunc);
 }
