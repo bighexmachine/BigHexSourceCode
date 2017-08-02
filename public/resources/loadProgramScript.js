@@ -23,9 +23,9 @@ $(document).ready(function(){
 	}
 
 	$('#factorial').click(
-		function(){sendReq('getprog', 'factorial.x')}
+		function(){sendReq('getprog', 'fact.x')}
 	);
-	
+
 	$('#wink').click(
 		function(){sendReq('getprog', 'test.x')}
 	);
@@ -37,15 +37,15 @@ $(document).ready(function(){
 	$('#reaction').click(
 		function(){sendReq('getprog', 'reaction.x')}
 	);
-	
+
 	$('#pong').click(
 		function(){sendReq('getprog', 'pong.x')}
 	);
-	
+
 	$('#david').click(
 		function(){sendReq('getprog', 'rotating_text.x')}
 	);
-	
+
 	$('#faces').click(
                 function(){sendReq('getprog', 'inputFaces.x')}
     );
@@ -65,7 +65,5 @@ $(document).ready(function(){
     $('#tree').click(
             function(){sendReq('getprog','tree.x')}
     );
-	
+
 });
-
-
