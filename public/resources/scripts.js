@@ -15,7 +15,7 @@ $(document).ready(function() {
         });
     });
     $('#stop').click(function() {
-        askServerForAccessToAPI( function()
+        askServerForAccessToAPI( function() {
             updateClock('stop', undefined);
         });
     });
@@ -122,7 +122,6 @@ function checkPlaceAndRunFunc(num, callbackFunc) {
             var $response=$(data);
             num = $response.selector;
             console.log("Your place in queue " + num);
-            console.log("type = " + typeof num);
             if(num == '0') {
                 callbackFunc();
             }
