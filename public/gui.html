@@ -14,33 +14,42 @@
 
     <body>
         <div id="container" class="container-fluid">
+            <div id = "queueUI" class="col-sm-12 button" style = "background-color:#581845;">Queue:</div>
+            <div class="btn-group btn-group-justified">
+                <div id = "start" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Start</div>
+                <div id = "stop" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Stop</div>
+            </div>
 
-            <div id = "start" class="col-sm-6 button" style = "background-color:lime;">Start</div>
-            <div id = "stop" class="col-sm-6 button" style = "background-color:red;">Stop</div>
-            <div id = "speed" class = "col-sm-12 button" style = "background-color:orange;">
+            <div class="btn-group btn-group-justified">
+                <div id = "step" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Step</div>
+                <div id = "reset" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Reset</div>
+            </div>
+            <div id = "speed" class = "col-sm-12 button" style = "background-color:#C70039;">
                 Speed
                 <input id="speedSlider" type="range" name="speed" min="0" max="196"><div id="speedOut"></div>
             </div>
-            <div id = "step" class="col-sm-6 button" style = "background-color:black;">Step</div>
-            <div id = "reset" class="col-sm-6 button" style = "background-color:gray; margin-bottom:10px">Reset</div>
 
-            <div id = "runInstruction" class="col-sm-4 button" style = "background-color:dodgerblue;">
-              <a href="runInstruction">Run an Instruction</a>
-            </div>
+            <div class="btn-group btn-group-justified">
+                <div id = "runInstruction" class="btn btn-primary;col-sm-4 button" style = "background-color:#FF5733;">
+                  <a href="runInstruction">Run an Instruction</a>
+                </div>
 
-            <div id = "loadprogram" class="col-sm-4 button" style = "background-color:purple;">
+                <div id = "loadprogram" class="btn btn-primary;col-sm-4 button" style = "background-color:#FF5733;">
         			<a href="loadprogram">Load an X Program</a>
         		</div>
 
-            <div id = "loadassebly" class="col-sm-4 button" style = "background-color:hotpink;">
+                <div id = "loadassebly" class="btn btn-primary;col-sm-4 button" style = "background-color:#FF5733;">
         			<a href="loadassembly">Load an Assembly Program</a>
         		</div>
-            <div id = "leavequeue" class="col-sm-6 button" style = "background-color:maroon;">
+            </div>
+            <div class="btn-group btn-group-justified">
+            <div id = "leavequeue" class="btn btn-primary;col-sm-6 button" style = "background-color:#FFC30F;">
                     Leave Queue
                 </div>
-            <div id = "backofqueue" class="col-sm-6 button" style = "background-color:darkslategray;">
+            <div id = "backofqueue" class="btn btn-primary;col-sm-6 button" style = "background-color:#FFC30F;">
                     Move to Back of Queue
                 </div>
+            </div>
         </div>
     </body>
 </html>

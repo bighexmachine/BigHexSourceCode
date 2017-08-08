@@ -87,6 +87,15 @@ function updateSpeed() {
     updateClock('speed',speed);
 }
 
+function updateQueueUI(place) {
+    if(place == '0') {
+        $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
+    }
+    else {
+        $('#queueUI').text('Your position in the queue is: ' + place);
+    }
+}
+
 function leaveQueue(toBack) {
     var num = getCookie("BIG_HEX");
     console.log("we got num " + num);
