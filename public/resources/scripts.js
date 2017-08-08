@@ -54,6 +54,16 @@ $(document).ready(function() {
         });
     });
 
+    $('#leavequeue').click( function() {
+            leaveQueue(false);
+	  }
+    );
+
+    $('#backofqueue').click( function() {
+		    leaveQueue(true);
+	  }
+    );
+
     askServerForAccessToAPI(function() {updateSpeed();});
 
 });
@@ -77,6 +87,17 @@ function updateSpeed() {
     updateClock('speed',speed);
 }
 
+function leaveQueue(toBack) {
+    var num = getCookie("BIG_HEX");
+    console.log("we got num " + num);
+    $.ajax({
+    url:'/leavequeue',
+    type:'GET',
+    data:{'userNum': num, 'toBack': toBack},
+    success: function(res){}
+    });
+}
+
 
 /*
  * Sends a simple command to the server @ port 8080.
@@ -94,45 +115,4 @@ function updateClock(command, data) {
     success: function(res){}
     });
 
-}
-
-function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
-
-//Copied from cookie.js, needs to be refactored at some point
-function checkPlaceAndRunFunc(num, callbackFunc) {
-    $.ajax({
-        type: 'GET',
-        url: '/placeinqueue',
-        data: {'userNum': num},
-        success: function(data){
-            var $response=$(data);
-            num = $response.selector;
-            console.log("Your place in queue " + num);
-            if(num == '0') {
-                callbackFunc();
-            }
-            else {
-                alert("You are not first in the queue. Wait your turn.");
-            }
-        }
-    });
-}
-
-function askServerForAccessToAPI(callbackFunc) {
-    var userNum = getCookie("BIG_HEX");
-    checkPlaceAndRunFunc(userNum, callbackFunc);
 }

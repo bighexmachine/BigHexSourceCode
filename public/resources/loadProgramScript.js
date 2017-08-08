@@ -1,11 +1,11 @@
 $(document).ready(function(){
 
 
-	$('#submitProgram').click(
-	        function(){
-	            sendReq('load', $('#programInput').val());
-	        }
-	);
+	$('#submitProgram').click( function() {
+		askServerForAccessToAPI( function() {
+	        sendReq('load', $('#programInput').val());
+		});
+	});
 
 	//submit code to be compiled
 	function sendReq(command, data)

@@ -23,12 +23,6 @@ module.exports = function (app) {
         res.sendFile('loadassembly.html', {root: './public'});
     });
 
-    app.get('/returnAndRun', function (req, res) {
-        console.log("get request to return and run");
-        apifunc('start', undefined);
-        res.redirect('/');
-    });
-
     /**
      * js files
      */
@@ -61,8 +55,8 @@ module.exports = function (app) {
         res.sendFile('resources/jquery.js', {root: './public'});
     });
 
-    app.get('/cookies.js', function(req, res) {
-        res.sendFile('cookies.js', { root: './configure' });
+    app.get('resources/cookies.js', function(req, res) {
+        res.sendFile('resources/cookies.js', { root: './public' });
     });
 
     //pdf
@@ -91,4 +85,11 @@ module.exports = function (app) {
         res.send(queuePos.toString());
     });
 
+    app.get('/leavequeue', function(req, res) {
+        var userNum = req.query.userNum;
+        var toBack = req.query.toBack;
+        console.log(userNum);
+        queue.remover(userNum, toBack);
+        res.send("Removed");
+    });
 };

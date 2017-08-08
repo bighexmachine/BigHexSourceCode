@@ -11,7 +11,7 @@ function addToQueue(number) {
 function timeOutUser() {
     setTimeout( function() {
         if(innactive) {
-            removeFromQueueFront(false)
+            removeFromQueue(queue[0] ,false)
         }
         innactive = true;
         timeOutUser();
@@ -19,12 +19,15 @@ function timeOutUser() {
 }
 
 //Remoe user from front of queue. Put them at back is flag is true
-function removeFromQueueFront(moveToBack) {
-    if(moveToBack) {
-        var temp = queue[0];
-        addToQueue(temp);
+function removeFromQueue(userNum, moveToBack) {
+    console.log("User num given: " + userNum);
+    var position = queue.indexOf(userNum);
+    if(position !== -1) {
+        queue.splice(position, 1);
+        if(moveToBack) {
+            addToQueue(userNum);
+        }
     }
-    queue.shift();
     console.log("Current queue " + queue);
 }
 
@@ -54,6 +57,10 @@ exports.checkUserInQueue = function(number) {
         nextUserNum = number+1;
     }
     return pos
+}
+
+exports.remover = function(userNum, moveToBack) {
+    removeFromQueue(userNum, moveToBack);
 }
 
 timeOutUser();

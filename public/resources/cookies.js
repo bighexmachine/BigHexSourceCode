@@ -15,15 +15,17 @@ function getCookie(cname) {
             c = c.substring(1);
         }
         if (c.indexOf(name) == 0) {
+            console.log("return at 1");
             return c.substring(name.length, c.length);
         }
     }
-    return undefined;
+    console.log("return at 2");
+    return "";
 }
 
 function checkCookie() {
     var userNum = getCookie("BIG_HEX");
-    if (userNum != undefined) {
+    if (userNum != "") {
         console.log("user num " + userNum);
         checkPlaceInQueue(userNum);
     } else {
@@ -69,4 +71,31 @@ function checkPlaceInQueue(num) {
 }
 
 
-checkCookie();
+//checkCookie();
+
+
+//Copied from cookie.js, needs to be refactored at some point
+function checkPlaceAndRunFunc(num, callbackFunc) {
+    $.ajax({
+        type: 'GET',
+        url: '/placeinqueue',
+        data: {'userNum': num},
+        success: function(data){
+            var $response=$(data);
+            num = $response.selector;
+            console.log("Your place in queue " + num);
+            if(num == '0') {
+                callbackFunc();
+            }
+            else {
+                alert("You are not first in the queue. Wait your turn.");
+            }
+        }
+    });
+}
+
+function askServerForAccessToAPI(callbackFunc) {
+    var userNum = getCookie("BIG_HEX");
+    console.log("ask access num = " + userNum);
+    checkPlaceAndRunFunc(userNum, callbackFunc);
+}
