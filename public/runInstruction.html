@@ -8,16 +8,19 @@
   <script type="text/javascript" src="resources/jquery.js"></script>
   <script src="resources/bootstrap.min.js"></script>
   <script type="text/javascript" src="resources/scripts.js"></script>
+  <script type="text/javascript" src="resources/cookies.js"></script>
   <body>
     <div id="container" class="container-fluid">
+        <div id = "queueUI" class="col-sm-12 button" style = "background-color:#4B5842;">Queue:</div>
 
-      <a href = "/" class="col-sm-2 button control" style="outline:none">Control Panel</a>
-
-      <div class="jumbotron">
+      <div class="jumbotron" style = "background-color:#8FB339;">
+        <font color = "white" align="center">
         <h1>Run an Instruction</h1>
+        </font>
       </div>
+      <a href = "/" class="col-sm-4 button control" style="background-color:#B7CE63;">Control Panel</a>
       <form method="get" action="/api">
-        <div class="col-sm-4" style = "background-color:green; padding:5%">
+        <div class="col-sm-4" style = "background-color:#B7CE63; padding:5%">
           <div>
             <label for="runInstr">Select an Instruction </label><br>
             <select style="height: 50px; font-size:20px" id="instr" name="instr">
@@ -44,7 +47,9 @@
             <input type="number" min=0 max=15 style="width: 100px; height: 50px; font-size:20px" value="0" id="opr" name="opr">
           </div>
         </div>
-        <div id = "execInst" class = "col-sm-8 button" style = "background-color:black;">Execute Instruction</div>
+        <div id = "execInst" class = "col-sm-4 button" style = "background-color:#B7CE63;">Execute Instruction</div>
+        <div id = "reset" class = "col-sm-4 button" style = "background-color:#B7CE63;">Reset</div>
+
       </form>
       <!--Commenting out this slider and step button, doesn't seem necessary for single instructions-->
      <!-- <div id = "speed" class = "col-sm-12 button" style = "background-color:orange;">
@@ -52,7 +57,6 @@
           <input disabled id="speedSlider" type="range" name="speed" min="0" max="196"><div id="speedOut"></div>
       </div>
       <div id = "step" disabled class="col-sm-6 button" style = "background-color:black;">Step</div> -->
-      <div id = "reset" class = "col-sm-6 button" style = "background-color:blue;">Reset</div>
     </div>
   </body>
 </html>

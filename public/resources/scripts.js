@@ -56,11 +56,13 @@ $(document).ready(function() {
 
     $('#leavequeue').click( function() {
             leaveQueue(false);
+            updateQueueUI(getCookie('BIG_HEX'));
 	  }
     );
 
     $('#backofqueue').click( function() {
 		    leaveQueue(true);
+            checkPlaceInQueue(getCookie('BIG_HEX'));
 	  }
     );
 

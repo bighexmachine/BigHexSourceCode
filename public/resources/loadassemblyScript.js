@@ -21,4 +21,14 @@ $(document).ready(function(){
         });
 
 	}
+
 });
+
+function updateQueueUI(place) {
+    if(place == '0') {
+        $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
+    }
+    else {
+        $('#queueUI').text('Your position in the queue is: ' + place);
+    }
+}

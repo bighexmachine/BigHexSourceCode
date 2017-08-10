@@ -13,19 +13,22 @@
 
     <body>
         <div id="container" class="container-fluid">
+            <div id = "queueUI" class="col-sm-12 button" style = "background-color:#2D1E2F;">Queue:</div>
 
-            <div class="jumbotron">
-              <h1>Run your own program</h1>
-              <p>Type some code in <a href="assemblySpec.pdf">X Assembly Language</a> and press submit.
-              <p>It will be assembled and written to the machines RAM.
+            <div class="jumbotron" style = "background-color:#2D1E2F;">
+                <font color = "white">
+                <h1>Run your own program</h1>
+                <p>Type some code in <a href="assemblySpec.pdf">X Assembly Language</a> and press submit.
+                <p>It will be assembled and written to the machines RAM.
+                </font>
             </div>
 
             <form method="get" action="/api">
                 <div class="col-sm-10">
                   <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important"></textarea>
                 </div>
-                  <div id = "submitProgram" class="col-sm-2 button" style = "background-color:green;">Submit Program</div>
-                  <a href = "/" class="col-sm-2 button control" style="outline:none">Return to Control Panel</a>
+                  <div id = "submitProgram" class="col-sm-2 button" style = "background-color:#2D1E2F;">Submit Program</div>
+                  <a href = "/" class="col-sm-2 button control" style = "background-color:#2D1E2F;">Return to Control Panel</a>
             </form>
         </div>
     </body>

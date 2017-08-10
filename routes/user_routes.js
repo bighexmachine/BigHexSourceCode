@@ -71,10 +71,11 @@ module.exports = function (app) {
         var comm = req.query.command;
         var data = req.query.data;
         rep = apifunc(comm, data);
+        queue.setActive();
         res.send(rep);
     })
 
-
+    //Queue calls
     app.get('/nextqueuenum', function(req, res) {
         var nextNum = queue.getNextUserNum()
         res.send(nextNum.toString());

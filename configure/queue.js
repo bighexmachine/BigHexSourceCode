@@ -3,6 +3,10 @@ var queue = [];
 var nextUserNum = 0;
 var innactive = true;
 
+exports.setActive = function() {
+    innactive = false;
+}
+
 function addToQueue(number) {
     queue.push(number);
 }
@@ -15,7 +19,7 @@ function timeOutUser() {
         }
         innactive = true;
         timeOutUser();
-    }, 3000000);//Timeout at 5 mins
+    }, 1500000);//Timeout at 2 1/2 mins
 }
 
 //Remoe user from front of queue. Put them at back is flag is true
@@ -42,7 +46,6 @@ exports.getNextUserNum = function() {
 //Checks user is in queue, if not then is added
 exports.checkUserInQueue = function(number) {
     var pos = queue.indexOf(number);
-    console.log(pos);
     if(pos === -1) {
         addToQueue(number);
         //Will print user in pos -1 for first position.
