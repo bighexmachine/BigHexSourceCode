@@ -11,7 +11,7 @@ The hostspot was created using this doc: https://www.raspberrypi.org/documentati
 node version: 6.11.0
 
 ###Compiing the X compiler
-If the compiler gets corrupted or overritten etc. `cd` to compiler director,
+If the compiler gets corrupted or overritten etc. `cd` to compiler directory,
 Run all these commands:
 
 `
@@ -33,8 +33,9 @@ Run all these commands:
 `
 
 ## Working on the R-Pi
-There are a couple of ways to work on the Pi remotely. First and foremost it has ssh capability so you can interact
-through a terminal and git pull any updates that are needed. Do this by connecting to the hotspot and using:
+There are a couple of ways to work on the Pi remotely. First and foremost it has ssh capability so you can
+interact through a terminal and git pull any updates that are needed. Do this by connecting to the hotspot
+and using:
 `
     ssh pi@192.168.0.1
 `
@@ -64,26 +65,82 @@ Build:
 -Don't really need to do much else to it.
 
 Configure:
-    express.js - Main configure file for express
-
 -Configure is used for any npm packages that need to be configured (who would've guessed?).
--Other potential packages like sql or Angular should be configured here to avoid spaghetti code.
+-Also used to configure the queue system and api calls
+-Other potential packages like sql or Angular should be configured here.
 
+gpioConfig:
+-Control of gpio pins from this folder.
+-Also contains js portion of compiler and assember. Maybe should be moved in future?
+-c++ object created to run on own thread. It maintains control of the clock signal
+ and regular data outputs. Needs to be c++ so clock is regular, as JS is single threaded.
 
-+-- Configure
+public:
+-All html, css and browser run js files are in public. It is the front end
+-scripts are in resources sub-directory.
+-gui is homepage.
 
+routes:
+-user_routes is where all http requests from a user are handled.
+-If websockets etc added in future, make a weboskcet routes file here to handle it all.
 
+xCompiler:
+-David May's x compiler is here rebuilding written above.
+-Also contains the old compiler if it is ever needed.
+-sim2 and sim3 reside here
+
+xPrograms:
+-All programs that can be chosen from the loadprogram page.
+
+serverV2:
++-- build:
+    +-- binding.Makefile
+    +-- config.gypi
+    +-- gpioService.target.mk
+    +-- Makefile
++-- Configure:
+    +-- api.js
+    +-- express.js
+    +-- queue.js
 +-- gpioConfig:
     +-- build:
+        +-- config.gypi
     +-- assembler.js
     +-- compiler.js
     +-- gpioService.js
     +-- gpioService.cc
     +-- myobject.h
     +-- myobject.cc
-
-Build comes from node-gyp again.
-
++-- node_modules:
+    +-- Too many to list.
++-- public:
+    +-- resources:
+        +-- bootstrap.min.css
+        +-- bootstrap.min.js
+        +-- cookies.js
+        +-- jquery.js
+        +-- loadassemblyScript.js
+        +-- loadProgramScript.js
+        +-- scripts.js
+        +-- styles.css
+    +-- gui.html
+    +-- loadassembly.html
+    +-- loadprogram.html
+    +-- runinstruction.html
++-- routes:
+    +-- user_routes.js
++-- xCompiler:
+    +-- oldCompiler:
+        +-- Previous versions of compiler files. Kept in case of emergency
+    +-- All compiler files
+    +-- sim2 and sim3 are git ignored
++-- xPrograms:
+    +-- all x program files
++-- .gitignore
++-- binding.gyp
++-- package.json
++-- README.txt
++-- server.js
 
 
 ## NPM modules
@@ -92,3 +149,9 @@ bindings
 express
 node-gyp
 hashmap
+
+## Known bugs
+-x compiler will compile when main is at bottom of file but hex output will be incorrect
+
+-error thrown on machine when x is compiled from terminal command in "gpioconfig/compiler.js".
+ But runs correctly anyway, might be problem later.  ¯\_(ツ)_/¯
