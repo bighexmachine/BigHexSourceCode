@@ -2,7 +2,7 @@
  * When everything on the page has loaded, bind the buttons to actions to do something.
  */
 $(document).ready(function() {
-
+    
 
     //Use jQuery to bind to the relevant actions. The send correct relevant command.
 
@@ -65,8 +65,8 @@ $(document).ready(function() {
             checkPlaceInQueue(getCookie('BIG_HEX'));
 	  }
     );
-
-    askServerForAccessToAPI(function() {updateSpeed();});
+    askServerForAccessToAPI(function() {
+        updateSpeed();});
 
 });
 

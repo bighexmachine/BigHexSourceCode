@@ -9,6 +9,7 @@ exports.setActive = function() {
 
 function addToQueue(number) {
     queue.push(number);
+    console.log("next userNum = " + nextUserNum);
 }
 
 //Time user out after ertain number of seconds if innactive
@@ -38,8 +39,9 @@ function removeFromQueue(userNum, moveToBack) {
 
 //Get the next available user number and add to queue
 exports.getNextUserNum = function() {
-    nextUserNum++;
-    addToQueue(nextUserNum)
+    nextUserNum = nextUserNum + 1;
+    addToQueue(nextUserNum);
+    console.log("next number given: " + nextUserNum);
     return nextUserNum;
 }
 
@@ -59,7 +61,7 @@ exports.checkUserInQueue = function(number) {
     if(number > nextUserNum) {
         nextUserNum = number+1;
     }
-    return pos
+    return pos;
 }
 
 exports.remover = function(userNum, moveToBack) {

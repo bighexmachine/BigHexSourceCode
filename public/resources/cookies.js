@@ -18,6 +18,7 @@ function getCookie(cname) {
             return c.substring(name.length, c.length);
         }
     }
+    console.log("return nothing");
     return "";
 }
 
@@ -35,7 +36,7 @@ function checkCookie() {
     //setCookie("BIG_HEX",1,-1);
 }
 
-//Get next available user number and add to queue
+//Get next available user number
 function getNextUserNum(callback) {
     var num = 0;
     $.ajax({
@@ -45,14 +46,15 @@ function getNextUserNum(callback) {
             //Create jQuery object from the response HTML.
             var $response=$(data);
             //Query the jQuery object for the values
-            num= $response.selector;
+            num = $response.selector;
             console.log("number from server " + num);
             callback(num);
         }
     });
 }
 
-//Check place of user in the queue and add if not already
+//Check place of user in the queue and add if not already.
+//updates queue ui
 function checkPlaceInQueue(num) {
     $.ajax({
         type: 'GET',
@@ -63,14 +65,14 @@ function checkPlaceInQueue(num) {
             var $response=$(data);
             //Query the jQuery object for the values
             num = $response.selector;
-            console.log("Your place in queue " + num);
+            console.log("1Your place in queue " + num);
             updateQueueUI(num);
         }
     });
 }
 
 
-//Copied from cookie.js, needs to be refactored at some point
+//Copied. needs to be refactored at some point
 function checkPlaceAndRunFunc(num, callbackFunc) {
     $.ajax({
         type: 'GET',
@@ -79,7 +81,7 @@ function checkPlaceAndRunFunc(num, callbackFunc) {
         success: function(data){
             var $response=$(data);
             num = $response.selector;
-            console.log("Your place in queue " + num);
+            console.log("2Your place in queue " + num);
             if(num == '0') {
                 callbackFunc();
             }
@@ -91,8 +93,14 @@ function checkPlaceAndRunFunc(num, callbackFunc) {
 }
 
 function askServerForAccessToAPI(callbackFunc) {
-    var userNum = getCookie("BIG_HEX");
-    checkPlaceAndRunFunc(userNum, callbackFunc);
+    var promise = new Promise(function(resolve, reject) {
+        resolve(checkCookie());
+    });
+    promise.then(function(result) {
+        //console.log(result); // "Stuff worked!"
+        var userNum = getCookie("BIG_HEX");
+        checkPlaceAndRunFunc(userNum, callbackFunc)
+    }, function(err) {
+        console.log(err); // Error: "It broke"
+    });
 }
-
-checkCookie()
