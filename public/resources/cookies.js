@@ -3,9 +3,10 @@ function setCookie(cname, cvalue, exdays) {
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    console.log("new cookie set");
 }
 
-function getCookie(cname) {
+function getCookie(cname, callback) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
@@ -15,25 +16,27 @@ function getCookie(cname) {
             c = c.substring(1);
         }
         if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
+            callback(c.substring(name.length, c.length));
+            return;
         }
     }
     console.log("return nothing");
-    return "";
+    callback("");
+    return;
 }
 
 function checkCookie() {
-    var userNum = getCookie("BIG_HEX");
-    if (userNum != "") {
-        console.log("Cookie user num " + userNum);
-        checkPlaceInQueue(userNum);
-    } else {
-        getNextUserNum(function(userNum) {
-            console.log("New user num " + userNum);
-            setCookie("BIG_HEX", userNum, 1);
-        });
-    }
-    //setCookie("BIG_HEX",1,-1);
+    getCookie("BIG_HEX", function(res) {
+        if (res != "") {
+            console.log("Cookie user num " + res);
+            checkPlaceInQueue(res);
+        } else {
+            getNextUserNum(function(res) {
+                console.log("New user num " + res);
+                setCookie("BIG_HEX", res, 1);
+            });
+        }
+    });
 }
 
 //Get next available user number
@@ -93,14 +96,21 @@ function checkPlaceAndRunFunc(num, callbackFunc) {
 }
 
 function askServerForAccessToAPI(callbackFunc) {
-    var promise = new Promise(function(resolve, reject) {
-        resolve(checkCookie());
+    getCookie("BIG_HEX", function(res) {
+        if(res !== "") {
+            console.log("get coookie user num = " + res);
+            checkPlaceInQueue(res);
+            checkPlaceAndRunFunc(res, callbackFunc);
+            return;
+        }
+        else {
+            console.log("we send nothing");
+            getNextUserNum(function(res) {
+                console.log("New user num " + res);
+                setCookie("BIG_HEX", res, 1);
+            });
+            return;
+        }
     });
-    promise.then(function(result) {
-        //console.log(result); // "Stuff worked!"
-        var userNum = getCookie("BIG_HEX");
-        checkPlaceAndRunFunc(userNum, callbackFunc)
-    }, function(err) {
-        console.log(err); // Error: "It broke"
-    });
+
 }

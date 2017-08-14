@@ -7,9 +7,13 @@ exports.setActive = function() {
     innactive = false;
 }
 
+function getHighestUserNum() {
+    //TODO
+}
+
 function addToQueue(number) {
     queue.push(number);
-    console.log("next userNum = " + nextUserNum);
+    console.log("New queue: " + queue);
 }
 
 //Time user out after ertain number of seconds if innactive
@@ -41,26 +45,26 @@ function removeFromQueue(userNum, moveToBack) {
 exports.getNextUserNum = function() {
     nextUserNum = nextUserNum + 1;
     addToQueue(nextUserNum);
-    console.log("next number given: " + nextUserNum);
+    console.log("next number to give: " + nextUserNum);
     return nextUserNum;
 }
 
 //Checks user is in queue, if not then is added
 exports.checkUserInQueue = function(number) {
-    var pos = queue.indexOf(number);
+    console.log("number provided = " + number + " " + typeof number );
+    var pos = queue.indexOf(parseInt(number));
+    console.log("pos = " + pos);
     if(pos === -1) {
+        console.log("in pos section with pos = " + pos);
         addToQueue(number);
         //Will print user in pos -1 for first position.
         console.log("Added user to queue. User number: " + number + "\nin position: " + pos);
         console.log("Current queue: " + queue);
+        //TODO Make sure server never hands out same number when restarted
+        nextUserNum = nextUserNum + 1;
         return queue.length-1;
     }
     console.log("Current queue: " + queue);
-
-    //TODO Make sure server never hands out same number when restarted
-    if(number > nextUserNum) {
-        nextUserNum = number+1;
-    }
     return pos;
 }
 
