@@ -54,20 +54,11 @@ $(document).ready(function() {
     });
 
     $('#leavequeue').click( function() {
-            leaveQueue(false);
-            updateQueueUI(getCookie('BIG_HEX'));
+            leaveQueue();
 	  }
     );
-
-    $('#backofqueue').click( function() {
-		    leaveQueue(true);
-            checkPlaceInQueue(getCookie('BIG_HEX'));
-	  }
-    );
-
-    askServerForAccessToAPI(function() {
-        updateSpeed();});
-
+    /*askServerForAccessToAPI(function() {
+        updateSpeed();});*/
 });
 
 function updateSpeed() {
@@ -90,24 +81,17 @@ function updateSpeed() {
 }
 
 function updateQueueUI(place) {
-    if(place == '0') {
+    if(place == 1) {
         $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
+    }
+    else if(place == -1) {
+        $('#queueUI').text('You are not in the queue');
     }
     else {
         $('#queueUI').text('Your position in the queue is: ' + place);
     }
 }
 
-function leaveQueue(toBack) {
-    var num = getCookie("BIG_HEX");
-    console.log("we got num " + num);
-    $.ajax({
-    url:'/leavequeue',
-    type:'GET',
-    data:{'userNum': num, 'toBack': toBack},
-    success: function(res){}
-    });
-}
 
 
 /*

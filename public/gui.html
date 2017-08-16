@@ -8,13 +8,13 @@
 <link rel="stylesheet" type="text/css" href="resources/styles.css">
 <script type="text/javascript" src="resources/jquery.js"></script>
 <script type="text/javascript" src="resources/scripts.js"></script>
-<script type="text/javascript" src="resources/cookies.js"></script>
+<script type="text/javascript" src="resources/browserSockets.js"></script>
 <script src="resources/bootstrap.min.js"></script>
 
 
     <body>
         <div id="container" class="container-fluid">
-            <div id = "queueUI" class="col-sm-12 button" style = "background-color:#581845;">Queue:</div>
+            <div id = "queueUI" class="col-sm-12 button" style = "background-color:#581845;">Queue position:</div>
             <div class="btn-group btn-group-justified">
                 <div id = "start" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Start</div>
                 <div id = "stop" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Stop</div>
@@ -43,11 +43,8 @@
         		</div>
             </div>
             <div class="btn-group btn-group-justified">
-            <div id = "leavequeue" class="btn btn-primary;col-sm-6 button" style = "background-color:#FFC30F;">
+            <div id = "leavequeue" class="btn btn-primary;col-sm-12 button" style = "background-color:#FFC30F;">
                     Leave Queue
-                </div>
-            <div id = "backofqueue" class="btn btn-primary;col-sm-6 button" style = "background-color:#FFC30F;">
-                    Move to Back of Queue
                 </div>
             </div>
         </div>

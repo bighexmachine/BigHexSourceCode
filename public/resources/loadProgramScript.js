@@ -69,8 +69,11 @@ $(document).ready(function(){
 });
 
 function updateQueueUI(place) {
-    if(place == '0') {
+    if(place == 1) {
         $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
+    }
+    else if(place == -1) {
+        $('#queueUI').text('You are not in the queue');
     }
     else {
         $('#queueUI').text('Your position in the queue is: ' + place);
