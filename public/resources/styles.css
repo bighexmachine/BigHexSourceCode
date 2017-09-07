@@ -11,12 +11,19 @@ body{
     background-color:#e1e1e1;
 }
 */
+
+body {
+    background-color: black;
+}
+
 #container{
     padding-top:15px;
 }
 
 .button{
     color:white !important;
+    border-style: solid;
+    border-color: black;
     text-align:center;
     padding-top:5%;
     padding-bottom:5%;

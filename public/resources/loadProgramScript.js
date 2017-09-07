@@ -1,11 +1,11 @@
 $(document).ready(function(){
 
 
-	$('#submitProgram').click(
-	        function(){
-	            sendReq('load', $('#programInput').val());
-	        }
-	);
+	$('#submitProgram').click( function() {
+		askServerForAccessToAPI( function() {
+	        sendReq('load', $('#programInput').val());
+		});
+	});
 
 	//submit code to be compiled
 	function sendReq(command, data)
@@ -67,3 +67,15 @@ $(document).ready(function(){
     );
 
 });
+
+function updateQueueUI(place) {
+    if(place == 1) {
+        $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
+    }
+    else if(place == -1) {
+        $('#queueUI').text('You are not in the queue');
+    }
+    else {
+        $('#queueUI').text('Your position in the queue is: ' + place);
+    }
+}
