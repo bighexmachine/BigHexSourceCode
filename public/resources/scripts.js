@@ -3,21 +3,41 @@
  */
 $(document).ready(function() {
 
-
     //Use jQuery to bind to the relevant actions. The send correct relevant command.
 
-    $('#start').click(function() { updateClock('start', undefined) });
-    $('#stop').click(function() { updateClock('stop', undefined) });
-
-    $('#step').click( function() { updateClock('step' , undefined) });
-    $('#reset').click( function() { updateClock('reset', undefined) });
+    $('#start').click(function() {
+        //check place in queue
+        //-get cookie num
+        //-send to server to get ok
+        askServerForAccessToAPI( function() {
+            updateClock('start', undefined);
+        });
+    });
+    $('#stop').click(function() {
+        askServerForAccessToAPI( function() {
+            updateClock('stop', undefined);
+        });
+    });
+    $('#step').click( function() {
+        askServerForAccessToAPI( function() {
+            updateClock('step' , undefined);
+        });
+    });
+    $('#reset').click( function() {
+        askServerForAccessToAPI( function() {
+            updateClock('reset', undefined);
+        });
+    });
     $('#load').click( function() {
 		    updateClock('load' , $('#text').val());
 	  }
     );
 
-    $('#screentest').click(function() { updateClock('screen', undefined) });
-
+    $('#screentest').click(function() {
+        askServerForAccessToAPI( function() {
+            updateClock('screen', undefined);
+        });
+    });
     $('#execInst').click(
       function(e) {
           e.preventDefault();
@@ -28,11 +48,17 @@ $(document).ready(function() {
     $('#speedSlider').val(12);
 
     $('#speedSlider').on('input change', function(){
-        updateSpeed();
+        askServerForAccessToAPI( function() {
+            updateSpeed();
+        });
     });
 
-    updateSpeed();
-
+    $('#leavequeue').click( function() {
+            leaveQueue();
+	  }
+    );
+    /*askServerForAccessToAPI(function() {
+        updateSpeed();});*/
 });
 
 function updateSpeed() {
@@ -53,6 +79,19 @@ function updateSpeed() {
     }
     updateClock('speed',speed);
 }
+
+function updateQueueUI(place) {
+    if(place == 1) {
+        $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
+    }
+    else if(place == -1) {
+        $('#queueUI').text('You are not in the queue');
+    }
+    else {
+        $('#queueUI').text('Your position in the queue is: ' + place);
+    }
+}
+
 
 
 /*

@@ -1,15 +1,13 @@
 var path = require('path');
 const apifunc = require('../configure/api.js');
-
+const queue = require('../configure/queue.js')
 
 module.exports = function (app) {
-
     /**
      * html files
      */
-
     app.get('/', function (req, res) {
-        console.log("get request to homepagae\n" + req);
+        console.log("get request to homepage\n");
         res.sendFile('gui.html', {root: './public'});
     });
 
@@ -23,12 +21,6 @@ module.exports = function (app) {
 
     app.get('/loadassembly', function(req, res) {
         res.sendFile('loadassembly.html', {root: './public'});
-    });
-
-    app.get('/returnAndRun', function (req, res) {
-        console.log("get request to return and run");
-        apifunc('start', undefined);
-        res.redirect('/');
     });
 
     /**
@@ -63,6 +55,10 @@ module.exports = function (app) {
         res.sendFile('resources/jquery.js', {root: './public'});
     });
 
+    app.get('resources/cookies.js', function(req, res) {
+        res.sendFile('resources/cookies.js', { root: './public' });
+    });
+
     //pdf
     app.get('/assemblySpec.pdf', function(req, res) {
         res.sendFile('assemblySpec.pdf', {root: './public'});
@@ -75,6 +71,26 @@ module.exports = function (app) {
         var comm = req.query.command;
         var data = req.query.data;
         rep = apifunc(comm, data);
+        queue.setActive();
         res.send(rep);
     })
+
+    //Queue calls
+    app.get('/nextqueuenum', function(req, res) {
+        var nextNum = queue.getNextUserNum()
+        res.send(nextNum.toString());
+    });
+
+    app.get('/placeinqueue', function(req, res) {
+        var queuePos = queue.checkUserInQueue(req.query.userNum);
+        res.send(queuePos.toString());
+    });
+
+    app.get('/leavequeue', function(req, res) {
+        var userNum = req.query.userNum;
+        var toBack = req.query.toBack;
+        console.log(userNum);
+        queue.remover(userNum, toBack);
+        res.send("Removed");
+    });
 };

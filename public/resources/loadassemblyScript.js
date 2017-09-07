@@ -1,11 +1,11 @@
 $(document).ready(function(){
 
 
-	$('#submitProgram').click(
-	        function(){
+	$('#submitProgram').click( function(){
+		askServerForAccessToAPI( function() {
 	            sendReq('loadassembly', $('#programInput').val());
-	        }
-	);
+	        });
+		});
 
 	//submit code to be compiled
 	function sendReq(command, data)
@@ -21,4 +21,14 @@ $(document).ready(function(){
         });
 
 	}
+
 });
+
+function updateQueueUI(place) {
+    if(place == '0') {
+        $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
+    }
+    else {
+        $('#queueUI').text('Your position in the queue is: ' + place);
+    }
+}
