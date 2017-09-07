@@ -149,9 +149,3 @@ bindings
 express
 node-gyp
 hashmap
-
-## Known bugs
--x compiler will compile when main is at bottom of file but hex output will be incorrect
-
--error thrown on machine when x is compiled from terminal command in "gpioconfig/compiler.js".
- But runs correctly anyway, might be problem later.  ¯\_(ツ)_/¯
