@@ -6,11 +6,13 @@ socket.onopen = function() {
 };
 
 socket.onmessage = function(evt) {
-    var received_msg = evt.data;
-    console.log("Message is received: " + received_msg);
-    switch(evt.data) {
+    var receivedMsg = evt.data;
+    console.log("Message is received: " + receivedMsg);
+    var splitMsg = receivedMsg.split(" ");
+    switch(splitMsg[0]) {
         case "denied":
             console.log("denied access to api");
+            queuePos = splitMsg[1];
             updateQueueUI(queuePos);
             break;
         case "accessAPISuccess":

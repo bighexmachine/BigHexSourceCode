@@ -41,14 +41,16 @@ wss.on('connection', function connection(ws, req) {
                     ws.send("accessAPISuccess");
                 }
                 else {
-                    ws.send("denied");
+                    var pos = queue.getQueuePositionOfIP(ip);
+                    pos = pos+1;
+                    ws.send("denied " + JSON.stringify(pos));
                 }
                 break;
             case "leaveQueue":
                 //send message to all ip addresses further behind in queue to move up one
                 wss.clients.forEach(function each(client) {
                   if (client !== ws && client.readyState === WebSocket.OPEN &&
-                       queue.getQueuePositionOfIP(getIp(client) > queue.getQueuePositionOfIP(ip))) {
+                       queue.getQueuePositionOfIP(getIp(client)) > queue.getQueuePositionOfIP(ip)) {
                            client.send("moveUpQueue");
                     }
                 });
