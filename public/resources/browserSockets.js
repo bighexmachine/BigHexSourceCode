@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://192.168.0.1:3000/");
+var socket = new WebSocket("ws://192.168.0.1/");
 var queuePos = -1;
 
 socket.onopen = function() {

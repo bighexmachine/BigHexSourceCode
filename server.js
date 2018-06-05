@@ -41,6 +41,7 @@ wss.on('connection', function connection(ws, req) {
                     ws.send("accessAPISuccess");
                 }
                 else {
+                    //return position along with deny to ensure client is up to date
                     var pos = queue.getQueuePositionOfIP(ip);
                     pos = pos+1;
                     ws.send("denied " + JSON.stringify(pos));
@@ -59,7 +60,6 @@ wss.on('connection', function connection(ws, req) {
                 break;
             default:
                 break;
-
         }
     });
 
@@ -68,6 +68,6 @@ wss.on('connection', function connection(ws, req) {
     });
 });
 
-server.listen(3000, function () {
-    console.log('Example app listening on port 3000')
+server.listen(80, function () {
+    console.log('Example app listening on port 80')
 });
