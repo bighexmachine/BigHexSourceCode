@@ -87,6 +87,11 @@ $(document).ready(function() {
         });
     });
     updateSpeed();
+
+    if($("#programInput").val() == "")
+    {
+      loadprog('starter.x')
+    }
 });
 
 function start()

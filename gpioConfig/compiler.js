@@ -15,7 +15,7 @@ var compile = function(Xsource, errorFunction, postCall){
   fs.writeFileSync(SOURCEFILE, Xsource);
 
   // executes compile on file
-  var COMPILECMD = "cd ~/Documents/serverV2/xCompiler/ && ./a.out < " + SOURCEFILE;
+  var COMPILECMD = "cd " + COMPILERFILES + " && ./a.out < " + SOURCEFILE;
   console.log(COMPILECMD);
   execs(COMPILECMD,
     function (error, stdout, stderr) {
