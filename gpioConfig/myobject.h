@@ -23,6 +23,7 @@ class MyObject : public node::ObjectWrap {
   static void StartClock(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void StopClock(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void StepClock(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void IsClockRunning(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetSpeed(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Reset(const v8::FunctionCallbackInfo<v8::Value>& args);
   static v8::Persistent<v8::Function> constructor;
@@ -34,7 +35,7 @@ class MyObject : public node::ObjectWrap {
   mutex clockLock;
   mutex pauseClockLock;
   int signals[4];
-  int clockIsRunning;
+  bool clockIsRunning;
 };
 
 #endif

@@ -2,9 +2,6 @@ $(document).ready(function(){
 
 
 	$('#submitProgram').click( function() {
-		askServerForAccessToAPI( function() {
-	        sendReq('load', $('#programInput').val());
-		});
 	});
 
 	//submit code to be compiled

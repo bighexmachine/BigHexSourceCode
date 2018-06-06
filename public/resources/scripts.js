@@ -1,47 +1,81 @@
+var examples = [
+  {
+    name: "Factorial",
+    desc: "Computes 5!",
+    path: "fact.x"
+  },
+  {
+    name: "Wink",
+    desc: "",
+    path: "wink.x"
+  },
+  {
+    name: "Welcome to CS",
+    desc: "",
+    path: "welcome.x"
+  },
+  {
+    name: "Raction Game",
+    desc: "",
+    path: "reaction.x"
+  },
+  {
+    name: "Pong Game",
+    desc: "",
+    path: "pong.x"
+  },
+  {
+    name: "Hi David",
+    desc: "",
+    path: "rotating_text.x"
+  },
+  {
+    name: "Faces",
+    desc: "",
+    path: "inputFaces.x"
+  },
+  {
+    name: "Nayn",
+    desc: "",
+    path: "nyan.x"
+  },
+  {
+    name: "Will's Automata",
+    desc: "",
+    path: "ca.x"
+  },
+  {
+    name: "Christmas Text",
+    desc: "",
+    path: "christmas.x"
+  },,
+  {
+    name: "Christmas Tree",
+    desc: "",
+    path: "tree.x"
+  }
+]
+
 /*
  * When everything on the page has loaded, bind the buttons to actions to do something.
  */
 $(document).ready(function() {
 
     //Use jQuery to bind to the relevant actions. The send correct relevant command.
-
-    $('#start').click(function() {
-        //check place in queue
-        //-get cookie num
-        //-send to server to get ok
-        askServerForAccessToAPI( function() {
-            updateClock('start', undefined);
-        });
-    });
-    $('#stop').click(function() {
-        askServerForAccessToAPI( function() {
-            updateClock('stop', undefined);
-        });
-    });
-    $('#step').click( function() {
-        askServerForAccessToAPI( function() {
-            updateClock('step' , undefined);
-        });
-    });
-    $('#reset').click( function() {
-        askServerForAccessToAPI( function() {
-            updateClock('reset', undefined);
-        });
-    });
     $('#load').click( function() {
-		    updateClock('load' , $('#text').val());
+		    sendReq('load' , $('#text').val());
 	  }
     );
 
     $('#screentest').click(function() {
         askServerForAccessToAPI( function() {
-            updateClock('screen', undefined);
+            sendReq('screen', undefined);
         });
     });
     $('#execInst').click(
       function(e) {
           e.preventDefault();
-          updateClock('runInstr', parseInt($('#instr').val() << 4) + parseInt($('#opr').val()) );
+          sendReq('runInstr', parseInt($('#instr').val() << 4) + parseInt($('#opr').val()) );
       }
     );
 
@@ -52,14 +86,78 @@ $(document).ready(function() {
             updateSpeed();
         });
     });
-
-    $('#leavequeue').click( function() {
-            leaveQueue();
-	  }
-    );
-    /*askServerForAccessToAPI(function() {
-        updateSpeed();});*/
+    updateSpeed();
 });
+
+function start()
+{
+  //check place in queue
+  //-get cookie num
+  //-send to server to get ok
+  askServerForAccessToAPI( function() {
+      sendReq('start', undefined);
+  });
+}
+
+function stop()
+{
+  askServerForAccessToAPI( function() {
+      sendReq('stop', undefined);
+  });
+}
+
+function step()
+{
+  askServerForAccessToAPI( function() {
+      sendReq('step' , undefined);
+  });
+}
+
+function reset()
+{
+  askServerForAccessToAPI( function() {
+      sendReq('reset', undefined);
+  });
+}
+
+function loadToRAM()
+{
+	askServerForAccessToAPI( function() {
+      sendReq('load', $('#programInput').val());
+	});
+}
+
+function compile()
+{
+  console.log("Compile!");
+}
+
+function openExampleProgramsModal()
+{
+  let container = $("#programsTable");
+  container.html("");
+  let markup = (example) =>
+    `<tr>
+      <td style="margin-right:auto">${example.name}</td>
+      <td><button type="button" class="btn btn-primary" onclick="loadprog('${example.path}')" data-dismiss="modal">Load</button></td>
+    </tr>
+    <tr>
+      <td class="small-text">${example.desc}</td><td></td>
+    </tr>`;
+
+  examples.forEach(function(example) {
+    container.append(markup(example));
+  });
+
+  $("#examplesModal").modal();
+}
+
+function loadprog(prog)
+{
+  sendReq('getprog', prog, function(res) {
+		$('#programInput').val(res);
+  });
+}
 
 function updateSpeed() {
     var base = 10;
@@ -77,19 +175,28 @@ function updateSpeed() {
       var kspeed = Math.round(speed/100)/10;
       $('#speedOut').text(kspeed + 'Khz');
     }
-    updateClock('speed',speed);
+    sendReq('speed',speed);
 }
 
 function updateQueueUI(place) {
-    if(place == 1) {
-        $('#queueUI').text('Your position in the queue is: ' + place + '. Use this power wisely.');
-    }
-    else if(place == -1) {
-        $('#queueUI').text('You are not in the queue');
-    }
-    else {
-        $('#queueUI').text('Your position in the queue is: ' + place);
-    }
+  $(".queue-header").removeClass("active");
+  $("#leaveQueue").show();
+  $("#controls").hide();
+  $("#controls-hidden").show();
+
+  if(place == 1) {
+      $('#queueUI').text('In Control');
+      $(".queue-header").addClass("active");
+      $("#controls").show();
+      $("#controls-hidden").hide();
+  }
+  else if(place == -1) {
+      $('#queueUI').text('Not waiting');
+      $("#leaveQueue").hide();
+  }
+  else {
+      $('#queueUI').text('Waiting, position ' + place);
+  }
 }
 
 
@@ -102,12 +209,14 @@ function updateQueueUI(place) {
  * has actually confirmed the command has been executed successfully.
  *
  */
-function updateClock(command, data) {
+function sendReq(command, data, callback) {
     $.ajax({
     url:'/api',
     type:'GET',
     data:{'command':command, 'data':data},
-    success: function(res){}
+    success: function(res){
+      if(callback != undefined) callback(res);
+    }
     });
 
 }

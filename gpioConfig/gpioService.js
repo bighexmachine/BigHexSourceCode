@@ -20,6 +20,10 @@ module.exports.stepClock = function(){
     gpioServiceLibraryObj.stepClock();
 };
 
+module.exports.isClockRunning = function(){
+    return gpioServiceLibraryObj.isClockRunning();
+};
+
 module.exports.resetClock = function(){
     gpioServiceLibraryObj.reset();
 };
