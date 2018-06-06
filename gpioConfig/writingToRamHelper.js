@@ -22,7 +22,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
   {
     // load the instruction in to reg A
 
-    process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
+    //process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
     
     var inst_l = createLDACInstructions(hexu[pc], hexl[pc]); // instructions to load one nibble at a time (for each RAM)
     //var inst_l = createLDACInstructions("00", "00"); // write 00s to clear ram 
@@ -37,7 +37,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
       }
     }
 
-    process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
+    //process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
 
     // store reg a to mem[pc]
     var inst_s = createLDAMInstructions(pc);
