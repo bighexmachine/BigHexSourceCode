@@ -1,9 +1,13 @@
 .idea/
 node_modules/
+build/
+
 gpioConfig/source.x
 xCompiler/sim2
 xCompiler/sim3
+xCompiler/a.bin
 xPrograms/source.x
 serverPID.txt
+
 *.log
-build/
+*.out
