@@ -30,8 +30,8 @@ var compile = function(Xsource, errorFunction, postCall){
       var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
       var hexlArray = hexl.split(" ");
 
-      console.log(hexuArray + '\n');
-      console.log(hexlArray + '\n');
+      //console.log(hexuArray + '\n');
+      //console.log(hexlArray + '\n');
 
       postCall(hexuArray, hexlArray);
 

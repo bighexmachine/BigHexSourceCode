@@ -32,8 +32,6 @@ class MyObject : public node::ObjectWrap {
   int state;
   int delay;
   void Clock();
-  mutex clockLock;
-  mutex pauseClockLock;
   int signals[4];
   bool clockIsRunning;
 };

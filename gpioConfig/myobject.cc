@@ -20,7 +20,6 @@ using v8::Value;
 Persistent<Function> MyObject::constructor;
 
 MyObject::MyObject(): state(0), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false) {
-  clockLock.lock();
   clockThread = thread(&MyObject::Clock, this);
 }
 
@@ -78,13 +77,13 @@ void MyObject::Clock()
   cout << "Clock Service Ready" << endl;
   while(1)
   {
-    pauseClockLock.lock();
-    pauseClockLock.unlock();
-    clockLock.lock();
-    writeClock( signals[state] );
+    if(clockIsRunning)
+      writeClock( signals[state] );
+
     delayMicroseconds(delay);
-    state = (state+1) % 4;
-    clockLock.unlock();
+
+    if(clockIsRunning)
+      state = (state+1) % 4;
   }
 }
 
@@ -92,19 +91,16 @@ void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   obj->clockIsRunning = true;
-  obj->pauseClockLock.unlock();
-  obj->clockLock.unlock();
 	printf("started\n");
   return;
 }
 
 void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  if(!obj->clockIsRunning) return
+  if(!obj->clockIsRunning) return;
 
-  obj->pauseClockLock.lock();
-  obj->clockLock.lock();
   obj->clockIsRunning = false;
+	printf("stopped\n");
 }
 
 void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
