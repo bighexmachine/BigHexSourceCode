@@ -17,6 +17,10 @@ class MyObject : public node::ObjectWrap {
   MyObject();
   ~MyObject();
 
+
+  void IncrementState();
+  void ResetState();
+
   static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void WriteData(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void RamPiSel(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -34,6 +38,8 @@ class MyObject : public node::ObjectWrap {
   void Clock();
   int signals[4];
   bool clockIsRunning;
+
+  mutex stateMutex;
 };
 
 #endif

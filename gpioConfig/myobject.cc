@@ -62,6 +62,9 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
 
 void writeClock(int val)
 {
+  static mutex clockMutex;
+  clockMutex.lock();
+
   //phase 0 clock
   digitalWrite (0, val & 1);
   //phase 0 reset
@@ -70,6 +73,22 @@ void writeClock(int val)
   digitalWrite (2, val & 16);
   //phase 1 reset
   digitalWrite (3, val & 32);
+
+  clockMutex.unlock();
+}
+
+void MyObject::IncrementState()
+{
+  stateMutex.lock();
+  state = (state+1) % 4;
+  stateMutex.unlock();
+}
+
+void MyObject::ResetState()
+{
+  stateMutex.lock();
+  state = 0;
+  stateMutex.unlock();
 }
 
 void MyObject::Clock()
@@ -83,7 +102,7 @@ void MyObject::Clock()
     delayMicroseconds(delay);
 
     if(clockIsRunning)
-      state = (state+1) % 4;
+      IncrementState();
   }
 }
 
@@ -107,7 +126,7 @@ void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
   writeClock( obj->signals[obj->state] );
-  obj->state = (obj->state+1) % 4;
+  obj->IncrementState();
   return;
 }
 
@@ -147,7 +166,7 @@ void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
 void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
-  obj->state = 0;
+  obj->ResetState();
   digitalWrite (0, 0);
   digitalWrite (1, 1);
   digitalWrite (2, 0);
