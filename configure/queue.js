@@ -40,7 +40,7 @@ exports.removeFromQueue = function(userIP) {
 function timeOutUser() {
     setTimeout( function() {
         if(innactive) {
-            removeFromQueue(queue[0] ,false)
+            exports.removeFromQueue(queue[0] ,false)
         }
         innactive = true;
         timeOutUser();
