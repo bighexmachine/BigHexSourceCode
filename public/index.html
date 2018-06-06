@@ -1,52 +1,115 @@
 <!DOCTYPE html>
 
 <html>
-<meta name = "viewport" content= "width=device-width, initial-scale=1">
-<title>WallComp</title>
+  <head lang="en">
+    <meta charset=utf-8>
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-<link rel="stylesheet" href="resources/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="resources/styles.css">
-<script type="text/javascript" src="resources/jquery.js"></script>
-<script type="text/javascript" src="resources/scripts.js"></script>
-<script type="text/javascript" src="resources/browserSockets.js"></script>
-<script src="resources/bootstrap.min.js"></script>
+    <title>BigHex Machine</title>
 
+    <link rel="stylesheet" href="resources/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="resources/styles.css">
+  </head>
 
     <body>
-        <div id="container" class="container-fluid">
-            <div id = "queueUI" class="col-sm-12 button" style = "background-color:#581845;">Queue position:</div>
-            <div class="btn-group btn-group-justified">
-                <div id = "start" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Start</div>
-                <div id = "stop" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Stop</div>
-            </div>
+        <div class="modal fade" tabindex="-1" role="dialog" id="examplesModal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Example Programs</h4>
+              </div>
+              <div class="modal-body">
+                <table width="100%" id="programsTable">
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
 
-            <div class="btn-group btn-group-justified">
-                <div id = "step" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Step</div>
-                <div id = "reset" class="btn btn-primary;col-sm-6 button" style = "background-color:#900C3F;">Reset</div>
-            </div>
-            <div id = "speed" class = "col-sm-12 button" style = "background-color:#C70039;">
-                Speed
-                <input id="speedSlider" type="range" name="speed" min="0" max="196"><div id="speedOut"></div>
-            </div>
-
-            <div class="btn-group btn-group-justified">
-                <div id = "runInstruction" class="btn btn-primary;col-sm-4 button" style = "background-color:#FF5733;">
-                  <a href="runInstruction.html">Run an Instruction</a>
-                </div>
-
-                <div id = "loadprogram" class="btn btn-primary;col-sm-4 button" style = "background-color:#FF5733;">
-        			<a href="loadprogram.html">Load an X Program</a>
-        		</div>
-
-                <div id = "loadassebly" class="btn btn-primary;col-sm-4 button" style = "background-color:#FF5733;">
-        			<a href="loadassembly.html">Load an Assembly Program</a>
-        		</div>
-            </div>
-            <div class="btn-group btn-group-justified">
-            <div id = "leavequeue" class="btn btn-primary;col-sm-12 button" style = "background-color:#FFC30F;">
-                    Leave Queue
-                </div>
-            </div>
+        <div class="queue-header">
+          <span id="queueUI">Loading...</span> <span id="leaveQueue" style="display:none;">(<a href="javascript:void(0);" onclick="leaveQueue();">Leave Queue</a>)</span>
         </div>
+        <div id="container" class="container-fluid">
+
+          <span class="small-text">TOOLBAR:</span>
+          <div id="controls" style="display:none">
+            <div class="row">
+              <div class="col-md-2">
+                <a href="javascript:void(0);" onclick="start();">
+                  <div class="button">Start</div>
+                </a>
+              </div>
+              <div class="col-md-2">
+                <a href="javascript:void(0);" onclick="stop();">
+                  <div class="button">Stop</div>
+                </a>
+              </div>
+              <div class="col-md-2">
+                <a href="javascript:void(0);" onclick="step();">
+                  <div class="button">Step</div>
+                </a>
+              </div>
+              <div class="col-md-2">
+                <a href="javascript:void(0);" onclick="reset();">
+                  <div class="button">Reset</div>
+                </a>
+              </div>
+              <div class="col-md-2">
+                <a href="javascript:void(0);" onclick="loadToRAM();">
+                  <div class="button">Load into RAM</div>
+                </a>
+              </div>
+            </div>
+
+            <div class="hidden-sm hidden-xs" style="padding-top:10px"></div>
+
+            <div class="row">
+              <div id = "speed" class = "col-md-12">
+                <div class="button">
+                  Speed (<span id="speedOut"></span>)
+                  <input id="speedSlider" type="range" name="speed" min="0" max="196">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="controls-hidden" class="row">
+            <div class="col-md-12"><div class="button">Controls will be displayed when you are at the front of the Queue</div></div>
+          </div>
+
+          <span class="small-text">CODE EDITOR:</span>
+          <div class="row">
+            <div class="col-md-2" style="display:none;">
+              <a href="javascript:void(0);" onclick="compile();">
+                <div class="button">Compile Complete</div>
+              </a>
+            </div>
+            <div class="col-md-2">
+              <a href="javascript:void(0);" onclick="openExampleProgramsModal();">
+                <div class="button">Example Programs</div>
+              </a>
+            </div>
+          </div>
+
+          <div class="hidden-sm hidden-xs" style="padding-top:10px"></div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="code-editor">
+                <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script type="text/javascript" src="resources/jquery.js"></script>
+        <script type="text/javascript" src="resources/scripts.js"></script>
+        <script type="text/javascript" src="resources/browserSockets.js"></script>
+        <script src="resources/bootstrap.min.js"></script>
     </body>
 </html>

@@ -1,1 +1,0 @@
-cmd_Release/obj.target/gpioService.node := g++ -shared -pthread -rdynamic  -Wl,-soname=gpioService.node -o Release/obj.target/gpioService.node -Wl,--start-group Release/obj.target/gpioService/gpioConfig/gpioService.o Release/obj.target/gpioService/gpioConfig/myobject.o -Wl,--end-group -lwiringPi -lpthread

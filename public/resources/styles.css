@@ -13,34 +13,34 @@ body{
 */
 
 body {
-    background-color: black;
+    background-color: #000;
+    font-size:2em;
+    color:#ddd;
 }
 
-#container{
-    padding-top:15px;
+.container-fluid
+{
+    padding-top:20px;
 }
 
 .button{
     color:white !important;
-    border-style: solid;
-    border-color: black;
+    border: thin solid #888;
     text-align:center;
-    padding-top:5%;
-    padding-bottom:5%;
-    font-size:32px;
-    font-size:2em;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size:1em;
     font-style:bold;
     cursor:pointer;
     user-select:none;
-
+    background-color:#C70039;
+    border-radius: 10px;
 }
 
-.button a
+.modal
 {
-	color:white;
-	text-decoration:none !important;
+  color: #222;
 }
-
 
 
 /*
@@ -67,3 +67,71 @@ body {
 {
   text-decoration:none;
 }
+
+.queue-header
+{
+  background-color:#581845;
+  color: #ddd;
+  font-size: 0.7em;
+  text-align: center;
+  padding: 3px 0 3px 0;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-shadow: 0 0 20px #000;
+  border-bottom: thin solid #000;
+}
+
+.queue-header.active
+{
+  background-color: #0a0;
+}
+
+.toolbar div
+{
+  padding: 5px;
+}
+
+.toolbar-header
+{
+}
+
+.toolbar-button
+{
+  border-left: thin solid #555;
+}
+
+.toolbar-button img
+{
+  width: 25px;
+}
+
+a, a:visited, a:active
+{
+  color: #ddd;
+	text-decoration:none !important;
+}
+
+a:hover
+{
+	color:#fff;
+}
+
+.small-text
+{
+  font-size: 0.6em;
+  padding-left: 10px;
+}
+
+.code-editor textarea
+{
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.code-editor
+{
+  background-color: #aaa;
+  border-radius: 4px;
+}s

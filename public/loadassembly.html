@@ -1,36 +1,46 @@
 <!DOCTYPE html>
 
 <html>
-<meta name = "viewport" content= "width=device-width, initial-scale=1">
-<title>WallComp</title>
+  <head lang="en">
+    <meta charset=utf-8>
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-<link rel="stylesheet" href="resources/bootstrap.min.css">
-<link rel="stylesheet" href="resources/styles.css">
-<script type="text/javascript" src="resources/jquery.js"></script>
-<script src="resources/bootstrap.min.js"></script>
-<script type="text/javascript" src="resources/loadassemblyScript.js"></script>
-<script type="text/javascript" src="resources/browserSockets.js"></script>
+    <title>BigHex Machine</title>
 
-    <body>
-        <div id="container" class="container-fluid">
-            <div id = "queueUI" class="col-sm-12 button" style = "background-color:#2D1E2F;">Queue:</div>
+    <link rel="stylesheet" href="resources/bootstrap.min.css">
+    <link rel="stylesheet" href="resources/styles.css">
+</head>
 
-            <div class="jumbotron" style = "background-color:#2D1E2F;">
-                <font color = "white">
-                <h1>Run your own program</h1>
-                <p>Type some code in <a href="resources/assemblySpec.pdf">X Assembly Language</a> and press submit.
-                <p>It will be assembled and written to the machines RAM.
-                </font>
-            </div>
-
-            <form method="get" action="/api">
-                <div class="col-sm-10">
-                  <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important"></textarea>
-                </div>
-                  <div id = "submitProgram" class="col-sm-2 button" style = "background-color:#2D1E2F;">Submit Program</div>
-                  <a href = "index.html" class="col-sm-2 button control" style = "background-color:#2D1E2F;">Return to Control Panel</a>
-            </form>
+  <body>
+      <div id="container" class="container-fluid">
+        <div class="row">
+          <div id = "queueUI" class="col-sm-12 button" style = "background-color:#2D1E2F;">Queue:</div>
         </div>
-    </body>
+
+        <div class="jumbotron" style = "background-color:#2D1E2F;">
+            <font color = "white">
+            <h1>Run your own program</h1>
+            <p>Type some code in <a href="resources/assemblySpec.pdf">X Assembly Language</a> and press submit.
+            <p>It will be assembled and written to the machines RAM.
+            </font>
+        </div>
+
+        <form method="get" action="/api">
+          <div class="row">
+            <div class="col-sm-10">
+              <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important"></textarea>
+            </div>
+            <div id = "submitProgram" class="col-sm-2 button" style = "background-color:#2D1E2F;">Submit Program</div>
+            <a href = "index.html" class="col-sm-2 button control" style = "background-color:#2D1E2F;">Return to Control Panel</a>
+          </div>
+        </form>
+      </div>
+
+      <script type="text/javascript" src="resources/jquery.js"></script>
+      <script src="resources/bootstrap.min.js"></script>
+      <script type="text/javascript" src="resources/loadassemblyScript.js"></script>
+      <script type="text/javascript" src="resources/browserSockets.js"></script>
+  </body>
 
 </html>

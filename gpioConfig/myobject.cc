@@ -1,7 +1,7 @@
 #include <node.h>
 #include <stdio.h>
-#include <wiringPi.h>
 #include <iostream>
+#include "wiringProxy.h"
 #include "myobject.h"
 
 
@@ -19,7 +19,7 @@ using v8::Value;
 
 Persistent<Function> MyObject::constructor;
 
-MyObject::MyObject(): state(0), delay(10), signals{1, 0, 16, 0}, clockIsRunning(0) {
+MyObject::MyObject(): state(0), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false) {
   clockLock.lock();
   clockThread = thread(&MyObject::Clock, this);
 }
@@ -47,6 +47,7 @@ void MyObject::Init(Local<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "startClock", StartClock);
   NODE_SET_PROTOTYPE_METHOD(tpl, "stopClock", StopClock);
   NODE_SET_PROTOTYPE_METHOD(tpl, "stepClock", StepClock);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "isClockRunning", IsClockRunning);
   NODE_SET_PROTOTYPE_METHOD(tpl, "setSpeed", SetSpeed);
   NODE_SET_PROTOTYPE_METHOD(tpl, "ramPiSel", RamPiSel);
   NODE_SET_PROTOTYPE_METHOD(tpl, "reset", Reset);
@@ -90,7 +91,7 @@ void MyObject::Clock()
 void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  obj->clockIsRunning = 1;
+  obj->clockIsRunning = true;
   obj->pauseClockLock.unlock();
   obj->clockLock.unlock();
 	printf("started\n");
@@ -99,13 +100,11 @@ void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 
 void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  if(obj->clockIsRunning != 0)
-  {
-    obj->pauseClockLock.lock();
-    obj->clockLock.lock();
-    obj->clockIsRunning = 0;
-  }
-  return;
+  if(!obj->clockIsRunning) return
+
+  obj->pauseClockLock.lock();
+  obj->clockLock.lock();
+  obj->clockIsRunning = false;
 }
 
 void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
@@ -116,10 +115,16 @@ void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
   return;
 }
 
+void MyObject::IsClockRunning(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+  const MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
+  args.GetReturnValue().Set(obj->clockIsRunning);
+}
+
 void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   double inputSpeed = args[0]->NumberValue();
-  int period = 1000000 / inputSpeed; 
+  int period = 1000000 / inputSpeed;
   obj->delay = period / 4;
   return;
 }
@@ -153,4 +158,3 @@ void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   digitalWrite (3, 1);
   return;
 }
-

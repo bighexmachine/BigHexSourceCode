@@ -6,3 +6,4 @@ xCompiler/sim3
 xPrograms/source.x
 serverPID.txt
 *.log
+build/

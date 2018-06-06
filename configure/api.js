@@ -9,7 +9,7 @@ module.exports = function (command, data) {
     var fs = require("fs");
 
     var lastCommand = "";
-    
+
     /*
      * If a GET request is made to /api we need to execute a command
      * to control the signals being send to the machine via i2c.
@@ -36,6 +36,9 @@ module.exports = function (command, data) {
     }
     else if(command === 'stop'){
         gpioService.stopClock();
+    }
+    else if(command == 'isrunning'){
+      return gpioService.isClockRunning();
     }
     else if(command === 'step'){
         gpioService.stepClock();
@@ -85,7 +88,7 @@ module.exports = function (command, data) {
 };
 
 function repeat(s,n) {
-    if (n==0) { 
+    if (n==0) {
         return ''
     }
     else {
@@ -103,7 +106,7 @@ function formatSpeed(speed) {
     if (speed < 10) {
         speed = Math.round(speed*10)/10;
         return speed + 'hz';
-    } 
+    }
     else if(speed <1000) {
         speed = Math.round(speed);
         return speed + 'hz';

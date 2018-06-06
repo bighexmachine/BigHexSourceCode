@@ -1,4 +1,5 @@
-var socket = new WebSocket("ws://192.168.0.1/");
+console.log(location.hostname);
+var socket = new WebSocket("ws://" + location.hostname + "/");
 var queuePos = -1;
 
 socket.onopen = function() {
