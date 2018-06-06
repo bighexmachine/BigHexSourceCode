@@ -1,7 +1,7 @@
 
 //using util instead of sys since sys is deprecated.
 var sys = require('util')
-var execs = require('child_process').exec;
+var execs = require('child_process').execSync;
 var fs = require("fs");
 
 var path = require('path');
@@ -34,26 +34,33 @@ var compile = function(Xsource, errorFunction, postCall){
   // executes compile on file
   var COMPILECMD = "cd " + COMPILERFILES + " && ./a.out < " + SOURCEFILE;
   console.log(COMPILECMD);
-  execs(COMPILECMD,
-    function (error, stdout, stderr) {
-      console.log("Trying to compile X code");
-      errorFunction("Errors: " + error);
-      errorFunction("StdError: " + stderr);
-      errorFunction("STDOUT:" + stdout);
 
-      var hexu = fs.readFileSync(COMPILERFILES + '/sim3').toString();
-      var hexuArray = hexu.split(" ");
+  try
+  {
+    execs(COMPILECMD,
+      function (error, stdout, stderr) {
+        console.log("Trying to compile X code");
+        errorFunction("Errors: " + error);
+        errorFunction("StdError: " + stderr);
+        errorFunction("STDOUT:" + stdout);
 
-      var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
-      var hexlArray = hexl.split(" ");
+        var hexu = fs.readFileSync(COMPILERFILES + '/sim3').toString();
+        var hexuArray = hexu.split(" ");
 
-      //console.log(hexuArray + '\n');
-      //console.log(hexlArray + '\n');
+        var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
+        var hexlArray = hexl.split(" ");
 
-      postCall(hexuArray, hexlArray);
+        //console.log(hexuArray + '\n');
+        //console.log(hexlArray + '\n');
 
-    }
-  );
+        postCall(hexuArray, hexlArray);
+
+      }
+    );
+  } catch(err) {
+    console.log("Compile Failed");
+    console.log(err.stdout.toString('utf8'));
+  }
 }
 
 module.exports.compile = compile;

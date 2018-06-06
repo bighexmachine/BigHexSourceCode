@@ -2,7 +2,7 @@
 # check if the port is already in use
 
 MAX_LOGFILES=50
-DATE=$(date -d "today" +"%H.%M.%S_%d.%m.%Y")
+DATE=$(date -d "today" +"%d.%m.%Y_%H.%M.%S")
 
 if ! nc -z 127.0.0.1 80
 then
