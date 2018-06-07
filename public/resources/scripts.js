@@ -1,5 +1,10 @@
 var examples = [
   {
+    name: "Starter Program",
+    desc: "Program with an empty main function",
+    path: "starter.x"
+  },
+  {
     name: "Factorial",
     desc: "Computes 5!",
     path: "fact.x"
@@ -11,7 +16,7 @@ var examples = [
   },
   {
     name: "Welcome to CS",
-    desc: "",
+    desc: "Writes Welcome to CS at Bristol! ☺ on the display output in a loop",
     path: "welcome.x"
   },
   {
@@ -136,22 +141,43 @@ function loadToRAM()
         $("#loadToRAM").html("Load into RAM");
 
         var result = JSON.parse(res);
-        result.keys.forEach(function(key) {
-          var row = "<tr><td>" + key + "</td><td>";
-
-          result[key].forEach(function(error) {
-            row = row + error + "</td></tr>";
-            $("#compile-errors").append(row);
-            row = "<tr><td></td><td>";
-          });
-        });
+        parseCompileErrors(result);
       });
 	});
 }
 
 function compile()
 {
-  console.log("Compile!");
+  $("#compile-errors").html("");
+  $("#compileBtn").html("Compiling...");
+
+  sendReq('compile', $("#programInput").val(), function(res) {
+    $("#compileBtn").html("Compile");
+    var result = JSON.parse(res);
+    parseCompileErrors(result);
+  });
+}
+
+function parseCompileErrors(result)
+{
+
+  if(result.keys.length == 0)
+  {
+    $("#compile-success").show();
+  }
+  else
+  {
+    $("#compile-success").hide();
+    result.keys.forEach(function(key) {
+      var row = "<tr><td>" + key + "</td><td>";
+
+      result[key].forEach(function(error) {
+        row = row + error + "</td></tr>";
+        $("#compile-errors").append(row);
+        row = "<tr><td></td><td>";
+      });
+    });
+  }
 }
 
 function openExampleProgramsModal()
@@ -204,6 +230,7 @@ function updateSpeed() {
 function updateQueueUI(place) {
   $(".queue-header").removeClass("active");
   $("#leaveQueue").show();
+  $("#joinQueue").hide();
   $("#controls").hide();
   $("#controls-hidden").show();
 
@@ -216,6 +243,7 @@ function updateQueueUI(place) {
   else if(place == -1) {
       $('#queueUI').text('Not waiting');
       $("#leaveQueue").hide();
+      $("#joinQueue").show();
   }
   else {
       $('#queueUI').text('Waiting, position ' + place);

@@ -6,33 +6,58 @@ var fs = require("fs");
 
 var path = require('path');
 
+function rmdirRecursive(path)
+{
+  if(!fs.existsSync(path)) return;
+
+  fs.readdirSync(path).forEach(function(file)
+  {
+    var curPath = path + "/" + file;
+
+    if (fs.lstatSync(curPath).isDirectory())
+    {
+      rmdirRecursive(curPath);
+    } else
+    {
+      fs.unlinkSync(curPath);
+    }
+  });
+
+  fs.rmdirSync(path);
+}
+
 
 module.exports.compile = function(Xsource){
+  var TEMPDIR = path.normalize(__dirname + '/../temp/');
+
+  if(!fs.existsSync(TEMPDIR))
+  {
+    fs.mkdirSync(TEMPDIR);
+    fs.chmodSync(TEMPDIR, '777');
+  }
+
+  // find a fee ID slot
+  var compileID = 0;
+  var COMPILEDIR = TEMPDIR + compileID;
+
+  while(fs.existsSync(COMPILEDIR))
+  {
+    compileID += 1;
+    COMPILEDIR = TEMPDIR + compileID;
+  }
+
+  fs.mkdirSync(COMPILEDIR);
+  fs.chmodSync(COMPILEDIR, '777');
+
   //writes code passed in to file source.x
-  var SOURCEFILE = path.normalize(__dirname + '/../xPrograms/source.x');
+  var SOURCEFILE = path.normalize(COMPILEDIR + '/source.x');
   var COMPILERFILES = path.normalize(__dirname + '/../xCompiler');
-
-  // delete old files so there is no chance of old data being used
-  if(fs.existsSync(SOURCEFILE))
-  {
-    fs.unlinkSync(SOURCEFILE);
-  }
-
-  if(fs.existsSync(COMPILERFILES + '/sim3'))
-  {
-    fs.unlinkSync(COMPILERFILES + '/sim3');
-  }
-
-  if(fs.existsSync(COMPILERFILES + '/sim2'))
-  {
-    fs.unlinkSync(COMPILERFILES + '/sim2');
-  }
 
   console.log("writing file to " + SOURCEFILE);
   fs.writeFileSync(SOURCEFILE, Xsource);
 
   // executes compile on file
-  var COMPILECMD = "cd " + COMPILERFILES + " && ./a.out < " + SOURCEFILE;
+  var COMPILECMD = "cd " + COMPILERFILES + " && " + COMPILERFILES + "/a.out " + COMPILEDIR + " < " + SOURCEFILE;
   console.log(COMPILECMD);
 
   var stdout;
@@ -42,23 +67,24 @@ module.exports.compile = function(Xsource){
     stdout = execs(COMPILECMD);
   } catch(err) {
     console.log("Compile Failed");
+    console.log("STDOUT:" + err.stdout.toString('utf8'));
+    //rmdirRecursive(COMPILEDIR);
     return {success: false, output:err.stdout.toString('utf8')};
   }
 
   console.log("Compile Successful");
   console.log("STDOUT:" + stdout.toString('utf8'));
 
-  var hexu = fs.readFileSync(COMPILERFILES + '/sim3').toString();
+  var hexu = fs.readFileSync(COMPILEDIR + '/sim3').toString();
   var hexuArray = hexu.split(" ");
 
-  var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
+  var hexl = fs.readFileSync(COMPILEDIR + '/sim2').toString();
   var hexlArray = hexl.split(" ");
-
-  fs.chmodSync(COMPILERFILES + '/sim2', 777);
-  fs.chmodSync(COMPILERFILES + '/sim3', 777);
 
   //console.log(hexuArray + '\n');
   //console.log(hexlArray + '\n');
+
+  rmdirRecursive(COMPILEDIR);
 
   return { success: true, output: stdout.toString('utf8'), u: hexuArray, l: hexlArray};
 }
@@ -79,8 +105,20 @@ module.exports.parseCompileErrors = function(stdout) {
       errors[choppedLine[0]] = [];
     }
 
-    errors[choppedLine[0]].push(choppedLine[1]);
+    let message = "";
+    for(let i = 1; i < choppedLine.length; i++)
+    {
+      message += choppedLine[i];
+    }
+
+    errors[choppedLine[0]].push(message);
   });
+
+  if(errors.keys.length == 0)
+  {
+    errors["keys"].push("ERROR");
+    errors["ERROR"] = ["Compiler Crashed, see server log for details"];
+  }
 
   return errors;
 }

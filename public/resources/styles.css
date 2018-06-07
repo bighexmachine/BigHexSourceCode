@@ -148,3 +148,12 @@ a:hover
 {
   width: 10%;
 }
+
+.compile-success
+{
+  background-color: #0a0;
+  border: thin solid #000;
+  padding: 3px;
+  width: 100%;
+  display: none;
+}

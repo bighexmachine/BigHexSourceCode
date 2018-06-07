@@ -62,6 +62,21 @@ module.exports = function (command, data) {
           return JSON.stringify(errors);
         }
     }
+    else if(command === 'compile') {
+      var xCode = data;
+      console.log("Recieved Code");
+      var result = compiler.compile(xCode);
+
+      if(result.success)
+      {
+        return JSON.stringify({keys:[]});
+      }
+      else
+      {
+        let errors = compiler.parseCompileErrors(result.output);
+        return JSON.stringify(errors);
+      }
+    }
     else if (command === 'loadassembly') {
         var assembly = data;
         console.log("Recieved Assembly: "+assembly);
