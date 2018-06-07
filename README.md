@@ -15,21 +15,8 @@ If the compiler gets corrupted or overritten etc. `cd` to compiler directory,
 Run all these commands:
 
 `
- gcc hexsimb.c
-
- cp xhexb.bin a.bin
-
- ./a.out < xhexb.x
-
- cp sim2 a.bin
-
- ./a.out < xhexb.x
-
- ./a.out < xhex16h.x
-
- cp sim2 a.bin
-
- ./a.out < fact.x
+  make clean
+  make
 `
 
 ## Working on the R-Pi

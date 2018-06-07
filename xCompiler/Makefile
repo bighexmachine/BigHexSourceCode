@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-O3
+CFLAGS=-std=c99 -O3 -g
 RM=rm -f
 
 a.out: hexsimb.c xhexb.bin xhexb.x xhex16h.x

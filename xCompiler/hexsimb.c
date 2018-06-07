@@ -1,5 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "stdio.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define true     -1
 #define false    0
@@ -19,12 +23,12 @@ char connected[] = {0, 0, 0, 0, 0, 0, 0, 0};
 #define i_ldbc   0x4
 #define i_ldap   0x5
 
-#define i_ldai   0x6 
-#define i_ldbi   0x7 
+#define i_ldai   0x6
+#define i_ldbi   0x7
 #define i_stai   0x8
 
 #define i_br     0x9
-#define i_brz    0xA 
+#define i_brz    0xA
 #define i_brn    0xB
 
 #define i_opr    0xD
@@ -51,10 +55,9 @@ unsigned int oreg;
 unsigned int inst;
 
 unsigned int running;
-	
 
-int inbin() 
-{ 
+int inbin()
+{
     int lowbits;
     int highbits;
     lowbits = fgetc(codefile);
@@ -63,93 +66,102 @@ int inbin()
 };
 
 void load()
-{ 
-    int low;
-    int length;	
-    int n;
-    codefile = fopen("a.bin", "rb");
-    low = inbin();	
-    length = ((inbin() << 16) | low) << 2;
-    pc = 0;	
-    for (n = 0; n < length; n++)
-        pmem[n] = fgetc(codefile);
+{
+  int low;
+  int length;
+
+  codefile = fopen("a.bin", "rb");
+  low = inbin();
+  length = ((inbin() << 16) | low) << 2;
+  pc = 0;
+
+  for (int n = 0; n < length; n++)
+    pmem[n] = fgetc(codefile);
+
+  fclose(codefile);
 };
 
+void ensureopen(unsigned int f)
+{
+  char fname[] = {'s', 'i', 'm', ' ', 0};
+
+	if (connected[f] == false)
+	{
+		fname[3] = f + '0';
+		simio[f] = fopen(fname, "w+");
+
+    if(simio[f] == NULL)
+    {
+      printf("Failed to open file %s\n", fname);
+      exit(1);
+    }
+		connected[f] = true;
+	}
+}
+
 void simout(unsigned int b, unsigned int s)
-{ 
-    char fname[] = {'s', 'i', 'm', ' ', 0};
+{
     int f;
     if (s < 256)
         putchar(b);
-    else 
-    { 
+    else
+    {
         f = (s >> 8) & 7;
-        if (! connected[f])
-        { 
-            fname[3] = f + '0';
-            simio[f] = fopen(fname, "wb");
-            connected[f] = true;
-        };  
+        ensureopen(f);
         fputc(b, simio[f]);
-    };      
+    }
 };
 
 int simin(unsigned int s)
-{ 
-    char fname[] = {'s', 'i', 'm', ' ', 0};
+{
     int f;
     if (s < 256)
         return getchar();
-    else 
+    else
     {
-        f = (s >> 8) & 7;
-        fname[3] = f + '0';
-        if (! connected[f])
-        { 
-            simio[f] = fopen(fname, "rb");
-            connected[f] = true;
-        }   
-    return fgetc(simio[f]) ;      
+      f = (s >> 8) & 7;
+      ensureopen(f);
+    	return fgetc(simio[f]) ;
     };
 };
 
 
 
-void svc() 
+void svc()
 { sp = mem[1];
   switch (areg)
   { case 0: running = false; break;
 	case 1: simout(mem[sp + 1], mem[sp + 2]); break;
 	case 2: mem[sp + 1] = simin(mem[sp + 1]) & 0xFF; break;
-  }			
+}
 }
 
-void main() 
+int main()
 {
-      
+
     printf("\n");
 
     load();
 
-    running = true; 
+    running = true;
 
-    oreg = 0; 
+    oreg = 0;
 
-    while (running) 
+    while (running)
 
-    { 
+    {
         inst = pmem[pc];
-    
-    
-        pc = pc + 1;  
 
-        oreg = oreg | (inst & 0xf); 
-        
+
+        pc = pc + 1;
+
+        oreg = oreg | (inst & 0xf);
+
         switch ((inst >> 4) & 0xf)
         {
             case i_ldam:   areg = mem[oreg]; oreg = 0; break;
             case i_ldbm:   breg = mem[oreg]; oreg = 0; break;
-            case i_stam:   mem[oreg] = areg; oreg = 0; break;   
+            case i_stam:   mem[oreg] = areg; oreg = 0; break;
 
             case i_ldac:   areg = oreg; oreg = 0; break;
             case i_ldbc:   breg = oreg; oreg = 0; break;
@@ -157,7 +169,7 @@ void main()
 
             case i_ldai:   areg = mem[areg + oreg]; oreg = 0; break;
             case i_ldbi:   breg = mem[breg + oreg]; oreg = 0; break;
-            case i_stai:   mem[breg + oreg] = areg; oreg = 0; break;    
+            case i_stai:   mem[breg + oreg] = areg; oreg = 0; break;
 
             case i_br:     pc = pc + oreg; oreg = 0; break;
             case i_brz:    if (areg == 0) pc = pc + oreg; oreg = 0; break;
@@ -169,20 +181,29 @@ void main()
             case i_opr:
                 switch (oreg)
                   {
-                    case o_brb:    pc = breg; oreg = 0; break; 
-                      
-                    case o_add:    areg = areg + breg; oreg = 0; break; 
+                    case o_brb:    pc = breg; oreg = 0; break;
+
+                    case o_add:    areg = areg + breg; oreg = 0; break;
                     case o_sub:    areg = areg - breg; oreg = 0; break;
 
                     case o_svc:  svc(); break;
                   };
-        oreg = 0; break;      
-        
+        oreg = 0; break;
+
         };
-        
+
       }
-        
-} 
+
+			// close all open files!
+			for(int i = 0; i < 8; ++i)
+			{
+        if(connected[i] != false)
+				  fclose(simio[i]);
+			}
+
+      // if applicable determine the return code of main
+      return mem[sp+1];
+}
 
 
 // gcc hexsimb.c
@@ -191,5 +212,5 @@ void main()
 // cp sim2 a.bin
 // ./a.out < xhexb.x
 // ./a.out < xhex16h.x
-//  cp sim2 a.bin 
-//./a.out < fact.x 
+//  cp sim2 a.bin
+//./a.out < fact.x

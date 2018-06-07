@@ -7,7 +7,7 @@ var fs = require("fs");
 var path = require('path');
 
 
-var compile = function(Xsource, errorFunction, postCall){
+module.exports.compile = function(Xsource){
   //writes code passed in to file source.x
   var SOURCEFILE = path.normalize(__dirname + '/../xPrograms/source.x');
   var COMPILERFILES = path.normalize(__dirname + '/../xCompiler');
@@ -35,32 +35,44 @@ var compile = function(Xsource, errorFunction, postCall){
   var COMPILECMD = "cd " + COMPILERFILES + " && ./a.out < " + SOURCEFILE;
   console.log(COMPILECMD);
 
+  var stdout;
+
   try
   {
-    execs(COMPILECMD,
-      function (error, stdout, stderr) {
-        console.log("Trying to compile X code");
-        errorFunction("Errors: " + error);
-        errorFunction("StdError: " + stderr);
-        errorFunction("STDOUT:" + stdout);
-
-        var hexu = fs.readFileSync(COMPILERFILES + '/sim3').toString();
-        var hexuArray = hexu.split(" ");
-
-        var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
-        var hexlArray = hexl.split(" ");
-
-        //console.log(hexuArray + '\n');
-        //console.log(hexlArray + '\n');
-
-        postCall(hexuArray, hexlArray);
-
-      }
-    );
+    stdout = execs(COMPILECMD);
   } catch(err) {
     console.log("Compile Failed");
-    console.log(err.stdout.toString('utf8'));
+    return {success: false, output:err.stdout.toString('utf8')};
   }
+
+  console.log("Compile Successful");
+  console.log("STDOUT:" + stdout.toString('utf8'));
+
+  var hexu = fs.readFileSync(COMPILERFILES + '/sim3').toString();
+  var hexuArray = hexu.split(" ");
+
+  var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
+  var hexlArray = hexl.split(" ");
+
+  //console.log(hexuArray + '\n');
+  //console.log(hexlArray + '\n');
+
+  return { success: true, output: stdout.toString('utf8'), u: hexuArray, l: hexlArray};
 }
 
-module.exports.compile = compile;
+module.exports.parseCompileErrors = function(stdout) {
+  var errors = {};
+  var lines = stdout.split('\n');
+
+  lines.forEach(function(line) {
+    if(!line.startsWith("error near ")) return;
+
+    let choppedLine = line.slice(11).split(':');
+    if(choppedLine.length < 2) return;
+
+    if(errors[choppedLine[0]] == undefined) errors[choppedLine[0]] = [];
+    errors[choppedLine[0]].push(choppedLine[1]);
+  });
+  
+  return errors;
+}

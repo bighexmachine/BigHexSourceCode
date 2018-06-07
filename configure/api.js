@@ -49,11 +49,17 @@ module.exports = function (command, data) {
     else if (command === 'load') {
         var xCode = data;
         console.log("Recieved Code");
-        compiler.compile(xCode, console.log,
-            function(hexuArray, hexlArray){
-                ramWriter.writeToRam(hexuArray, hexlArray, gpioService);
-            });
+        var result = compiler.compile(xCode);
 
+        if(result.success)
+        {
+          ramWriter.writeToRam(result.u, result.l, gpioService);
+        }
+        else
+        {
+          let errors = compiler.parseCompileErrors(result.output);
+          return JSON.stringify(errors);
+        }
     }
     else if (command === 'loadassembly') {
         var assembly = data;

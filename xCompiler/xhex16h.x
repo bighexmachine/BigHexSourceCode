@@ -146,6 +146,8 @@ array linev[linemax];
 var linep;
 var linelength;
 var linecount;
+var errcount;
+
 ||
 | name scoping stack |
 array names_d[500];
@@ -233,7 +235,7 @@ var div_x;
 ||
 val maxaddr      = 32000;
 
-proc main() is
+func main() is
   var t;
 {
   selectoutput(messagestream);
@@ -246,8 +248,19 @@ proc main() is
 
   prints("program size: "); printn(codesize); newline();
 
-  prints("size: "); printn(codesize + mul((maxaddr - arraybase), 2)); newline()
+  prints("size: ");
+  printn(codesize + mul((maxaddr - arraybase), 2));
+  newline();
 
+  prints("total errors:");
+  printn(errcount);
+  newline();
+
+  if (errcount = 0)
+  then
+    return 0
+  else
+    return 1
 }
 
 proc selectoutput(c) is outstream := c
@@ -481,10 +494,11 @@ func formtree() is
 }
 
 proc cmperror(s) is
-{ prints("error near line ");
+{ prints("error near ");
   printn(linecount); prints(": ");
   prints(s);
-  newline()
+  newline();
+  errcount := errcount + 1
 }
 
 | tree node constructors |
@@ -1280,6 +1294,11 @@ func rdecl() is
 }
 
 proc namemessage(s, x) is
+{
+  namemessage_internal(s, x); newline()
+}
+
+proc namemessage_internal(s, x) is
   var n;
   var p;
   var w;
@@ -1308,13 +1327,18 @@ proc namemessage(s, x) is
       else skip
     }
   }
-  else skip;
-  newline()
+  else skip
 }
 
 proc generror(s) is
-{ prints(s); newline();
-  namemessage("in function ", procdef.t1)
+{
+  generror(s); newline()
+}
+
+proc generror_internal(s) is
+{ namemessage_internal("error near ", procdef.t1);
+  prints(":"); prints(s);
+  errcount := errcount + 1
 }
 
 | translator |
@@ -1445,8 +1469,9 @@ func findname(x) is
   then
     skip
   else
-  { namemessage("name not declared ", x);
-    namemessage("in function ", procdef.t1)
+  {
+    generror_internal(" ");
+    namemessage("name not declared ", x)
   };
   return n
 }
@@ -3321,8 +3346,3 @@ proc outhdr() is
   out1(i_pfix, div(offset, #10));
   out1(i_br, offset)
 }
-
-
-
-
-   
