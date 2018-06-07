@@ -26,12 +26,13 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 wss.on('connection', function connection(ws, req) {
     const location = url.parse(req.url, true);
-    queue.addToQueue(getIp(ws));
+    var ip = getIp(ws);
+
+    queue.addToQueue(ip);
 
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
         //get ip address of this user
-        var ip = getIp(ws)
         console.log("Message from IP = " + ip);
         switch (message) {
             case "askServerForAccessToAPI":
@@ -48,6 +49,7 @@ wss.on('connection', function connection(ws, req) {
                 }
                 break;
             case "leaveQueue":
+
                 //send message to all ip addresses further behind in queue to move up one
                 wss.clients.forEach(function each(client) {
                   if (client !== ws && client.readyState === WebSocket.OPEN &&
@@ -55,6 +57,7 @@ wss.on('connection', function connection(ws, req) {
                            client.send("moveUpQueue");
                     }
                 });
+
                 queue.removeFromQueue(ip);
                 ws.send("leaveQueueSuccess");
                 break;
@@ -65,6 +68,16 @@ wss.on('connection', function connection(ws, req) {
 
     ws.on('close', function close() {
         console.log('disconnected');
+
+        //send message to all ip addresses further behind in queue to move up one
+        wss.clients.forEach(function each(client) {
+          if (client !== ws && client.readyState === WebSocket.OPEN &&
+               queue.getQueuePositionOfIP(getIp(client)) > queue.getQueuePositionOfIP(ip)) {
+                   client.send("moveUpQueue");
+            }
+        });
+
+        queue.removeFromQueue(ip);
     });
 });
 
