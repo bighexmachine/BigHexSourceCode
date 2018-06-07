@@ -72,18 +72,6 @@ $(document).ready(function() {
 	  }
     );
 
-    $('#screentest').click(function() {
-        askServerForAccessToAPI( function() {
-            sendReq('screen', undefined);
-        });
-    });
-    $('#execInst').click(
-      function(e) {
-          e.preventDefault();
-          sendReq('runInstr', parseInt($('#instr').val() << 4) + parseInt($('#opr').val()) );
-      }
-    );
-
     $('#speedSlider').val(12);
 
     $('#speedSlider').on('input change', function(){
@@ -178,6 +166,16 @@ function parseCompileErrors(result)
       });
     });
   }
+}
+
+function openRunInstructionModal()
+{
+  $("#instructionModal").modal();
+}
+
+function runInstruction()
+{
+  sendReq('runInstr', parseInt($('#instr').val() << 4) + parseInt($('#opr').val()) );
 }
 
 function openExampleProgramsModal()
