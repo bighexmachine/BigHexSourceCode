@@ -54,6 +54,9 @@ module.exports.compile = function(Xsource){
   var hexl = fs.readFileSync(COMPILERFILES + '/sim2').toString();
   var hexlArray = hexl.split(" ");
 
+  fs.chmodSync(COMPILERFILES + '/sim2', 777);
+  fs.chmodSync(COMPILERFILES + '/sim3', 777);
+
   //console.log(hexuArray + '\n');
   //console.log(hexlArray + '\n');
 
@@ -61,7 +64,7 @@ module.exports.compile = function(Xsource){
 }
 
 module.exports.parseCompileErrors = function(stdout) {
-  var errors = {};
+  var errors = {keys:[]};
   var lines = stdout.split('\n');
 
   lines.forEach(function(line) {
@@ -70,9 +73,14 @@ module.exports.parseCompileErrors = function(stdout) {
     let choppedLine = line.slice(11).split(':');
     if(choppedLine.length < 2) return;
 
-    if(errors[choppedLine[0]] == undefined) errors[choppedLine[0]] = [];
+    if(errors[choppedLine[0]] == undefined)
+    {
+      errors["keys"].push(choppedLine[0]);
+      errors[choppedLine[0]] = [];
+    }
+
     errors[choppedLine[0]].push(choppedLine[1]);
   });
-  
+
   return errors;
 }

@@ -54,6 +54,7 @@ module.exports = function (command, data) {
         if(result.success)
         {
           ramWriter.writeToRam(result.u, result.l, gpioService);
+          return JSON.stringify({keys:[]});
         }
         else
         {

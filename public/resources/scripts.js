@@ -127,8 +127,25 @@ function reset()
 
 function loadToRAM()
 {
+  $("#compile-errors").html("");
+  $("#loadToRAM").html("Loading...");
+
 	askServerForAccessToAPI( function() {
-      sendReq('load', $('#programInput').val());
+      sendReq('load', $('#programInput').val(), function(res) {
+
+        $("#loadToRAM").html("Load into RAM");
+
+        var result = JSON.parse(res);
+        result.keys.forEach(function(key) {
+          var row = "<tr><td>" + key + "</td><td>";
+
+          result[key].forEach(function(error) {
+            row = row + error + "</td></tr>";
+            $("#compile-errors").append(row);
+            row = "<tr><td></td><td>";
+          });
+        });
+      });
 	});
 }
 
@@ -161,6 +178,7 @@ function loadprog(prog)
 {
   sendReq('getprog', prog, function(res) {
 		$('#programInput').val(res);
+    $("#compile-errors").html("");
   });
 }
 
