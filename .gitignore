@@ -11,3 +11,4 @@ serverPID.txt
 
 *.log
 *.out
+temp/

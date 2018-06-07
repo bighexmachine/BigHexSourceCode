@@ -71,6 +71,13 @@ void load()
   int length;
 
   codefile = fopen("a.bin", "rb");
+
+  if(codefile == NULL)
+  {
+    printf("Failed to open file \"a.bin\"\n");
+    exit(1);
+  }
+
   low = inbin();
   length = ((inbin() << 16) | low) << 2;
   pc = 0;
@@ -88,6 +95,7 @@ void ensureopen(unsigned int f)
 	if (connected[f] == false)
 	{
 		fname[3] = f + '0';
+
 		simio[f] = fopen(fname, "w+");
 
     if(simio[f] == NULL)
@@ -136,12 +144,18 @@ void svc()
 }
 }
 
-int main()
+int main(int argc, char** argv)
 {
-
-    printf("\n");
-
     load();
+
+  if(argc > 1)
+  {
+    if(chdir(argv[1]) != 0)
+    {
+      printf("Error setting working directory to %s\n", argv[1]);
+      exit(1);
+    }
+  }
 
     running = true;
 

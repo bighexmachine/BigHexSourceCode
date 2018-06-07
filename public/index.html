@@ -25,17 +25,54 @@
                 </table>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               </div>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" role="dialog" id="instructionModal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Run Instruction</h4>
+              </div>
+              <div class="modal-body">
+                <label for="runInstr">Instruction:</label>
+                <select style="height: 50px; font-size:20px" id="instr" name="instr">
+                  <option value="0">0-LDAM</option>
+                  <option value="1">1-LDBM</option>
+                  <option value="2">2-STAM</option>
+                  <option value="3">3-LDAC</option>
+                  <option value="4">4-LDBC</option>
+                  <option value="5">5-LDAP</option>
+                  <option value="6">6-LDAI</option>
+                  <option value="7">7-LDBI</option>
+                  <option value="8">8-STAI</option>
+                  <option value="9">9-BR</option>
+                  <option value="10">A-BRZ</option>
+                  <option value="11">B-BRN</option>
+                  <option value="12">C-BRB</option>
+                  <option value="13">D-OPR</option>
+                  <option value="14">E-PFIX</option>
+                  <option value="15">F-NFIX</option>
+                </select><br>
+                <label for="opr">Operand:</label>
+                <input type="number" min=0 max=15 style="width: 100px; height: 50px; font-size:20px" value="0" id="opr" name="opr">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="runInstruction();">Run</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="queue-header">
-          <span id="queueUI">Loading...</span> <span id="leaveQueue" style="display:none;">(<a href="javascript:void(0);" onclick="leaveQueue();">Leave Queue</a>)</span>
+          <span id="queueUI">Loading...</span> <span id="leaveQueue" style="display:none;">(<a href="javascript:void(0);" onclick="leaveQueue();">Leave Queue</a>)</span><span id="joinQueue" style="display:none;">(<a href="javascript:void(0);" onclick="joinQueue();">Join Queue</a>)</span>
         </div>
         <div id="container" class="container-fluid">
-
           <span class="small-text">TOOLBAR:</span>
           <div id="controls" style="display:none">
             <div class="row">
@@ -61,7 +98,12 @@
               </div>
               <div class="col-md-2">
                 <a href="javascript:void(0);" onclick="loadToRAM();">
-                  <div class="button">Load into RAM</div>
+                  <div class="button" id="loadToRAM">Load into RAM</div>
+                </a>
+              </div>
+              <div class="col-md-2">
+                <a href="javascript:void(0);" onclick="openRunInstructionModal();">
+                  <div class="button">Run Instruction</div>
                 </a>
               </div>
             </div>
@@ -84,9 +126,9 @@
 
           <span class="small-text">CODE EDITOR:</span>
           <div class="row">
-            <div class="col-md-2" style="display:none;">
+            <div class="col-md-2">
               <a href="javascript:void(0);" onclick="compile();">
-                <div class="button">Compile Complete</div>
+                <div class="button" id="compileBtn">Compile</div>
               </a>
             </div>
             <div class="col-md-2">
@@ -100,6 +142,9 @@
 
           <div class="row">
             <div class="col-md-12">
+              <table class="compile-errors" id="compile-errors">
+              </table>
+              <div class="compile-success" id="compile-success">Compile Complete!</div>
               <div class="code-editor">
                 <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important"></textarea>
               </div>

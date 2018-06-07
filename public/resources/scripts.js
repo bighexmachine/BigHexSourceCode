@@ -1,5 +1,10 @@
 var examples = [
   {
+    name: "Starter Program",
+    desc: "Program with an empty main function",
+    path: "starter.x"
+  },
+  {
     name: "Factorial",
     desc: "Computes 5!",
     path: "fact.x"
@@ -11,7 +16,7 @@ var examples = [
   },
   {
     name: "Welcome to CS",
-    desc: "",
+    desc: "Writes Welcome to CS at Bristol! ☺ on the display output in a loop",
     path: "welcome.x"
   },
   {
@@ -67,18 +72,6 @@ $(document).ready(function() {
 	  }
     );
 
-    $('#screentest').click(function() {
-        askServerForAccessToAPI( function() {
-            sendReq('screen', undefined);
-        });
-    });
-    $('#execInst').click(
-      function(e) {
-          e.preventDefault();
-          sendReq('runInstr', parseInt($('#instr').val() << 4) + parseInt($('#opr').val()) );
-      }
-    );
-
     $('#speedSlider').val(12);
 
     $('#speedSlider').on('input change', function(){
@@ -127,14 +120,62 @@ function reset()
 
 function loadToRAM()
 {
+  $("#compile-errors").html("");
+  $("#loadToRAM").html("Loading...");
+
 	askServerForAccessToAPI( function() {
-      sendReq('load', $('#programInput').val());
+      sendReq('load', $('#programInput').val(), function(res) {
+
+        $("#loadToRAM").html("Load into RAM");
+
+        var result = JSON.parse(res);
+        parseCompileErrors(result);
+      });
 	});
 }
 
 function compile()
 {
-  console.log("Compile!");
+  $("#compile-errors").html("");
+  $("#compileBtn").html("Compiling...");
+
+  sendReq('compile', $("#programInput").val(), function(res) {
+    $("#compileBtn").html("Compile");
+    var result = JSON.parse(res);
+    parseCompileErrors(result);
+  });
+}
+
+function parseCompileErrors(result)
+{
+
+  if(result.keys.length == 0)
+  {
+    $("#compile-success").show();
+  }
+  else
+  {
+    $("#compile-success").hide();
+    result.keys.forEach(function(key) {
+      var row = "<tr><td>" + key + "</td><td>";
+
+      result[key].forEach(function(error) {
+        row = row + error + "</td></tr>";
+        $("#compile-errors").append(row);
+        row = "<tr><td></td><td>";
+      });
+    });
+  }
+}
+
+function openRunInstructionModal()
+{
+  $("#instructionModal").modal();
+}
+
+function runInstruction()
+{
+  sendReq('runInstr', parseInt($('#instr').val() << 4) + parseInt($('#opr').val()) );
 }
 
 function openExampleProgramsModal()
@@ -161,6 +202,7 @@ function loadprog(prog)
 {
   sendReq('getprog', prog, function(res) {
 		$('#programInput').val(res);
+    $("#compile-errors").html("");
   });
 }
 
@@ -186,6 +228,7 @@ function updateSpeed() {
 function updateQueueUI(place) {
   $(".queue-header").removeClass("active");
   $("#leaveQueue").show();
+  $("#joinQueue").hide();
   $("#controls").hide();
   $("#controls-hidden").show();
 
@@ -198,6 +241,7 @@ function updateQueueUI(place) {
   else if(place == -1) {
       $('#queueUI').text('Not waiting');
       $("#leaveQueue").hide();
+      $("#joinQueue").show();
   }
   else {
       $('#queueUI').text('Waiting, position ' + place);

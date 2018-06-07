@@ -494,7 +494,7 @@ func formtree() is
 }
 
 proc cmperror(s) is
-{ prints("error near ");
+{ prints("error near line ");
   printn(linecount); prints(": ");
   prints(s);
   newline();
