@@ -13,6 +13,8 @@ var gpioService = require('./gpioConfig/gpioService.js');
 const WebSocket = require('ws');
 const queue = require('./configure/queue');
 
+const apifunc = require('./configure/api.js');
+
 const app = configureExpress();
 gpioService.setSpeed(1);
 
@@ -84,3 +86,21 @@ wss.on('connection', function connection(ws, req) {
 server.listen(80, function () {
     console.log('Example app listening on port 80')
 });
+
+let randidx = 0;
+let randomPrograms = ["welcome.x", "wink.x", "nyan.x", "rotating_text.x"];
+function runRandomProgram() {
+  // start the next program
+  randidx += 1;
+  if(randidx >= randomPrograms.length) randidx = 0;
+
+  if(queue.length() == 0)
+  {
+    console.log("Loading random program...");
+    apifunc('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString());
+    apifunc('start', undefined);
+  }
+}
+
+runRandomProgram();
+setInterval(runRandomProgram, 60000);

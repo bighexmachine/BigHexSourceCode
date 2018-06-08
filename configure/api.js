@@ -1,5 +1,3 @@
-
-
 module.exports = function (command, data) {
     var gpioService = require('../gpioConfig/gpioService');
     var ramWriter = require('../gpioConfig/writingToRamHelper');

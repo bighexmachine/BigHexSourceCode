@@ -7,6 +7,7 @@ exports.setActive = function() {
     innactive = false;
 }
 
+exports.length = function() { return queue.length; }
 
 exports.addToQueue = function(number) {
     if(queue.indexOf(number) === -1) {

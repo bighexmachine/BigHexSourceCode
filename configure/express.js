@@ -9,8 +9,6 @@ module.exports = function () {
     app.use(express.static('public'));
 
     require('../routes/user_routes.js')(app);
+
     return app;
 };
-
-
-
