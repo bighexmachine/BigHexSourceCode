@@ -59,7 +59,37 @@ var examples = [
     desc: "",
     path: "tree.x"
   }
-]
+];
+
+// list of all testable parts of the machine
+var allops = [
+  "RESET",
+  "TIMING",
+
+  "LDAM",
+  "LDBM",
+  "STAM",
+  "LDAC",
+  "LDBC",
+  "LDAP",
+  "LDAI",
+  "LDBI",
+  "STAI",
+  "BR",
+  "BRZ",
+  "BRN",
+  "BRB",
+  "ADD",
+  "SUB",
+  "IN",
+  "OUT",
+  "PFX",
+  "NFX",
+
+  "PCLED",
+  "ALED",
+  "BLED"
+];
 
 /*
  * When everything on the page has loaded, bind the buttons to actions to do something.
@@ -81,6 +111,7 @@ $(document).ready(function() {
     });
     updateSpeed();
 
+    $("#programInput").linedtextarea();
     if($("#programInput").val() == "")
     {
       loadprog('starter.x')
@@ -179,6 +210,7 @@ function runInstruction()
 }
 
 var suite = undefined;
+var results = [];
 var testID = -1;
 var instructionID = 0;
 
@@ -219,6 +251,7 @@ function runPreTest(callback, id = 0)
 function cancelTest()
 {
   suite = undefined;
+  results = [];
   testID = -1;
   instructionID = 0;
 }
@@ -233,6 +266,8 @@ function nextTest(pass)
     curRow.removeClass("test-current");
     curRow.addClass("test-done");
     curRow.children().eq(0).html(pass ? "[/]" : "[X]");
+
+    results.push(pass);
   }
 
   testID++;
@@ -324,7 +359,29 @@ function runTestCmd(cmd, callback)
 
 function showTestResults()
 {
-  alert("Test Complete!");
+  let verifiedOps = [];
+  allops.forEach(function(op) {
+    verifiedOps.push({op: op, count: 0});
+  });
+
+  results.forEach(function(res, idx) {
+    suite.tests[idx].verifies.forEach(function(op) {
+      let found = verifiedOps.findIndex(function(item) {
+        return item.op === op;
+      });
+
+      if(found == -1) return;
+
+      verifiedOps[found].count += (res ? 1 : -1);
+    });
+
+  });
+
+  verifiedOps.sort(function(a,b){
+    return a.count - b.count;
+  });
+
+  alert(verifiedOps[0].op);
 }
 
 function openExampleProgramsModal()

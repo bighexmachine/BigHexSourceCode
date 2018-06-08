@@ -168,3 +168,8 @@ a:hover
 {
   width: 20px;
 }
+
+.linedwrap .codelines .lineno
+{
+  color: #fff;
+}

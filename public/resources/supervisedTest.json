@@ -93,7 +93,7 @@
       ]
     },
     {
-      "title":"BRNZ true",
+      "title":"BRN true",
       "cmds": [
         "RESET",
         "14 15",
@@ -107,21 +107,21 @@
       ],
       "checkText":"Check that all LEDs of the PC and A reg are lit",
       "verifies":[
-        "BRNZ",
+        "BRN",
         "PFX",
         "PCLED",
         "ALED"
       ]
     },
     {
-      "title":"BRNZ false",
+      "title":"BRN false",
       "cmds": [
         "RESET",
         "11 15"
       ],
       "checkText":"Check that PC displays the value 1",
       "verifies":[
-        "BRNZ"
+        "BRN"
       ]
     },
     {
@@ -309,7 +309,7 @@
       "verifies":[
         "LDBC",
         "PFX",
-        "ALED"
+        "BLED"
       ]
     },
     {
