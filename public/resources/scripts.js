@@ -178,6 +178,143 @@ function runInstruction()
   sendReq('runInstr', parseInt($('#instr').val() << 4) + parseInt($('#opr').val()) );
 }
 
+var suite = undefined;
+var testID = -1;
+var instructionID = 0;
+
+function openTestSuiteModal()
+{
+  // load the test file and clear previous test info
+  $.ajax({
+  url:'/resources/supervisedTest.json',
+  type:'GET',
+    success: function(res){
+      cancelTest();
+      $("#testContent").html("");
+      $("#testSuiteModal").modal();
+
+      suite = res;
+
+      runPreTest(function() {
+        nextTest(true);
+      });
+    }
+  });
+}
+
+function runPreTest(callback, id = 0)
+{
+  if(suite.preTest == undefined ||
+      id >= suite.preTest.length)
+  {
+    callback();
+    return;
+  }
+
+  runTestCmd(suite.preTest[id], function() {
+    runPreTest(callback, id+1);
+  });
+}
+
+function cancelTest()
+{
+  suite = undefined;
+  testID = -1;
+  instructionID = 0;
+}
+
+function nextTest(pass)
+{
+  if(testID > -1)
+  {
+    // TODO: keep track of which tests pass
+
+    var curRow = $(".test-current");
+    curRow.removeClass("test-current");
+    curRow.addClass("test-done");
+    curRow.children().eq(0).html(pass ? "[/]" : "[X]");
+  }
+
+  testID++;
+
+  if(testID >= suite.tests.length)
+  {
+    showTestResults();
+    return;
+  }
+
+  let rowMarkup = (test) => `<tr class="test-current">
+  <td>[ ]</td><td>${test.checkText}</td></tr>`
+
+  $("#testContent").append(rowMarkup(suite.tests[testID]));
+
+  // run the test commands
+  instructionID = -1;
+  nextInstruction();
+}
+
+function nextInstruction()
+{
+  instructionID++;
+
+  if(instructionID >= suite.tests[testID].cmds.length)
+  {
+    if(suite.tests[testID].loopCmds === true)
+    {
+      instructionID = 0;
+    }
+    else
+    {
+      return;
+    }
+  }
+
+  runTestCmd(suite.tests[testID].cmds[instructionID], function() {
+    nextInstruction();
+  });
+}
+
+function runTestCmd(cmd, callback)
+{
+  let parts = cmd.split(" ");
+
+  let req = {
+    url:'/api',
+    type:'GET',
+    success: function(res){
+      callback();
+    }
+  };
+
+  if(parts[0] == "SKIP")
+  {
+    req.data = {'command':'step', 'data':undefined};
+  }
+  else if(parts[0] == "RESET")
+  {
+    req.data = {'command':'reset', 'data':undefined};
+  }
+  else if(parts[0] == "SPEED")
+  {
+    let val = parseFloat(parts[1]);
+    req.data = {'command':'speed', 'data':val};
+  }
+  else
+  {
+    let instr = parseInt(parts[0]);
+    let opr = parseInt(parts[1]);
+
+    req.data = {'command':'runInstr', 'data':(instr << 4) + opr};
+  }
+
+  $.ajax(req);
+}
+
+function showTestResults()
+{
+  alert("Test Complete!");
+}
+
 function openExampleProgramsModal()
 {
   let container = $("#programsTable");

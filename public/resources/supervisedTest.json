@@ -1,0 +1,46 @@
+{
+  "suiteName": "Supervised Smoke Test",
+  "desc": "Run this test suite to discover any problems with the machines basic functions",
+
+  "preTest":[
+    "RESET",
+    "SPEED 1"
+  ],
+
+  "tests": [
+    {
+      "title":"reset test",
+      "cmds": [
+        "RESET"
+      ],
+      "checkText":"Check that A reg, B reg, PC and O reg all have no LEDs lit",
+      "verifies":[
+        "RESET"
+      ]
+    },
+    {
+      "title":"timing test",
+      "cmds": [
+        "SKIP"
+      ],
+      "loopCmds":true,
+      "checkText":"On the timing module, check the blue lights are displayed in the order of FETCH, INC PC, EXE then DISPLAY",
+      "verifies":[
+        "TIMING"
+      ]
+    },
+    {
+      "title":"LDAC test",
+      "cmds": [
+        "3 0",
+        "4 0"
+      ],
+      "checkText":"Check that A reg and B reg both have no LEDs lit",
+      "verifies":[
+        "LDAC",
+        "LDBC"
+      ]
+    }
+  ]
+
+}

@@ -157,3 +157,14 @@ a:hover
   width: 100%;
   display: none;
 }
+
+.test-done
+{
+  color: #aaa;
+  font-size: 0.5em;
+}
+
+.test-table tr td:first-child
+{
+  width: 20px;
+}
