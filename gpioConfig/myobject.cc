@@ -96,13 +96,16 @@ void MyObject::Clock()
   cout << "Clock Service Ready" << endl;
   while(1)
   {
+
+    updateMutex.lock();
     if(clockIsRunning)
+    {
       writeClock( signals[state] );
+      IncrementState();
+    }
+    updateMutex.unlock();
 
     delayMicroseconds(delay);
-
-    if(clockIsRunning)
-      IncrementState();
   }
 }
 
@@ -110,6 +113,7 @@ void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   obj->clockIsRunning = true;
+
 	printf("started\n");
   return;
 }
@@ -119,6 +123,9 @@ void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
   if(!obj->clockIsRunning) return;
 
   obj->clockIsRunning = false;
+  obj->updateMutex.lock();
+  obj->updateMutex.unlock();
+
 	printf("stopped\n");
 }
 
@@ -127,6 +134,7 @@ void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
   if (obj->clockIsRunning) StopClock(args);
   writeClock( obj->signals[obj->state] );
   obj->IncrementState();
+  delayMicroseconds(1);
   return;
 }
 

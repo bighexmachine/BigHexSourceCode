@@ -98,7 +98,7 @@ module.exports = function (command, data) {
     else if(command === 'runInstr') {
         var instr = parseInt(data);
         process.stdout.write('\r'+repeat(' ', process.stdout.columns)+'\r');
-        process.stdout.write('command recieved: run Instruction: ' + (instr>>4) + ' ' + (instr%4));
+        process.stdout.write('command recieved: run Instruction: ' + (instr>>4) + ' ' + (instr & 0x00f));
         gpioService.runInstruction(instr);
     }
     else if(command === 'getprog') {

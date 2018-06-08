@@ -40,6 +40,7 @@ class MyObject : public node::ObjectWrap {
   bool clockIsRunning;
 
   mutex stateMutex;
+  mutex updateMutex;
 };
 
 #endif
