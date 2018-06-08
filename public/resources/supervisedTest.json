@@ -4,7 +4,7 @@
 
   "preTest":[
     "RESET",
-    "SPEED 1"
+    "SPEED 0.1"
   ],
 
   "tests": [
@@ -32,6 +32,9 @@
     {
       "title":"LDAC test",
       "cmds": [
+        "14 0",
+        "14 0",
+        "14 0",
         "3 0",
         "4 0"
       ],
@@ -39,6 +42,270 @@
       "verifies":[
         "LDAC",
         "LDBC"
+      ]
+    },
+    {
+      "title":"BR",
+      "cmds": [
+        "RESET",
+        "14 15",
+        "14 15",
+        "14 15",
+        "9 11"
+      ],
+      "checkText":"Check that all LEDs of the PC are lit",
+      "verifies":[
+        "BR",
+        "PFX",
+        "PCLED"
+      ]
+    },
+    {
+      "title":"BRZ false",
+      "cmds": [
+        "RESET",
+        "14 15",
+        "14 15",
+        "14 15",
+        "10 11"
+      ],
+      "checkText":"Check that all LEDs of the PC are lit",
+      "verifies":[
+        "BRZ",
+        "PFX",
+        "PCLED"
+      ]
+    },
+    {
+      "title":"BRZ false",
+      "cmds": [
+        "RESET",
+        "3 1",
+        "10 15"
+      ],
+      "checkText":"Check that PC displays value 2",
+      "verifies":[
+        "BRZ"
+      ]
+    },
+    {
+      "title":"BRNZ true",
+      "cmds": [
+        "RESET",
+        "14 15",
+        "14 15",
+        "14 15",
+        "3 15",
+        "14 15",
+        "14 15",
+        "14 15",
+        "11 7"
+      ],
+      "checkText":"Check that all LEDs of the PC and A reg are lit",
+      "verifies":[
+        "BRNZ",
+        "PFX",
+        "PCLED",
+        "ALED"
+      ]
+    },
+    {
+      "title":"BRNZ false",
+      "cmds": [
+        "RESET",
+        "11 15"
+      ],
+      "checkText":"Check that PC displays the value 1",
+      "verifies":[
+        "BRNZ"
+      ]
+    },
+    {
+      "title":"BRB",
+      "cmds": [
+        "RESET",
+        "14 15",
+        "14 15",
+        "14 15",
+        "4 15",
+        "12 0"
+      ],
+      "checkText":"Check that all LEDs of PC and B are lit",
+      "verifies":[
+        "BRB",
+        "PFX",
+        "PCLED",
+        "BLED"
+      ]
+    },
+    {
+      "title":"ALED Test",
+      "cmds": [
+        "RESET",
+
+        "14 0",
+        "14 0",
+        "14 0",
+        "3 1",
+        "14 0",
+        "14 0",
+        "14 0",
+        "3 2",
+        "14 0",
+        "14 0",
+        "14 0",
+        "3 4",
+        "14 0",
+        "14 0",
+        "14 0",
+        "3 8",
+
+        "14 0",
+        "14 0",
+        "14 1",
+        "3 0",
+        "14 0",
+        "14 0",
+        "14 2",
+        "3 0",
+        "14 0",
+        "14 0",
+        "14 4",
+        "3 0",
+        "14 0",
+        "14 0",
+        "14 8",
+        "3 0",
+
+        "14 0",
+        "14 1",
+        "14 0",
+        "3 0",
+        "14 0",
+        "14 2",
+        "14 0",
+        "3 0",
+        "14 0",
+        "14 4",
+        "14 0",
+        "3 0",
+        "14 0",
+        "14 8",
+        "14 0",
+        "3 0",
+
+        "14 1",
+        "14 0",
+        "14 0",
+        "3 0",
+        "14 2",
+        "14 0",
+        "14 0",
+        "3 0",
+        "14 4",
+        "14 0",
+        "14 0",
+        "3 0",
+        "14 8",
+        "14 0",
+        "14 0",
+        "3 0",
+
+        "14 0",
+        "14 0"
+
+      ],
+      "loopCmds":true,
+      "checkText":"Check that each LED of A reg lights up in turn",
+      "verifies":[
+        "LDAC",
+        "PFX",
+        "ALED"
+      ]
+    },
+    {
+      "title":"BLED Test",
+      "cmds": [
+        "RESET",
+
+        "14 0",
+        "14 0",
+        "14 0",
+        "4 1",
+        "14 0",
+        "14 0",
+        "14 0",
+        "4 2",
+        "14 0",
+        "14 0",
+        "14 0",
+        "4 4",
+        "14 0",
+        "14 0",
+        "14 0",
+        "4 8",
+
+        "14 0",
+        "14 0",
+        "14 1",
+        "4 0",
+        "14 0",
+        "14 0",
+        "14 2",
+        "4 0",
+        "14 0",
+        "14 0",
+        "14 4",
+        "4 0",
+        "14 0",
+        "14 0",
+        "14 8",
+        "4 0",
+
+        "14 0",
+        "14 1",
+        "14 0",
+        "4 0",
+        "14 0",
+        "14 2",
+        "14 0",
+        "4 0",
+        "14 0",
+        "14 4",
+        "14 0",
+        "4 0",
+        "14 0",
+        "14 8",
+        "14 0",
+        "4 0",
+
+        "14 1",
+        "14 0",
+        "14 0",
+        "4 0",
+        "14 2",
+        "14 0",
+        "14 0",
+        "4 0",
+        "14 4",
+        "14 0",
+        "14 0",
+        "4 0",
+        "14 8",
+        "14 0",
+        "14 0",
+        "4 0",
+
+        "14 0",
+        "14 0"
+
+      ],
+      "loopCmds":true,
+      "checkText":"Check that each LED of B reg lights up in turn",
+      "verifies":[
+        "LDBC",
+        "PFX",
+        "ALED"
       ]
     }
   ]

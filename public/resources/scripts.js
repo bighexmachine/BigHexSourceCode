@@ -274,6 +274,7 @@ function nextInstruction()
   });
 }
 
+var commandSpeed = 0.5;
 function runTestCmd(cmd, callback)
 {
   let parts = cmd.split(" ");
@@ -298,6 +299,7 @@ function runTestCmd(cmd, callback)
   {
     let val = parseFloat(parts[1]);
     req.data = {'command':'speed', 'data':val};
+    commandSpeed = val;
   }
   else
   {
@@ -307,7 +309,9 @@ function runTestCmd(cmd, callback)
     req.data = {'command':'runInstr', 'data':(instr << 4) + opr};
   }
 
-  $.ajax(req);
+  setTimeout(function() {
+    $.ajax(req);
+  }, commandSpeed*1000);
 }
 
 function showTestResults()
