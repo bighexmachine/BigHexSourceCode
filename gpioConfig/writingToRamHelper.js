@@ -8,24 +8,43 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
 
   //going through every instruction
   console.log("Started writing to RAM");
-  
+
+  gpioService.resetClock();
+  let inst = [
+    (/*PFIX*/14 << 4) + 4,
+    (/*PFIX*/14 << 4) + 0,
+    (/*PFIX*/14 << 4) + 12,
+    (/*LDAC*/3  << 4) + 0,
+    (/*STAM*/2  << 4) + 0,
+  ];
+  for(j = 0; j < inst.length; j++)
+  { //loading nibble at a time
+   gpioService.writeData( inst[j] );
+    //cyle through the whole fetch, inc, execute cycle
+    for(x = 0; x < 16; x++)
+    {
+        gpioService.stepClock();
+    }
+  }
+  gpioService.resetClock();
+
   /*
   / it is length - 1 since the last element in the hex arrays are spaces
   / we didn't want to trim the spaces since in the case that the ram lower has more instructions than the higher,
   / its easiest to to parse the two spaces at the end of ram higher as instructions (which works because there is not error checking)
   / since a correct program never reads from this memory address then it is fine.
   */
-  var pcMax = hexl.length-1; 
+  var pcMax = hexl.length-1;
   //var pcMax = (1<<12);
-  
+
   for(pc = 0; pc < pcMax; pc++)
   {
     // load the instruction in to reg A
 
     //process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
-    
+
     var inst_l = createLDACInstructions(hexu[pc], hexl[pc]); // instructions to load one nibble at a time (for each RAM)
-    //var inst_l = createLDACInstructions("00", "00"); // write 00s to clear ram 
+    //var inst_l = createLDACInstructions("00", "00"); // write 00s to clear ram
     for(j = 0; j < inst_l.length; j++)
     { //loading nibble at a time
      gpioService.writeData( inst_l[j] );
@@ -51,7 +70,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
 	        gpioService.stepClock();
       }
     }
-    
+
   }
   console.log("\rFinished writing to RAM                                                         ");
 
@@ -89,4 +108,3 @@ function createLDAMInstructions(num){
 
   return insts;
 }
-

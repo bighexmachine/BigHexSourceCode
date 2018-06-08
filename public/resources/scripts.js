@@ -11,7 +11,7 @@ var examples = [
   },
   {
     name: "Wink",
-    desc: "",
+    desc: "Displays a smiley face on a ticker tape",
     path: "wink.x"
   },
   {
@@ -274,7 +274,7 @@ function nextInstruction()
   });
 }
 
-var commandSpeed = 0.5;
+var commandSpeed = 50;
 function runTestCmd(cmd, callback)
 {
   let parts = cmd.split(" ");
@@ -301,6 +301,14 @@ function runTestCmd(cmd, callback)
     req.data = {'command':'speed', 'data':val};
     commandSpeed = val;
   }
+  else if(parts[0] == "START")
+  {
+    req.data = {'command':'start', 'data':undefined};
+  }
+  else if(parts[0] == "STOP")
+  {
+    req.data = {'command':'stop', 'data':undefined};
+  }
   else
   {
     let instr = parseInt(parts[0]);
@@ -311,7 +319,7 @@ function runTestCmd(cmd, callback)
 
   setTimeout(function() {
     $.ajax(req);
-  }, commandSpeed*1000);
+  }, 1000 / commandSpeed);
 }
 
 function showTestResults()
