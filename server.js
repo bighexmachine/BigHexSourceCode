@@ -84,11 +84,15 @@ wss.on('connection', function connection(ws, req) {
 });
 
 server.listen(80, function () {
-    console.log('Example app listening on port 80')
+    console.log('Example app listening on port 80');
+
+    apifunc('reset', undefined);
+    //runRandomProgram();
+    setInterval(runRandomProgram, 60000);
 });
 
 let randidx = 0;
-let randomPrograms = ["welcome.x", "wink.x", "nyan.x", "rotating_text.x"];
+let randomPrograms = ["wink.x", "welcome.x", "nyan.x", "rotating_text.x"];
 function runRandomProgram() {
   // start the next program
   randidx += 1;
@@ -96,11 +100,9 @@ function runRandomProgram() {
 
   if(queue.length() == 0)
   {
-    console.log("Loading random program...");
+    console.log("Loading random program... " + randomPrograms[randidx]);
     apifunc('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString());
     apifunc('start', undefined);
+    apifunc('speed', 70000);
   }
 }
-
-runRandomProgram();
-setInterval(runRandomProgram, 60000);

@@ -1,3 +1,4 @@
+var sleep = require('sleep');
 
 var gpioServiceLibrary = require('bindings')('gpioService');
 
@@ -43,6 +44,7 @@ module.exports.writeData = function(pattern){
 module.exports.runInstruction = function(instr){
     module.exports.selectPi();
     module.exports.writeData(instr);
+    sleep.usleep(100);
     for (i=0; i<16; i++)
     {
         module.exports.stepClock();

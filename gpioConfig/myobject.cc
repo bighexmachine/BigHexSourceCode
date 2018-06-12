@@ -1,6 +1,7 @@
 #include <node.h>
 #include <stdio.h>
 #include <iostream>
+#include <unistd.h>
 #include "wiringProxy.h"
 #include "myobject.h"
 
@@ -19,7 +20,7 @@ using v8::Value;
 
 Persistent<Function> MyObject::constructor;
 
-MyObject::MyObject(): state(0), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false) {
+MyObject::MyObject(): state(0), clockPhase(ClockPhase::FETCH), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false) {
   clockThread = thread(&MyObject::Clock, this);
 }
 
@@ -50,6 +51,7 @@ void MyObject::Init(Local<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "setSpeed", SetSpeed);
   NODE_SET_PROTOTYPE_METHOD(tpl, "ramPiSel", RamPiSel);
   NODE_SET_PROTOTYPE_METHOD(tpl, "reset", Reset);
+  NODE_SET_PROTOTYPE_METHOD(tpl, "moveToPhase", MoveToPhase);
   constructor.Reset(isolate, tpl->GetFunction());
   target->Set(String::NewFromUtf8(isolate, "MyObject"), tpl->GetFunction());
 }
@@ -81,6 +83,11 @@ void MyObject::IncrementState()
 {
   stateMutex.lock();
   state = (state+1) % 4;
+  if(state == 3)
+  {
+    clockPhase = (ClockPhase)(((int)clockPhase + 1) % 4);
+  }
+
   stateMutex.unlock();
 }
 
@@ -88,7 +95,18 @@ void MyObject::ResetState()
 {
   stateMutex.lock();
   state = 0;
+  clockPhase = ClockPhase::FETCH;
   stateMutex.unlock();
+}
+
+void MyObject::SetPhase(ClockPhase desiredPhase, int desiredState)
+{
+  if(desiredState < 0 || desiredState > 3) return;
+
+  while(clockPhase != desiredPhase && state != desiredState)
+  {
+    DoStepClock();
+  }
 }
 
 void MyObject::Clock()
@@ -105,7 +123,7 @@ void MyObject::Clock()
     }
     updateMutex.unlock();
 
-    delayMicroseconds(delay);
+    usleep(delay < minDelay ? minDelay : delay);
   }
 }
 
@@ -118,24 +136,33 @@ void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
   return;
 }
 
-void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
-  MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  if(!obj->clockIsRunning) return;
+void MyObject::DoStopClock()
+{
+  if(!clockIsRunning) return;
 
-  obj->clockIsRunning = false;
-  obj->updateMutex.lock();
-  obj->updateMutex.unlock();
+  updateMutex.lock();
+  clockIsRunning = false;
+  updateMutex.unlock();
 
 	printf("stopped\n");
 }
 
+void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
+  MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
+  obj->DoStopClock();
+}
+
+void MyObject::DoStepClock()
+{
+  if (clockIsRunning) DoStopClock();
+  writeClock( signals[state] );
+  IncrementState();
+  usleep(minDelay);
+}
+
 void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  if (obj->clockIsRunning) StopClock(args);
-  writeClock( obj->signals[obj->state] );
-  obj->IncrementState();
-  delayMicroseconds(1);
-  return;
+  obj->DoStepClock();
 }
 
 void MyObject::IsClockRunning(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -175,9 +202,18 @@ void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
   obj->ResetState();
-  digitalWrite (0, 0);
-  digitalWrite (1, 1);
-  digitalWrite (2, 0);
-  digitalWrite (3, 1);
+  writeClock(34);
+  usleep(minDelay);
+  writeClock(0);
+  usleep(minDelay);
   return;
+}
+
+void MyObject::MoveToPhase(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+  MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
+  ClockPhase desiredPhase = (ClockPhase)args[0]->NumberValue();
+  int desiredState = args[1]->NumberValue();
+
+  obj->SetPhase(desiredPhase, desiredState);
 }

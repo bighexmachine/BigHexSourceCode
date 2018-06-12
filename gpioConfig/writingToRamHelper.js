@@ -9,25 +9,6 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
   //going through every instruction
   console.log("Started writing to RAM");
 
-  gpioService.resetClock();
-  let inst = [
-    (/*PFIX*/14 << 4) + 4,
-    (/*PFIX*/14 << 4) + 0,
-    (/*PFIX*/14 << 4) + 12,
-    (/*LDAC*/3  << 4) + 0,
-    (/*STAM*/2  << 4) + 0,
-  ];
-  for(j = 0; j < inst.length; j++)
-  { //loading nibble at a time
-   gpioService.writeData( inst[j] );
-    //cyle through the whole fetch, inc, execute cycle
-    for(x = 0; x < 16; x++)
-    {
-        gpioService.stepClock();
-    }
-  }
-  gpioService.resetClock();
-
   /*
   / it is length - 1 since the last element in the hex arrays are spaces
   / we didn't want to trim the spaces since in the case that the ram lower has more instructions than the higher,
@@ -51,7 +32,6 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
       //cyle through the whole fetch, inc, execute cycle
       for(x = 0; x < 16; x++)
       {
-		sleep.usleep(25);
 	        gpioService.stepClock();
       }
     }
@@ -66,7 +46,6 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
       //cyle through the whole fetch, inc, execute cycle
       for(x = 0; x < 16; x++)
       {
-		sleep.usleep(25);
 	        gpioService.stepClock();
       }
     }
