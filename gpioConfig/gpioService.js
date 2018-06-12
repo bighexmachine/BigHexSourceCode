@@ -41,14 +41,20 @@ module.exports.writeData = function(pattern){
     gpioServiceLibraryObj.writeData(pattern);
 };
 
-module.exports.runInstruction = function(instr){
-    module.exports.selectPi();
+module.exports.runInstruction = function(instr, switchInputs){
+    if(switchInputs == undefined || swtichInputs)
+    {
+      module.exports.selectPi();
+      switchInputs = true;
+    }
+
     module.exports.writeData(instr);
-    sleep.usleep(100);
+    sleep.usleep(400);
     for (i=0; i<16; i++)
     {
         module.exports.stepClock();
-        sleep.usleep(100);
     }
-    module.exports.selectRam();
+
+    if(switchInputs)
+      module.exports.selectRam();
 };

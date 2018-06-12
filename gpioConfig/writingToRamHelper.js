@@ -28,12 +28,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
     //var inst_l = createLDACInstructions("00", "00"); // write 00s to clear ram
     for(j = 0; j < inst_l.length; j++)
     { //loading nibble at a time
-     gpioService.writeData( inst_l[j] );
-      //cyle through the whole fetch, inc, execute cycle
-      for(x = 0; x < 16; x++)
-      {
-	        gpioService.stepClock();
-      }
+     gpioService.runInstruction( inst_l[j] );
     }
 
     //process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
@@ -42,16 +37,11 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
     var inst_s = createLDAMInstructions(pc);
     for(j = 0; j < inst_s.length; j++)
     {
-      gpioService.writeData( inst_s[j] );
-      //cyle through the whole fetch, inc, execute cycle
-      for(x = 0; x < 16; x++)
-      {
-	        gpioService.stepClock();
-      }
+      gpioService.runInstruction( inst_s[j] );
     }
 
   }
-  console.log("\rFinished writing to RAM                                                         ");
+  console.log("\rFinished writing to RAM");
 
   gpioService.writeData( 0 );
 

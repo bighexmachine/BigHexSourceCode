@@ -50,7 +50,7 @@ class MyObject : public node::ObjectWrap {
   int state;
   ClockPhase clockPhase;
   int delay;
-  static const int minDelay = 100;
+  static const int minDelay = 1;
   void Clock();
   int signals[4];
   bool clockIsRunning;

@@ -87,8 +87,8 @@ server.listen(80, function () {
     console.log('Example app listening on port 80');
 
     apifunc('reset', undefined);
-    //runRandomProgram();
-    setInterval(runRandomProgram, 60000);
+    runRandomProgram();
+    setInterval(runRandomProgram, 5*60000);
 });
 
 let randidx = 0;

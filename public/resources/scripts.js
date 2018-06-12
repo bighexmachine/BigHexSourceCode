@@ -16,7 +16,7 @@ var examples = [
   },
   {
     name: "Welcome to CS",
-    desc: "Writes Welcome to CS at Bristol! ☺ on the display output in a loop",
+    desc: "Writes Welcome to CS at Bristol! ☺ on the display output",
     path: "welcome.x"
   },
   {
@@ -31,12 +31,17 @@ var examples = [
   },
   {
     name: "Hi David",
-    desc: "",
+    desc: "Rotating Text on the display output",
     path: "rotating_text.x"
   },
   {
+    name: "Counter",
+    desc: "Demonstrates the display buffer as a binary counter",
+    path: "counter.x"
+  },
+  {
     name: "Faces",
-    desc: "",
+    desc: "Faces on the display output",
     path: "inputFaces.x"
   },
   {
@@ -48,6 +53,11 @@ var examples = [
     name: "Will's Automata",
     desc: "",
     path: "ca.x"
+  },
+  {
+    name: "Game of Life",
+    desc: "Simulates Conway's Game of Life",
+    path: "gameoflife.x"
   },
   {
     name: "Christmas Text",

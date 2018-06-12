@@ -4,7 +4,7 @@ proc main() is
   var a;
   var b;
 {
-  
+
   a := [ #b0001100000011000
        , #b0010010000100100
        , #b1110001001000100
@@ -40,15 +40,22 @@ proc main() is
        , #b0010001010001000
        , #b0001110001110000
        ];
-  
-  while true do 
+
+  displayBitmap(a);
+  while true do
   {
-    displayBitmap(a);
-    displayBitmap(b)
+    framebuff[0] := b[15];
+    framebuff[1] := b[14];
+    framebuff[2] := b[13];
+    delay();
+    framebuff[0] := a[15];
+    framebuff[1] := a[14];
+    framebuff[2] := a[13];
+    delay()
   }
 }
 
-proc displayBitmap(s) is 
+proc displayBitmap(s) is
 {
   copyImage(s);
   delay()
@@ -57,10 +64,10 @@ proc displayBitmap(s) is
 
 proc copyImage(s) is
   var n;
-{ 
+{
   n := 0;
   while n < 16 do
-  { 
+  {
     framebuff[15-n] := s[n];
     n := n + 1
   }
@@ -69,5 +76,5 @@ proc copyImage(s) is
 proc delay() is
   var n;
 { n := 0;
-  while n < 200 do n := n + 1
+  while n < 10 do n := n + 1
 }

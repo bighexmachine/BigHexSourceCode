@@ -94,7 +94,7 @@ void MyObject::IncrementState()
 void MyObject::ResetState()
 {
   stateMutex.lock();
-  state = 0;
+  state = 3;
   clockPhase = ClockPhase::FETCH;
   stateMutex.unlock();
 }
@@ -123,7 +123,7 @@ void MyObject::Clock()
     }
     updateMutex.unlock();
 
-    usleep(delay < minDelay ? minDelay : delay);
+    usleep(delay);
   }
 }
 
@@ -176,6 +176,10 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
   double inputSpeed = args[0]->NumberValue();
   int period = 1000000 / inputSpeed;
   obj->delay = period / 4;
+
+  if(obj->delay < minDelay)
+    obj->delay = minDelay;
+
   return;
 }
 
