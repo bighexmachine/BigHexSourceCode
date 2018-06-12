@@ -212,7 +212,6 @@ function runInstruction()
 var suite = undefined;
 var results = [];
 var testID = -1;
-var instructionID = 0;
 
 function openTestSuiteModal()
 {
@@ -236,15 +235,13 @@ function openTestSuiteModal()
 
 function runPreTest(callback, id = 0)
 {
-  if(suite.preTest == undefined ||
-      id >= suite.preTest.length)
-  {
-    callback();
-    return;
-  }
-
-  runTestCmd(suite.preTest[id], function() {
-    runPreTest(callback, id+1);
+  $.ajax({
+    url:'/api',
+    type:'GET',
+    data:{'command':'runTestCmd', 'data':{suite:'supervisedTest.json', testID:'pre'}},
+    success: function(res){
+      callback();
+    }
   });
 }
 
@@ -253,7 +250,6 @@ function cancelTest()
   suite = undefined;
   results = [];
   testID = -1;
-  instructionID = 0;
 }
 
 function nextTest(pass)
@@ -284,77 +280,13 @@ function nextTest(pass)
   $("#testContent").append(rowMarkup(suite.tests[testID]));
 
   // run the test commands
-  instructionID = -1;
-  nextInstruction();
-}
-
-function nextInstruction()
-{
-  instructionID++;
-
-  if(instructionID >= suite.tests[testID].cmds.length)
-  {
-    if(suite.tests[testID].loopCmds === true)
-    {
-      instructionID = 0;
-    }
-    else
-    {
-      return;
-    }
-  }
-
-  runTestCmd(suite.tests[testID].cmds[instructionID], function() {
-    nextInstruction();
-  });
-}
-
-var commandSpeed = 50;
-function runTestCmd(cmd, callback)
-{
-  let parts = cmd.split(" ");
-
-  let req = {
+  $.ajax({
     url:'/api',
     type:'GET',
+    data:{'command':'runTestCmd', 'data':{suite:'supervisedTest.json', testID:testID}},
     success: function(res){
-      callback();
     }
-  };
-
-  if(parts[0] == "SKIP")
-  {
-    req.data = {'command':'step', 'data':undefined};
-  }
-  else if(parts[0] == "RESET")
-  {
-    req.data = {'command':'reset', 'data':undefined};
-  }
-  else if(parts[0] == "SPEED")
-  {
-    let val = parseFloat(parts[1]);
-    req.data = {'command':'speed', 'data':val};
-    commandSpeed = val;
-  }
-  else if(parts[0] == "START")
-  {
-    req.data = {'command':'start', 'data':undefined};
-  }
-  else if(parts[0] == "STOP")
-  {
-    req.data = {'command':'stop', 'data':undefined};
-  }
-  else
-  {
-    let instr = parseInt(parts[0]);
-    let opr = parseInt(parts[1]);
-
-    req.data = {'command':'runInstr', 'data':(instr << 4) + opr};
-  }
-
-  setTimeout(function() {
-    $.ajax(req);
-  }, 1000 / commandSpeed);
+  });
 }
 
 function showTestResults()

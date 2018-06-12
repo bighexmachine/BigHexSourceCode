@@ -1,10 +1,11 @@
-module.exports = function (command, data) {
-    var gpioService = require('../gpioConfig/gpioService');
-    var ramWriter = require('../gpioConfig/writingToRamHelper');
-    var compiler = require('../gpioConfig/compiler');
-    var assembler = require('../gpioConfig/assembler');
+var gpioService = require('../gpioConfig/gpioService');
+var ramWriter = require('../gpioConfig/writingToRamHelper');
+var compiler = require('../gpioConfig/compiler');
+var assembler = require('../gpioConfig/assembler');
 
-    var fs = require("fs");
+var fs = require("fs");
+
+module.exports = function (command, data) {
 
     var lastCommand = "";
 
@@ -99,6 +100,9 @@ module.exports = function (command, data) {
         process.stdout.write('command recieved: run Instruction: ' + (instr>>4) + ' ' + (instr & 0x00f));
         gpioService.runInstruction(instr);
     }
+    else if(command === 'runTestCmd') {
+      runTestCmd(data.suite, data.testID);
+    }
     else if(command === 'getprog') {
         var prog = fs.readFileSync('./xPrograms/' + data).toString();
         process.stdout.write('command recieved: loadprog: ' + data);
@@ -106,6 +110,68 @@ module.exports = function (command, data) {
     }
     return "";
 };
+
+function runTestCmd(suiteName, testID)
+{
+  var suiteText = fs.readFileSync('./public/resources/' + suiteName).toString();
+  var suite = JSON.parse(suiteText);
+
+  var cmds = [];
+
+  if(testID == 'pre')
+  {
+    cmds = suite.preTest;
+  }
+  else
+  {
+    cmds = suite.tests[testID].cmds;
+  }
+
+  var running = true;
+  var idx = 0;
+  while(running)
+  {
+    if(idx >= cmds.length)
+    {
+      running = false;
+      break;
+    }
+
+    let cmd = cmds[idx];
+    let parts = cmd.split(" ");
+    if(parts[0] == "SKIP")
+    {
+      module.exports('step', undefined)
+    }
+    else if(parts[0] == "RESET")
+    {
+      module.exports('reset', undefined);
+    }
+    else if(parts[0] == "SPEED")
+    {
+      let val = parseFloat(parts[1]);
+      module.exports('speed', val);
+    }
+    else if(parts[0] == "START")
+    {
+      module.exports('start', undefined);
+    }
+    else if(parts[0] == "STOP")
+    {
+      module.exports('stop', undefined);
+    }
+    else
+    {
+      let instr = parseInt(parts[0]);
+      let opr = parseInt(parts[1]);
+
+      module.exports('runInstr', (instr << 4) + opr);
+    }
+
+    ++idx;
+  }
+
+}
 
 function repeat(s,n) {
     if (n==0) {

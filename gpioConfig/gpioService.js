@@ -48,6 +48,7 @@ module.exports.runInstruction = function(instr){
     for (i=0; i<16; i++)
     {
         module.exports.stepClock();
+        sleep.usleep(100);
     }
     module.exports.selectRam();
 };

@@ -336,7 +336,6 @@
 
         "START"
       ],
-      "loopCmds": false,
       "checkText":"Check that the display is all lit",
       "verifies":[
         "PFX",
@@ -417,7 +416,6 @@
 
         "START"
       ],
-      "loopCmds": false,
       "checkText":"Check that the display is all cleared",
       "verifies":[
         "PFX",
