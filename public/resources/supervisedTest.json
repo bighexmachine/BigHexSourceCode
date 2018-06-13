@@ -61,8 +61,7 @@
       "checkText":"Check that all LEDs of the PC are lit",
       "verifies":[
         "BR",
-        "PFX",
-        "PCLED"
+        "PFIX"
       ]
     },
     {
@@ -77,8 +76,7 @@
       "checkText":"Check that all LEDs of the PC are lit",
       "verifies":[
         "BRZ",
-        "PFX",
-        "PCLED"
+        "PFIX"
       ]
     },
     {
@@ -109,9 +107,7 @@
       "checkText":"Check that all LEDs of the PC and A reg are lit",
       "verifies":[
         "BRN",
-        "PFX",
-        "PCLED",
-        "ALED"
+        "PFIX"
       ]
     },
     {
@@ -138,9 +134,7 @@
       "checkText":"Check that all LEDs of PC and B are lit",
       "verifies":[
         "BRB",
-        "PFX",
-        "PCLED",
-        "BLED"
+        "PFIX"
       ]
     },
     {
@@ -206,7 +200,7 @@
       ],
       "checkText":"Check that A and B reg have alternate LEDs on",
       "verifies":[
-        "PFX",
+        "PFIX",
         "LDAC",
         "STAM",
         "LDAM",
@@ -250,7 +244,7 @@
       ],
       "checkText":"Check that A and B reg have alternate LEDs on",
       "verifies":[
-        "PFX",
+        "PFIX",
         "LDAC",
         "STAI",
         "LDAI",
@@ -338,9 +332,10 @@
       ],
       "checkText":"Check that the display is all lit",
       "verifies":[
-        "PFX",
+        "PFIX",
         "LDAC",
-        "STAM"
+        "STAM",
+        "DISPLAY"
       ]
     },
     {
@@ -418,9 +413,10 @@
       ],
       "checkText":"Check that the display is all cleared",
       "verifies":[
-        "PFX",
+        "PFIX",
         "LDAC",
-        "STAM"
+        "STAM",
+        "DISPLAY"
       ]
     }
   ]

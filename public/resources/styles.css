@@ -173,3 +173,25 @@ a:hover
 {
   color: #fff;
 }
+
+.debug-table
+{
+  border: thin solid #fff;
+}
+
+.debug-table tr:first-child
+{
+  background-color: #fff;
+  color: #000;
+}
+
+.debug-table td
+{
+  border-right: thin solid #fff;
+  padding: 3px;
+}
+
+.debug-table td:last-child
+{
+  border-right: none;
+}

@@ -2,6 +2,12 @@ Docs on Big hex project - year 2
 
 Author: Nathan Doorly
 
+## Hardware
+ * Raspberry PI 2 (running the webserver, compiling code and driving the clock signals)
+ * Briding circuit that allows R-PI GPIO pins to drive build-a-comp signals
+ * Build-a-comp boards (comprising the actual machine)
+ * LED matrix and driver board
+ * Buttons driven by custom circuit
 
 The R-Pi has two wifi connections. One for eduroam and one to create a hotspot for people to connect to. There is no
 bridge between the two, since it is not necessary for any work done or users to access. Could also create large security

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+  <head lang="en">
+    <meta charset=utf-8>
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>BigHex - Debugger</title>
+
+    <link rel="stylesheet" href="resources/bootstrap.min.css">
+      <link rel="stylesheet" href="resources/jquery-linedtextarea.css">
+    <link rel="stylesheet" type="text/css" href="resources/styles.css">
+  </head>
+
+    <body>
+        <div class="queue-header">
+          <span id="queueUI">Loading...</span> <span id="leaveQueue" style="display:none;">(<a href="javascript:void(0);" onclick="leaveQueue();">Leave Queue</a>)</span><span id="joinQueue" style="display:none;">(<a href="javascript:void(0);" onclick="joinQueue();">Join Queue</a>)</span>
+        </div>
+        <div id="container" class="container-fluid">
+
+          <h2 id="debugger-title">Loading...</h2>
+          <div id="debugger">
+            <table class="debug-table">
+            </table>
+
+            <p>Calculated possible failures (in order of likelyhood):</p>
+            
+          </div>
+        </div>
+        <script type="text/javascript" src="resources/jquery.js"></script>
+        <script type="text/javascript" src="resources/jquery-linedtextarea.js"></script>
+        <script type="text/javascript" src="resources/scripts.js"></script>
+        <script type="text/javascript" src="resources/browserSockets.js"></script>
+        <script type="text/javascript" src="resources/debug.js"></script>
+        <script src="resources/bootstrap.min.js"></script>
+    </body>
+</html>

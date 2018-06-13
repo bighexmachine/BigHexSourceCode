@@ -70,37 +70,6 @@ var examples = [
     path: "tree.x"
   }
 ];
-
-// list of all testable parts of the machine
-var allops = [
-  "RESET",
-  "TIMING",
-
-  "LDAM",
-  "LDBM",
-  "STAM",
-  "LDAC",
-  "LDBC",
-  "LDAP",
-  "LDAI",
-  "LDBI",
-  "STAI",
-  "BR",
-  "BRZ",
-  "BRN",
-  "BRB",
-  "ADD",
-  "SUB",
-  "IN",
-  "OUT",
-  "PFX",
-  "NFX",
-
-  "PCLED",
-  "ALED",
-  "BLED"
-];
-
 /*
  * When everything on the page has loaded, bind the buttons to actions to do something.
  */
@@ -222,16 +191,19 @@ function runInstruction()
 var suite = undefined;
 var results = [];
 var testID = -1;
+var suitename = 'supervisedTest.json';
 
 function openTestSuiteModal()
 {
   // load the test file and clear previous test info
   $.ajax({
-  url:'/resources/supervisedTest.json',
+  url:'/resources/' + suitename,
   type:'GET',
     success: function(res){
       cancelTest();
       $("#testContent").html("");
+      $("#btn-no").show();
+      $("#btn-yes").show();
       $("#testSuiteModal").modal();
 
       suite = res;
@@ -293,7 +265,7 @@ function nextTest(pass)
   $.ajax({
     url:'/api',
     type:'GET',
-    data:{'command':'runTestCmd', 'data':{suite:'supervisedTest.json', testID:testID}},
+    data:{'command':'runTestCmd', 'data':{suite:suitename, testID:testID}},
     success: function(res){
     }
   });
@@ -301,29 +273,26 @@ function nextTest(pass)
 
 function showTestResults()
 {
-  let verifiedOps = [];
-  allops.forEach(function(op) {
-    verifiedOps.push({op: op, count: 0});
-  });
+  let failures = [];
 
   results.forEach(function(res, idx) {
-    suite.tests[idx].verifies.forEach(function(op) {
-      let found = verifiedOps.findIndex(function(item) {
-        return item.op === op;
-      });
-
-      if(found == -1) return;
-
-      verifiedOps[found].count += (res ? 1 : -1);
-    });
-
+    if(res == false)
+    {
+      failures.push(idx);
+    }
   });
 
-  verifiedOps.sort(function(a,b){
-    return a.count - b.count;
-  });
+  let markup = "All tests passed!";
 
-  alert(verifiedOps[0].op);
+  if(failures.length > 0)
+  {
+    markup = failures.length + " tests failed. <a href=debug.html?suite=" + suitename + "&failures=" + JSON.stringify(failures) + ">Debug Now</a>";
+  }
+
+  $("#btn-no").hide();
+  $("#btn-yes").hide();
+  $("#testContent").append(`<tr class="test-current"><td></td><td>${markup}</td></tr>`);
+
 }
 
 function openExampleProgramsModal()
@@ -380,7 +349,7 @@ function updateQueueUI(place) {
   $("#controls").hide();
   $("#controls-hidden").show();
 
-  if(place == 1) {
+  if(place <= 1) {
       $('#queueUI').text('In Control');
       $(".queue-header").addClass("active");
       $("#controls").show();

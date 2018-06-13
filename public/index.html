@@ -80,22 +80,11 @@
               <div class="modal-body">
                 <table style="width:100%" id="testContent" class="test-table">
                 </table>
-                <div style="width:100%; display:none;" id="testResults" class="test-results">
-                  <hr>
-                  <p>3 Tests Failed, most probable failure is PCLED.</p>
-
-                  An LED in the PC register is not functioning
-                  <ul>
-                    <li>This should not affect the performance of the machine, solve by replacing the offending register module</li>
-                  </ul>
-
-                  <p>Is this diagnosis correct?</p>
-                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" onclick="cancelTest();" data-dismiss="modal">Exit Test</button>
-                <button type="button" class="btn btn-danger" onclick="nextTest(false);">No</button>
-                <button type="button" class="btn btn-primary" onclick="nextTest(true);">Yes</button>
+                <button type="button" class="btn btn-danger" onclick="nextTest(false);" id="btn-no">No</button>
+                <button type="button" class="btn btn-primary" onclick="nextTest(true);" id="btn-yes">Yes</button>
               </div>
             </div>
           </div>
