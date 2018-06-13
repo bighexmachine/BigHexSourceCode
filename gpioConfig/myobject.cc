@@ -146,7 +146,7 @@ void MyObject::Clock()
     }
     updateMutex.unlock();
 
-    usleep(delay);
+    nsleep(delay);
   }
 }
 
@@ -180,7 +180,7 @@ void MyObject::DoStepClock()
   if (clockIsRunning) DoStopClock();
   writeClock( signals[state] );
   IncrementState();
-  usleep(minDelay);
+  nsleep(minDelay);
 }
 
 void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
@@ -197,8 +197,8 @@ void MyObject::IsClockRunning(const v8::FunctionCallbackInfo<v8::Value>& args)
 void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   double inputSpeed = args[0]->NumberValue();
-  int period = 1000000 / inputSpeed;
-  obj->delay = period / 4;
+  double period = 1000000000.0 / inputSpeed;
+  obj->delay = (long)period;
 
   if(obj->delay < minDelay)
     obj->delay = minDelay;
@@ -231,9 +231,7 @@ void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   if (obj->clockIsRunning) StopClock(args);
   obj->ResetState();
   writeClock(34);
-  //usleep(minDelay);
-  //writeClock(0);
-  usleep(minDelay);
+  nsleep(minDelay);
   return;
 }
 
