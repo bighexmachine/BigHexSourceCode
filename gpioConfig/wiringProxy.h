@@ -24,7 +24,7 @@
 
 #define IS_PI 1
 
-#define USE_WIRING_PI 1
+#define USE_WIRING_PI 0
 
 #if IS_PI
 

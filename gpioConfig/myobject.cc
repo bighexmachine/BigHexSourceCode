@@ -57,6 +57,7 @@ void MyObject::Init(Local<Object> target) {
                              PIN_RAM_PI_SELECT };
   for(int i = 0; i < 13; ++i)
   {
+    setPinIn (allpins[i]);
     setPinOut (allpins[i]);
   }
 
