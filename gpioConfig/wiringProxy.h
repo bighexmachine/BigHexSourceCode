@@ -1,24 +1,94 @@
 #ifndef WIRING_PROXY_H
 #define WIRING_PROXY_H
 
-// trashy proxy header so that we can compile on machines that are not raspberry pis
+// PIN IDs for the various GPIO pins (BCM Numbering)
+#define GPIO0 17
+#define GPIO1 18
+#define GPIO2 27
+#define GPIO3 22
+#define GPIO4 23
+#define GPIO5 24
+#define GPIO6 25
+#define GPIO7 4
+#define SDA 2
+#define SCL 3
+#define CE0 8
+#define CE1 7
+#define MOSI 10
+
+// defines functions for accessing GPIO
+// setupGPIO() initialises the gpio system
+// setPinOut(p) sets pin p as an output
+// setPinIn(p) sets pin p as an input
+// write(p, v) sets pin p to the value v
+
 #define IS_PI 1
 
+#define USE_WIRING_PI 1
 
 #if IS_PI
-  #include <wiringPi.h>
+
+  #if USE_WIRING_PI
+    #include <wiringPi.h>
+
+    #undef GPIO0
+    #undef GPIO1
+    #undef GPIO2
+    #undef GPIO3
+    #undef GPIO4
+    #undef GPIO5
+    #undef GPIO6
+    #undef GPIO7
+    #undef SDA
+    #undef SCL
+    #undef CE0
+    #undef CE1
+    #undef MOSI
+
+    #define GPIO0 0
+    #define GPIO1 1
+    #define GPIO2 2
+    #define GPIO3 3
+    #define GPIO4 4
+    #define GPIO5 5
+    #define GPIO6 6
+    #define GPIO7 7
+    #define SDA 8
+    #define SCL 9
+    #define CE0 10
+    #define CE1 11
+    #define MOSI 12
+
+    void setupGPIO()
+    {
+      wiringPiSetup();
+    }
+
+    void setPinOut(int p)
+    {
+      pinMode (p, OUTPUT);
+    }
+
+    void setPinIn(int p)
+    {
+      pinMode (p, INPUT);
+    }
+
+    void write(int p, int v)
+    {
+      digitalWrite (p, v);
+    }
+  #else
+    #include "nativeWiring.h"
+  #endif
+
 #else
-  #include <unistd.h>
-  #define OUTPUT 0
 
-  void wiringPiSetup() {}
-  void pinMode(int i, int j) {}
-  void digitalWrite(int i, int j) {}
+  void setupGPIO() {}
+  void setPinOut(int p) {}
+  void setPinIn(int p) {}
+  void write(int p, int v) {}
 
-  void delayMicroseconds(int secs)
-  {
-    usleep(secs);
-  }
-#endif
+#endif // IS_PI
 
-#endif
+#endif // WIRING_PROXY_H

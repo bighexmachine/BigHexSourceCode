@@ -5,6 +5,25 @@
 #include "wiringProxy.h"
 #include "myobject.h"
 
+/*
+  PIN DEFINITIONS
+ */
+#define PIN_CLK_0 GPIO0
+#define PIN_CLK_1 GPIO1
+#define PIN_CLK_2 GPIO2
+#define PIN_CLK_3 GPIO3
+
+#define PIN_DATA_0 GPIO4
+#define PIN_DATA_1 GPIO5
+#define PIN_DATA_2 GPIO6
+#define PIN_DATA_3 GPIO7
+#define PIN_DATA_4 SDA
+#define PIN_DATA_5 SCL
+#define PIN_DATA_6 CE0
+#define PIN_DATA_7 CE1
+
+#define PIN_RAM_PI_SELECT MOSI
+
 
 using v8::Context;
 using v8::Function;
@@ -30,12 +49,15 @@ MyObject::~MyObject() {
 
 void MyObject::Init(Local<Object> target) {
   //setting up gpio pins
-  wiringPiSetup () ;
+  setupGPIO () ;
   Isolate* isolate = target->GetIsolate();
-  int i;
-  for(i=0;i<13;i++)
+  static int allpins[13] = { PIN_CLK_0, PIN_CLK_1, PIN_CLK_2, PIN_CLK_3,
+                             PIN_DATA_0, PIN_DATA_1, PIN_DATA_2, PIN_DATA_3,
+                             PIN_DATA_4, PIN_DATA_5, PIN_DATA_6, PIN_DATA_7,
+                             PIN_RAM_PI_SELECT };
+  for(int i = 0; i < 13; ++i)
   {
-    pinMode (i, OUTPUT) ;
+    setPinOut (allpins[i]);
   }
 
   // Prepare constructor template
@@ -68,13 +90,13 @@ void writeClock(int val)
   clockMutex.lock();
 
   //phase 0 clock
-  digitalWrite (0, val & 1);
+  write (PIN_CLK_0, val & 1);
   //phase 0 reset
-  digitalWrite (1, val & 2);
+  write (PIN_CLK_1, val & 2);
   //phase 1 clock
-  digitalWrite (2, val & 16);
+  write (PIN_CLK_2, val & 16);
   //phase 1 reset
-  digitalWrite (3, val & 32);
+  write (PIN_CLK_3, val & 32);
 
   clockMutex.unlock();
 }
@@ -185,20 +207,21 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
 
 void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
   int byte = args[0]->NumberValue();
-  int base = 4;
-  int i;
-  for ( i=base; i<base+8; i++ )
+
+  static int pins[8] = {PIN_DATA_0, PIN_DATA_1, PIN_DATA_2, PIN_DATA_3, PIN_DATA_4, PIN_DATA_5, PIN_DATA_6, PIN_DATA_7};
+
+  for (int i=0; i < 8; ++i )
   {
-    int shift = i-base;
-    digitalWrite (i, ( byte & (1<<shift) ) >> shift);
+    write (pins[i], ( byte & (1<<i) ) >> i);
   }
+
   return;
 }
 
 void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
   int input = args[0]->NumberValue();
   int bit = input & 1;
-  digitalWrite (12, bit);
+  write (PIN_RAM_PI_SELECT, bit);
   return;
 }
 
@@ -207,8 +230,8 @@ void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   if (obj->clockIsRunning) StopClock(args);
   obj->ResetState();
   writeClock(34);
-  usleep(minDelay);
-  writeClock(0);
+  //usleep(minDelay);
+  //writeClock(0);
   usleep(minDelay);
   return;
 }
