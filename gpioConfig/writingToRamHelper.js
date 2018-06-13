@@ -16,7 +16,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
   / since a correct program never reads from this memory address then it is fine.
   */
   var pcMax = hexl.length-1;
-  //var pcMax = (1<<12);
+  var totalInstructionCount = 0;
 
   for(pc = 0; pc < pcMax; pc++)
   {
@@ -29,6 +29,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
     for(j = 0; j < inst_l.length; j++)
     { //loading nibble at a time
      gpioService.runInstruction( inst_l[j] );
+     totalInstructionCount++;
     }
 
     //process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
@@ -38,10 +39,12 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
     for(j = 0; j < inst_s.length; j++)
     {
       gpioService.runInstruction( inst_s[j] );
+      totalInstructionCount++;
     }
 
   }
   console.log("\rFinished writing to RAM");
+  console.log("Total Instructions Written : " + totalInstructionCount);
 
   gpioService.writeData( 0 );
 
@@ -65,15 +68,24 @@ function createLDACInstructions(hexu, hexl){
 }
 
 function createLDAMInstructions(num){
-  var insts = new Array();
+  var insts = [];
 
-  insts[3] = (/*STAM*/2  << 4) + (num & 15);
+  insts.push((/*STAM*/2  << 4) + (num & 15));
   num = num >> 4;
-  insts[2] = (/*PFIX*/14 << 4) + (num & 15);
-  num = num >> 4;
-  insts[1] = (/*PFIX*/14 << 4) + (num & 15);
-  num = num >> 4;
-  insts[0] = (/*PFIX*/14 << 4) + (num & 15);
 
+  if((num & 15) != 0)
+    insts.push((/*PFIX*/14 << 4) + (num & 15));
+
+  num = num >> 4;
+
+  if((num & 15) != 0)
+    insts.push((/*PFIX*/14 << 4) + (num & 15));
+
+  num = num >> 4;
+
+  if((num & 15) != 0)
+    insts.push((/*PFIX*/14 << 4) + (num & 15));
+
+  insts.reverse();
   return insts;
 }
