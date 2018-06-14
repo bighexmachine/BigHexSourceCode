@@ -9,6 +9,8 @@ var manuallyVerifiedCtrls = [];
 
 var controlSignals = undefined;
 
+var scoreThreshold = -1;
+
 $(document).ready(function() {
   // parse the parameters
   let inParams = window.location.search.substr(1).split('&');
@@ -91,7 +93,7 @@ function CalculateControlSignalFailures()
   let signalScores = [];
 
   controlSignals.signals.forEach(function(signal) {
-    signalScores[signal] = 0;
+    signalScores[signal] = scoreThreshold;
   });
 
   controlSignals.ops.forEach(function(op) {
@@ -183,6 +185,15 @@ function CalculateControlSignalFailures()
   likelyFailingControls.forEach(function(control) {
     failuresList.append(listItemMarkup(control));
   });
+
+  if(likelyFailingControls.length == 0)
+  {
+    scoreThreshold--;
+    if(scoreThreshold > -10)
+    {
+      CalculateControlSignalFailures();
+    }
+  }
 }
 
 //returns a list of the most likely controls to fail in reverse order (i.e the last control in the list is the most likely)

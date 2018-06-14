@@ -55,37 +55,72 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
 
 }
 
+function createInstruction(opcode, operand)
+{
+  var insts = [];
 
-function createLDACInstructions(hexu, hexl){
-  var insts = new Array();
+  var operand0 = operand & 15;
 
-  insts[0] = (/*PFIX*/14 << 4) + (parseInt(hexu.charAt(0), 16));
-  insts[1] = (/*PFIX*/14 << 4) + (parseInt(hexu.charAt(1), 16));
-  insts[2] = (/*PFIX*/14 << 4) + (parseInt(hexl.charAt(0), 16));
-  insts[3] = (/*LDAC*/3  << 4) + (parseInt(hexl.charAt(1), 16));
+  operand = operand >> 4;
+  var operand1 = operand & 15;
 
-  return insts;
+  operand = operand >> 4;
+  var operand2 = operand & 15;
+
+  operand = operand >> 4;
+  var operand3 = operand & 15;
+
+  insts.push((opcode << 4) + operand0);
+
+  if(operand2 == 15 && operand3 == 15)
+  {
+    // use NFIX
+    insts.push((15 << 4) + operand1);
+  }
+  else if(operand3 == 15)
+  {
+    // use NFIX and a single PFIX
+    insts.push((15 << 4) + operand2);
+    insts.push((14 << 4) + operand1);
+  }
+  else
+  {
+    //use a sequence of prefixes
+    if(operand3 != 0 || operand2 != 0 || operand1 != 0)
+    {
+      insts.push((14 << 4) + operand1);
+    }
+
+    if(operand3 != 0 || operand2 != 0)
+    {
+      insts.push((14 << 4) + operand2);
+    }
+
+    if(operand3 != 0)
+    {
+      insts.push((14 << 4) + operand3);
+    }
+  }
+
+  return insts.reverse();
+}
+
+
+function createLDACInstructions(hexu, hexl) {
+  var value = parseInt(hexl.charAt(1), 16);
+
+  value = value << 4;
+  value += parseInt(hexl.charAt(0), 16);
+
+  value = value << 4;
+  value += parseInt(hexu.charAt(1), 16);
+
+  value = value << 4;
+  value += parseInt(hexu.charAt(0), 16);
+
+  return createInstruction(3, value);
 }
 
 function createLDAMInstructions(num){
-  var insts = [];
-
-  insts.push((/*STAM*/2  << 4) + (num & 15));
-  num = num >> 4;
-
-  if(num != 0)
-    insts.push((/*PFIX*/14 << 4) + (num & 15));
-
-  num = num >> 4;
-
-  if(num != 0)
-    insts.push((/*PFIX*/14 << 4) + (num & 15));
-
-  num = num >> 4;
-
-  if(num != 0)
-    insts.push((/*PFIX*/14 << 4) + (num & 15));
-
-  insts.reverse();
-  return insts;
+  return createInstruction(2, num);
 }
