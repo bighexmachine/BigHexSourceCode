@@ -66,7 +66,7 @@ class MyObject : public node::ObjectWrap {
   int state;
   ClockPhase clockPhase;
   long delay;
-  static const int minDelay = 10000;
+  static const int minDelay = 100;
   void Clock();
   int signals[4];
   bool clockIsRunning;

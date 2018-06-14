@@ -673,6 +673,10 @@ func value(c) is
   then
     return (c + 10) - 'A'
   else
+  if (c >= 'a') and (c <= 'z')
+  then
+    return (c + 10) - 'a'
+  else
     return 500
 
 func readcharco() is

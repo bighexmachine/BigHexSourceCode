@@ -42,7 +42,7 @@ module.exports.writeData = function(pattern){
 };
 
 module.exports.runInstruction = function(instr, switchInputs){
-    if(switchInputs == undefined || swtichInputs)
+    if(switchInputs == undefined || switchInputs)
     {
       module.exports.selectPi();
       switchInputs = true;
@@ -55,6 +55,7 @@ module.exports.runInstruction = function(instr, switchInputs){
     for (i=0; i<16; i++)
     {
         module.exports.stepClock();
+        sleep.usleep(100);
     }
 
     if(switchInputs)

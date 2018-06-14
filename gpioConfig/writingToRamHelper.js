@@ -28,7 +28,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
     //var inst_l = createLDACInstructions("00", "00"); // write 00s to clear ram
     for(j = 0; j < inst_l.length; j++)
     { //loading nibble at a time
-     gpioService.runInstruction( inst_l[j] );
+     gpioService.runInstruction( inst_l[j], false);
      totalInstructionCount++;
     }
 
@@ -38,7 +38,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
     var inst_s = createLDAMInstructions(pc);
     for(j = 0; j < inst_s.length; j++)
     {
-      gpioService.runInstruction( inst_s[j] );
+      gpioService.runInstruction( inst_s[j], false);
       totalInstructionCount++;
     }
 
