@@ -5,6 +5,25 @@
 #include "wiringProxy.h"
 #include "myobject.h"
 
+/*
+  PIN DEFINITIONS
+ */
+#define PIN_CLK_0 GPIO0
+#define PIN_CLK_1 GPIO1
+#define PIN_CLK_2 GPIO2
+#define PIN_CLK_3 GPIO3
+
+#define PIN_DATA_0 GPIO4
+#define PIN_DATA_1 GPIO5
+#define PIN_DATA_2 GPIO6
+#define PIN_DATA_3 GPIO7
+#define PIN_DATA_4 SDA
+#define PIN_DATA_5 SCL
+#define PIN_DATA_6 CE0
+#define PIN_DATA_7 CE1
+
+#define PIN_RAM_PI_SELECT MOSI
+
 
 using v8::Context;
 using v8::Function;
@@ -20,22 +39,27 @@ using v8::Value;
 
 Persistent<Function> MyObject::constructor;
 
-MyObject::MyObject(): state(0), clockPhase(ClockPhase::FETCH), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false) {
-  clockThread = thread(&MyObject::Clock, this);
-}
+MyObject::MyObject(): state(0), clockPhase(ClockPhase::FETCH), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false)
+{}
 
-MyObject::~MyObject() {
-
+MyObject::~MyObject()
+{
+  DoStopClock();
+  clockThread.join();
 }
 
 void MyObject::Init(Local<Object> target) {
   //setting up gpio pins
-  wiringPiSetup () ;
+  setupGPIO () ;
   Isolate* isolate = target->GetIsolate();
-  int i;
-  for(i=0;i<13;i++)
+  static int allpins[13] = { PIN_CLK_0, PIN_CLK_1, PIN_CLK_2, PIN_CLK_3,
+                             PIN_DATA_0, PIN_DATA_1, PIN_DATA_2, PIN_DATA_3,
+                             PIN_DATA_4, PIN_DATA_5, PIN_DATA_6, PIN_DATA_7,
+                             PIN_RAM_PI_SELECT };
+  for(int i = 0; i < 13; ++i)
   {
-    pinMode (i, OUTPUT) ;
+    setPinIn (allpins[i]);
+    setPinOut (allpins[i]);
   }
 
   // Prepare constructor template
@@ -68,13 +92,13 @@ void writeClock(int val)
   clockMutex.lock();
 
   //phase 0 clock
-  digitalWrite (0, val & 1);
+  write (PIN_CLK_0, val & 1);
   //phase 0 reset
-  digitalWrite (1, val & 2);
+  write (PIN_CLK_1, val & 2);
   //phase 1 clock
-  digitalWrite (2, val & 16);
+  write (PIN_CLK_2, val & 16);
   //phase 1 reset
-  digitalWrite (3, val & 32);
+  write (PIN_CLK_3, val & 32);
 
   clockMutex.unlock();
 }
@@ -111,28 +135,34 @@ void MyObject::SetPhase(ClockPhase desiredPhase, int desiredState)
 
 void MyObject::Clock()
 {
-  cout << "Clock Service Ready" << endl;
-  while(1)
+  cout << "Clock Service Started" << endl;
+  while(clockIsRunning)
   {
-
     updateMutex.lock();
-    if(clockIsRunning)
-    {
-      writeClock( signals[state] );
-      IncrementState();
-    }
+    writeClock( signals[state] );
+    IncrementState();
     updateMutex.unlock();
 
-    usleep(delay);
+    nsleep(delay);
   }
+  cout << "Clock Service Stopped" << endl;
+}
+
+void MyObject::DoStartClock()
+{
+  if(clockIsRunning) return;
+
+  clockIsRunning = true;
+
+  // if the clock thread is not running start it
+  if(!clockThread.joinable())
+    clockThread = thread(&MyObject::Clock, this);
 }
 
 void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  obj->clockIsRunning = true;
-
-	printf("started\n");
+  obj->DoStartClock();
   return;
 }
 
@@ -143,8 +173,7 @@ void MyObject::DoStopClock()
   updateMutex.lock();
   clockIsRunning = false;
   updateMutex.unlock();
-
-	printf("stopped\n");
+  clockThread.join();
 }
 
 void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
@@ -157,7 +186,7 @@ void MyObject::DoStepClock()
   if (clockIsRunning) DoStopClock();
   writeClock( signals[state] );
   IncrementState();
-  usleep(minDelay);
+  nsleep(minDelay);
 }
 
 void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
@@ -174,8 +203,8 @@ void MyObject::IsClockRunning(const v8::FunctionCallbackInfo<v8::Value>& args)
 void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   double inputSpeed = args[0]->NumberValue();
-  int period = 1000000 / inputSpeed;
-  obj->delay = period / 4;
+  double period = 1000000000.0 / inputSpeed;
+  obj->delay = (long)(period / 16); // a full cycle of the machine takes 16 clock ticks
 
   if(obj->delay < minDelay)
     obj->delay = minDelay;
@@ -185,20 +214,22 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
 
 void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
   int byte = args[0]->NumberValue();
-  int base = 4;
-  int i;
-  for ( i=base; i<base+8; i++ )
+
+  static int pins[8] = {PIN_DATA_0, PIN_DATA_1, PIN_DATA_2, PIN_DATA_3, PIN_DATA_4, PIN_DATA_5, PIN_DATA_6, PIN_DATA_7};
+
+  for (int i=0; i < 8; ++i )
   {
-    int shift = i-base;
-    digitalWrite (i, ( byte & (1<<shift) ) >> shift);
+    write (pins[i], ( byte & (1<<i) ) >> i);
   }
+
   return;
 }
 
 void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
   int input = args[0]->NumberValue();
   int bit = input & 1;
-  digitalWrite (12, bit);
+  write (PIN_RAM_PI_SELECT, bit);
+  usleep(100);
   return;
 }
 
@@ -207,9 +238,7 @@ void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   if (obj->clockIsRunning) StopClock(args);
   obj->ResetState();
   writeClock(34);
-  usleep(minDelay);
-  writeClock(0);
-  usleep(minDelay);
+  nsleep(minDelay);
   return;
 }
 

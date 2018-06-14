@@ -3,6 +3,7 @@
 #include <thread>
 #include <node.h>
 #include <mutex>
+#include <time.h>
 #include <node_object_wrap.h>
 
 using namespace v8;
@@ -16,6 +17,21 @@ enum class ClockPhase : uint8_t
   DISPLAY = 3
 };
 
+inline void nsleep(long nsecs)
+{
+  timespec ts;
+  ts.tv_sec = 0;
+
+  while(nsecs >= 1000000000)
+  {
+    ts.tv_sec++;
+    nsecs -= 1000000000;
+  }
+
+  ts.tv_nsec = nsecs;
+
+  nanosleep(&ts, NULL);
+}
 
 class MyObject : public node::ObjectWrap {
  public:
@@ -25,11 +41,11 @@ class MyObject : public node::ObjectWrap {
   MyObject();
   ~MyObject();
 
-
   void IncrementState();
   void ResetState();
   void SetPhase(ClockPhase desiredPhase, int desiredState = 0);
 
+  void DoStartClock();
   void DoStopClock();
   void DoStepClock();
 
@@ -49,8 +65,8 @@ class MyObject : public node::ObjectWrap {
   std::thread clockThread;
   int state;
   ClockPhase clockPhase;
-  int delay;
-  static const int minDelay = 1;
+  long delay;
+  static const int minDelay = 100;
   void Clock();
   int signals[4];
   bool clockIsRunning;

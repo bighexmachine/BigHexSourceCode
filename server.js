@@ -103,6 +103,6 @@ function runRandomProgram() {
     console.log("Loading random program... " + randomPrograms[randidx]);
     apifunc('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString());
     apifunc('start', undefined);
-    apifunc('speed', 70000);
+    apifunc('speed', 1000000000);
   }
 }
