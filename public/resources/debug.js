@@ -49,7 +49,7 @@ function OnSuiteLoaded()
 
   failures = JSON.parse(params['failures']);
 
-  let testRow = (testId, test) => `"<tr><td>${testId}</td><td>${test.checkText}</td><td>${test.verifies.toString()}</td><td>Re-rcun Test</td></tr>"`;
+  let testRow = (testId, test) => `<tr><td>${testId}</td><td>${test.checkText}</td><td>${test.verifies.toString()}</td><td>Re-run Test</td></tr>`;
   failures.forEach(function(testID) {
     $(".debug-table").append(testRow(testID, suite.tests[testID]));
   });
@@ -80,17 +80,22 @@ function ArrayRemoveSwap_Idx(arr, idx)
   arr.pop();
 }
 
+function MarkControlWorking(control)
+{
+  manuallyVerifiedCtrls.push(control);
+}
+
 function CalculateControlSignalFailures()
 {
-  let failingOps = controlSignals.ops;
+  let opScores = [];
   let signalScores = [];
 
   controlSignals.signals.forEach(function(signal) {
     signalScores[signal] = 0;
   });
 
-  manuallyVerifiedCtrls.forEach(function(control) {
-    ArrayRemoveSwap(failingControls, control);
+  controlSignals.ops.forEach(function(op) {
+    opScores[op] = 0;
   });
 
   suite.tests.forEach(function(test, idx) {
@@ -99,9 +104,13 @@ function CalculateControlSignalFailures()
     let uniqueSignals = [];
 
     test.verifies.forEach(function(op) {
-      if(!failing)
+      if(failing)
       {
-        ArrayRemoveSwap(failingOps, op);
+        opScores[op]++;
+      }
+      else
+      {
+          opScores[op] -= 100;
       }
 
       controlSignals.opSignals[op].forEach(function(control) {
@@ -125,17 +134,55 @@ function CalculateControlSignalFailures()
     });
   });
 
+  let failingOps = [];
   let failingControls = [];
 
+  controlSignals.ops.forEach(function(op) {
+    if(opScores[op] > 0)
+    {
+        failingOps.push(op);
+    }
+  });
+
   controlSignals.signals.forEach(function(signal) {
-    if(signalScores[signal] <= 0)
+    if(signalScores[signal] < 0)
     {
       failingControls.push(signal);
     }
   });
 
+  manuallyVerifiedCtrls.forEach(function(control) {
+    ArrayRemoveSwap(failingControls, control);
+  });
+
+  //ensure all failing ops use at least one failing control
+  for(let i = failingOps.length-1; i >= 0; i--)
+  {
+    let valid = false;
+    controlSignals.opSignals[failingOps[i]].forEach(function(control) {
+      if(failingControls.includes(control))
+      {
+        valid = true;
+      }
+    });
+
+    if(!valid)
+    {
+      ArrayRemoveSwap_Idx(failingOps, i);
+    }
+  }
+
   let likelyFailingControls = CalculateLikelyFailingControls(failingOps, failingControls);
-  alert(likelyFailingControls);
+  likelyFailingControls.reverse();
+  let failuresList = $(".failures-list");
+
+  failuresList.html("");
+
+  let listItemMarkup = (control) => `<li>${control}   (<a href="javascript:void(0);" onclick="MarkControlWorking('${control}');CalculateControlSignalFailures();">Not This</a>)</li>`;
+
+  likelyFailingControls.forEach(function(control) {
+    failuresList.append(listItemMarkup(control));
+  });
 }
 
 //returns a list of the most likely controls to fail in reverse order (i.e the last control in the list is the most likely)

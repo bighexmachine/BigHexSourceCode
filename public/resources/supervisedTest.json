@@ -4,7 +4,7 @@
 
   "preTest":[
     "RESET",
-    "SPEED 12",
+    "SPEED 1",
     "14 4",
     "14 0",
     "14 12",
@@ -47,6 +47,19 @@
       "verifies":[
         "LDAC",
         "LDBC"
+      ]
+    },
+    {
+      "title":"LDAP test",
+      "cmds": [
+        "RESET",
+        "15 15",
+        "5 13"
+      ],
+      "checkText":"Check that A reg has all LEDs lit",
+      "verifies":[
+        "NFIX",
+        "LDAP"
       ]
     },
     {

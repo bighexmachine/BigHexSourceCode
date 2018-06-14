@@ -81,14 +81,18 @@ $(document).ready(function() {
 	  }
     );
 
-    $('#speedSlider').val(12);
+    let speedSlider = $('#speedSlider');
+    if(speedSlider != undefined)
+    {
+      speedSlider.val(12);
 
-    $('#speedSlider').on('input change', function(){
-        askServerForAccessToAPI( function() {
-            updateSpeed();
-        });
-    });
-    updateSpeed();
+      speedSlider.on('input change', function(){
+          askServerForAccessToAPI( function() {
+              updateSpeed();
+          });
+      });
+      updateSpeed();
+    }
 
     $("#programInput").linedtextarea();
     if($("#programInput").val() == "")
@@ -327,6 +331,7 @@ function updateSpeed() {
     var base = 10;
     var max = 49;
     var speed = $('#speedSlider').val() / 40;
+    if(isNaN(speed)) return;
     var speed = Math.pow(base,speed);
     speed--;
     if (speed < 10) {
