@@ -49,7 +49,9 @@ module.exports.runInstruction = function(instr, switchInputs){
     }
 
     module.exports.writeData(instr);
+
     sleep.usleep(400);
+
     for (i=0; i<16; i++)
     {
         module.exports.stepClock();

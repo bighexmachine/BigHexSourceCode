@@ -39,12 +39,13 @@ using v8::Value;
 
 Persistent<Function> MyObject::constructor;
 
-MyObject::MyObject(): state(0), clockPhase(ClockPhase::FETCH), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false) {
-  clockThread = thread(&MyObject::Clock, this);
-}
+MyObject::MyObject(): state(0), clockPhase(ClockPhase::FETCH), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false)
+{}
 
-MyObject::~MyObject() {
-
+MyObject::~MyObject()
+{
+  DoStopClock();
+  clockThread.join();
 }
 
 void MyObject::Init(Local<Object> target) {
@@ -134,28 +135,34 @@ void MyObject::SetPhase(ClockPhase desiredPhase, int desiredState)
 
 void MyObject::Clock()
 {
-  cout << "Clock Service Ready" << endl;
-  while(1)
+  cout << "Clock Service Started" << endl;
+  while(clockIsRunning)
   {
-
     updateMutex.lock();
-    if(clockIsRunning)
-    {
-      writeClock( signals[state] );
-      IncrementState();
-    }
+    writeClock( signals[state] );
+    IncrementState();
     updateMutex.unlock();
 
     nsleep(delay);
   }
+  cout << "Clock Service Stopped" << endl;
+}
+
+void MyObject::DoStartClock()
+{
+  if(clockIsRunning) return;
+
+  clockIsRunning = true;
+
+  // if the clock thread is not running start it
+  if(!clockThread.joinable())
+    clockThread = thread(&MyObject::Clock, this);
 }
 
 void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  obj->clockIsRunning = true;
-
-	printf("started\n");
+  obj->DoStartClock();
   return;
 }
 
@@ -166,8 +173,7 @@ void MyObject::DoStopClock()
   updateMutex.lock();
   clockIsRunning = false;
   updateMutex.unlock();
-
-	printf("stopped\n");
+  clockThread.join();
 }
 
 void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
@@ -198,7 +204,7 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   double inputSpeed = args[0]->NumberValue();
   double period = 1000000000.0 / inputSpeed;
-  obj->delay = (long)period;
+  obj->delay = (long)(period / 16); // a full cycle of the machine takes 16 clock ticks
 
   if(obj->delay < minDelay)
     obj->delay = minDelay;
@@ -223,6 +229,7 @@ void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
   int input = args[0]->NumberValue();
   int bit = input & 1;
   write (PIN_RAM_PI_SELECT, bit);
+  usleep(100);
   return;
 }
 

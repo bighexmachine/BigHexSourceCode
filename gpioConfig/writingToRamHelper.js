@@ -73,17 +73,17 @@ function createLDAMInstructions(num){
   insts.push((/*STAM*/2  << 4) + (num & 15));
   num = num >> 4;
 
-  if((num & 15) != 0)
+  if(num != 0)
     insts.push((/*PFIX*/14 << 4) + (num & 15));
 
   num = num >> 4;
 
-  if((num & 15) != 0)
+  if(num != 0)
     insts.push((/*PFIX*/14 << 4) + (num & 15));
 
   num = num >> 4;
 
-  if((num & 15) != 0)
+  if(num != 0)
     insts.push((/*PFIX*/14 << 4) + (num & 15));
 
   insts.reverse();

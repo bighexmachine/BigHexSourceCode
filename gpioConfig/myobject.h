@@ -21,6 +21,13 @@ inline void nsleep(long nsecs)
 {
   timespec ts;
   ts.tv_sec = 0;
+
+  while(nsecs >= 1000000000)
+  {
+    ts.tv_sec++;
+    nsecs -= 1000000000;
+  }
+
   ts.tv_nsec = nsecs;
 
   nanosleep(&ts, NULL);
@@ -38,6 +45,7 @@ class MyObject : public node::ObjectWrap {
   void ResetState();
   void SetPhase(ClockPhase desiredPhase, int desiredState = 0);
 
+  void DoStartClock();
   void DoStopClock();
   void DoStepClock();
 
@@ -58,7 +66,7 @@ class MyObject : public node::ObjectWrap {
   int state;
   ClockPhase clockPhase;
   long delay;
-  static const int minDelay = 1000;
+  static const int minDelay = 10000;
   void Clock();
   int signals[4];
   bool clockIsRunning;
