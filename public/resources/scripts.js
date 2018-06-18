@@ -165,9 +165,28 @@ function compile()
   });
 }
 
+
+function getAssembly()
+{
+  $("#compile-errors").html("");
+  $("#genasmBtn").html("Generating...");
+
+  sendReq('getasm', $("#programInput").val(), function(res) {
+    $("#genasmBtn").html("Get Assembly");
+    try
+    {
+      var result = JSON.parse(res);
+      parseCompileErrors(result);
+    }
+    catch
+    {
+      $("#programInput").val(res);
+    }
+  });
+}
+
 function parseCompileErrors(result)
 {
-
   if(result.keys.length == 0)
   {
     $("#compile-success").show();
@@ -359,7 +378,7 @@ function updateQueueUI(place) {
   $("#controls").hide();
   $("#controls-hidden").show();
 
-  if(place <= 1) {
+  if(place == 1) {
       $('#queueUI').text('In Control');
       $(".queue-header").addClass("active");
       $("#controls").show();

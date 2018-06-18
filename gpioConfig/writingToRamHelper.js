@@ -1,6 +1,6 @@
 var sleep = require('sleep');
 
-module.exports.writeToRam = function(hexu, hexl, gpioService){
+module.exports.writeToRam = function(hexu, hexl, gpioService) {
   gpioService.resetClock();
 
   //enable instruction input on machine
@@ -22,7 +22,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
   {
     // load the instruction in to reg A
 
-    //process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
+    //console.log("INST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+" \n");
 
     var inst_l = createLDACInstructions(hexu[pc], hexl[pc]); // instructions to load one nibble at a time (for each RAM)
     //var inst_l = createLDACInstructions("00", "00"); // write 00s to clear ram
@@ -32,7 +32,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
      totalInstructionCount++;
     }
 
-    //process.stdout.write("\rINST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+".");
+    //console.log("INST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+" \n");
 
     // store reg a to mem[pc]
     var inst_s = createLDAMInstructions(pc);
@@ -52,7 +52,6 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
   gpioService.selectRam();
 
   gpioService.resetClock();
-
 }
 
 function createInstruction(opcode, operand)

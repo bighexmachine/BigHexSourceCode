@@ -1,115 +1,153 @@
 var gpioService = require('../gpioConfig/gpioService');
-var ramWriter = require('../gpioConfig/writingToRamHelper');
 var compiler = require('../gpioConfig/compiler');
 var assembler = require('../gpioConfig/assembler');
+var ramWriter = require('../gpioConfig/writingToRamHelper');
+const { fork } = require('child_process');
 
 var fs = require("fs");
 
-module.exports = function (command, data) {
+var isWritingToRAM = false;
 
-    var lastCommand = "";
+module.exports.isCommandRestricted = function(command) {
+  if(command == "compile" || command == "getasm" || command == "getprog") return false;
+  return true;
+}
 
-    /*
-     * If a GET request is made to /api we need to execute a command
-     * to control the signals being send to the machine via i2c.
-     */
-     //a bit of logic so speed commands write on top of each other but no one else
-    if (command === 'speed' && lastCommand === 'speed') {
-        process.stdout.write('\r');
-    } else {
-        process.stdout.write('\n');
-    }
+module.exports.execute = function (command, data) {
+    console.log( 'command recieved: ' + command + "\n");
 
-    lastCommand = command;
-    process.stdout.write( 'command recieved: ' + command + "\n");
-
-    if(command === 'speed'){
+    if(command === 'speed')
+    {
         var clockSpeed = data;
-        //clear the line
-        process.stdout.write('\r'+repeat(' ', process.stdout.columns)+'\r')
-        process.stdout.write('command recieved: speed: ' + formatSpeed(clockSpeed) + '\n');
+        console.log('command recieved: speed: ' + formatSpeed(clockSpeed) + '\n');
         gpioService.setSpeed(clockSpeed);
     }
-    else if(command === 'start'){
-        gpioService.startClock();
+    else if(command === 'start' && !isWritingToRAM)
+    {
+      gpioService.startClock();
     }
-    else if(command === 'stop'){
-        gpioService.stopClock();
+    else if(command === 'stop' && !isWritingToRAM)
+    {
+      gpioService.stopClock();
     }
-    else if(command == 'isrunning'){
+    else if(command == 'isrunning')
+    {
       return gpioService.isClockRunning();
     }
-    else if(command === 'step'){
+    else if(command === 'step' && !isWritingToRAM)
+    {
         gpioService.stepClock();
     }
-    else if(command === 'reset'){
+    else if(command === 'reset' && !isWritingToRAM)
+    {
         gpioService.resetClock();
     }
-    else if (command === 'load') {
+    else if (command === 'load' && !isWritingToRAM)
+    {
         var xCode = data;
-        console.log("Recieved Code");
-        var result = compiler.compile(xCode);
+        console.log("Loading Code");
 
-        if(result.success)
-        {
-          ramWriter.writeToRam(result.u, result.l, gpioService);
-          return JSON.stringify({keys:[]});
-        }
-        else
-        {
-          let errors = compiler.parseCompileErrors(result.output);
-          return JSON.stringify(errors);
-        }
+        return new Promise((resolve, reject) => {
+          compiler.compile(xCode, function(result) {
+            if(result.success)
+            {
+              return new Promise((resolve, reject) => {
+                WriteToRam(result.u, result.l, gpioService, function() {
+                  resolve(JSON.stringify({keys:[]}));
+                });
+              });
+            }
+            else
+            {
+              resolve(JSON.stringify(compiler.parseCompileErrors(result.output)));
+            }
+          });
+        });
     }
     else if(command === 'compile') {
       var xCode = data;
-      console.log("Recieved Code");
-      var result = compiler.compile(xCode);
+      console.log("Compiling Code");
 
-      if(result.success)
-      {
-        return JSON.stringify({keys:[]});
-      }
-      else
-      {
-        let errors = compiler.parseCompileErrors(result.output);
-        return JSON.stringify(errors);
-      }
+      return new Promise((resolve, reject) => {
+        compiler.compile(xCode, function(result) {
+          if(result.success)
+          {
+            resolve(JSON.stringify({keys:[]}));
+          }
+          else
+          {
+            let errors = compiler.parseCompileErrors(result.output);
+            resolve(JSON.stringify(errors));
+          }
+        });
+      });
     }
-    else if (command === 'loadassembly') {
+    else if(command === 'getasm') {
+      var xCode = data;
+      console.log("Generating ASM");
+      return new Promise((resolve, reject) => {
+        compiler.compile(xCode, function(result) {
+          if(result.success)
+          {
+            resolve(compiler.disassemble(result.u, result.l, result.dataStart, result.dataEnd));
+          }
+          else
+          {
+            let errors = compiler.parseCompileErrors(result.output);
+            resolve(JSON.stringify(errors));
+          }
+        });
+      });
+
+    }
+    else if (command === 'loadassembly' && !isWritingToRAM) {
         var assembly = data;
         console.log("Recieved Assembly: "+assembly);
-        assembler.assemble(assembly, console.log,
-            function(hexuArray, hexlArray){
-                hexuArray.push("  ");
-                hexlArray.push("  ");
-                console.log(hexuArray); console.log( hexlArray);
-                ramWriter.writeToRam(hexuArray, hexlArray, gpioService);
-            });
+        return new Promise((resolve, reject) => {
+          assembler.assemble(assembly, console.log,
+              function(hexuArray, hexlArray){
+                  hexuArray.push("  ");
+                  hexlArray.push("  ");
+                  console.log(hexuArray); console.log( hexlArray);
+                  WriteToRam(hexuArray, hexlArray, gpioService, function() {
+                    resolve("Done");
+                  });
+              });
+        });
     }
-    else if (command === 'screen') {
-        console.log("Recieved Screen Command");
-        compiler.runScreenTest(
-            function(hexuArray, hexlArray){
-                ramWriter.writeToRam(hexuArray, hexlArray, gpioService);
-            });
-    }
-    else if(command === 'runInstr') {
+    else if(command === 'runInstr' && !isWritingToRAM) {
         var instr = parseInt(data);
-        process.stdout.write('\r'+repeat(' ', process.stdout.columns)+'\r');
-        process.stdout.write('command recieved: run Instruction: ' + (instr>>4) + ' ' + (instr & 0x00f));
+        console.log('command recieved: run Instruction: ' + (instr>>4) + ' ' + (instr & 0x00f) + '\n');
         gpioService.runInstruction(instr);
     }
-    else if(command === 'runTestCmd') {
+    else if(command === 'runTestCmd' && !isWritingToRAM)
+    {
       runTestCmd(data.suite, data.testID);
     }
-    else if(command === 'getprog') {
-        var prog = fs.readFileSync('./xPrograms/' + data).toString();
-        process.stdout.write('command recieved: loadprog: ' + data);
-        return prog;
+    else if(command === 'getprog')
+    {
+        console.log('command recieved: loadprog: ' + data);
+
+        return new Promise((resolve, reject) => {
+          fs.readFile('./xPrograms/' + data, function(err, data) {
+            if(err == null)
+              resolve(data.toString())
+            else
+              reject(err);
+          });
+        });
     }
-    return "";
+
+    return Promise.resolve({success: true});
 };
+
+function WriteToRam(hexuArray, hexlArray, gpioService, callback)
+{
+  isWritingToRAM = true;
+  ramWriter.writeToRam(hexuArray, hexlArray, gpioService);
+  isWritingToRAM = false;
+  callback();
+}
 
 function runTestCmd(suiteName, testID)
 {
@@ -170,21 +208,6 @@ function runTestCmd(suiteName, testID)
 
     ++idx;
   }
-
-}
-
-function repeat(s,n) {
-    if (n==0) {
-        return ''
-    }
-    else {
-	let result = s;
-	for(let i = 0; i < n-1; ++i)
-	{
-		result = result + s;
-	}
-	return result;
-    }
 
 }
 

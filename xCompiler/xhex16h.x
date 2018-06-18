@@ -256,6 +256,16 @@ func main() is
   printn(errcount);
   newline();
 
+  prints("data section:");
+  printn(cb_conststart);
+  prints(",");
+  printn(cb_stringstart + stringsize);
+  newline();
+
+  prints("total errors:");
+  printn(errcount);
+  newline();
+
   if (errcount = 0)
   then
     return 0

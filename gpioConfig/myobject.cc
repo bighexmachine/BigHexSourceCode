@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "wiringProxy.h"
 #include "myobject.h"
+#include "referencemodel.h"
 
 /*
   PIN DEFINITIONS
@@ -39,13 +40,16 @@ using v8::Value;
 
 Persistent<Function> MyObject::constructor;
 
-MyObject::MyObject(): state(0), clockPhase(ClockPhase::FETCH), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false)
-{}
+MyObject::MyObject(): state(0), delay(10), signals{1, 0, 16, 0}, clockIsRunning(false)
+{
+  refModel = new ReferenceModel();
+}
 
 MyObject::~MyObject()
 {
   DoStopClock();
   clockThread.join();
+  delete refModel;
 }
 
 void MyObject::Init(Local<Object> target) {
@@ -75,7 +79,6 @@ void MyObject::Init(Local<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(tpl, "setSpeed", SetSpeed);
   NODE_SET_PROTOTYPE_METHOD(tpl, "ramPiSel", RamPiSel);
   NODE_SET_PROTOTYPE_METHOD(tpl, "reset", Reset);
-  NODE_SET_PROTOTYPE_METHOD(tpl, "moveToPhase", MoveToPhase);
   constructor.Reset(isolate, tpl->GetFunction());
   target->Set(String::NewFromUtf8(isolate, "MyObject"), tpl->GetFunction());
 }
@@ -86,7 +89,7 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(args.This());
 }
 
-void writeClock(int val)
+void MyObject::WriteClock(int val)
 {
   static mutex clockMutex;
   clockMutex.lock();
@@ -100,6 +103,8 @@ void writeClock(int val)
   //phase 1 reset
   write (PIN_CLK_3, val & 32);
 
+  refModel->UpdateClock(val & 1, val & 2, val & 16, val & 32);
+
   clockMutex.unlock();
 }
 
@@ -107,11 +112,6 @@ void MyObject::IncrementState()
 {
   stateMutex.lock();
   state = (state+1) % 4;
-  if(state == 3)
-  {
-    clockPhase = (ClockPhase)(((int)clockPhase + 1) % 4);
-  }
-
   stateMutex.unlock();
 }
 
@@ -119,18 +119,7 @@ void MyObject::ResetState()
 {
   stateMutex.lock();
   state = 3;
-  clockPhase = ClockPhase::FETCH;
   stateMutex.unlock();
-}
-
-void MyObject::SetPhase(ClockPhase desiredPhase, int desiredState)
-{
-  if(desiredState < 0 || desiredState > 3) return;
-
-  while(clockPhase != desiredPhase && state != desiredState)
-  {
-    DoStepClock();
-  }
 }
 
 void MyObject::Clock()
@@ -139,7 +128,7 @@ void MyObject::Clock()
   while(clockIsRunning)
   {
     updateMutex.lock();
-    writeClock( signals[state] );
+    WriteClock( signals[state] );
     IncrementState();
     updateMutex.unlock();
 
@@ -184,7 +173,7 @@ void MyObject::StopClock(const FunctionCallbackInfo<Value>& args) {
 void MyObject::DoStepClock()
 {
   if (clockIsRunning) DoStopClock();
-  writeClock( signals[state] );
+  WriteClock( signals[state] );
   IncrementState();
   nsleep(minDelay);
 }
@@ -213,6 +202,7 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
 }
 
 void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
+  MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   int byte = args[0]->NumberValue();
 
   static int pins[8] = {PIN_DATA_0, PIN_DATA_1, PIN_DATA_2, PIN_DATA_3, PIN_DATA_4, PIN_DATA_5, PIN_DATA_6, PIN_DATA_7};
@@ -222,13 +212,17 @@ void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
     write (pins[i], ( byte & (1<<i) ) >> i);
   }
 
+  obj->refModel->SetPiDataInput(byte);
+
   return;
 }
 
 void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
+  MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   int input = args[0]->NumberValue();
   int bit = input & 1;
   write (PIN_RAM_PI_SELECT, bit);
+  obj->refModel->SetRamPiSelect(bit == 0);
   usleep(100);
   return;
 }
@@ -237,16 +231,7 @@ void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   if (obj->clockIsRunning) StopClock(args);
   obj->ResetState();
-  writeClock(34);
+  obj->WriteClock(34);
   nsleep(minDelay);
   return;
-}
-
-void MyObject::MoveToPhase(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-  MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  ClockPhase desiredPhase = (ClockPhase)args[0]->NumberValue();
-  int desiredState = args[1]->NumberValue();
-
-  obj->SetPhase(desiredPhase, desiredState);
 }
