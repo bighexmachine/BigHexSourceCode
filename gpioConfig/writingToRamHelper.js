@@ -43,7 +43,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService){
     }
 
   }
-  console.log("\rFinished writing to RAM");
+  console.log("Finished writing to RAM");
   console.log("Total Instructions Written : " + totalInstructionCount);
 
   gpioService.writeData( 0 );
@@ -80,8 +80,8 @@ function createInstruction(opcode, operand)
   else if(operand3 == 15)
   {
     // use NFIX and a single PFIX
-    insts.push((15 << 4) + operand2);
     insts.push((14 << 4) + operand1);
+    insts.push((15 << 4) + operand2);
   }
   else
   {
@@ -107,16 +107,16 @@ function createInstruction(opcode, operand)
 
 
 function createLDACInstructions(hexu, hexl) {
-  var value = parseInt(hexl.charAt(1), 16);
-
-  value = value << 4;
-  value += parseInt(hexl.charAt(0), 16);
+  var value = parseInt(hexu.charAt(0), 16);
 
   value = value << 4;
   value += parseInt(hexu.charAt(1), 16);
 
   value = value << 4;
-  value += parseInt(hexu.charAt(0), 16);
+  value += parseInt(hexl.charAt(0), 16);
+
+  value = value << 4;
+  value += parseInt(hexl.charAt(1), 16);
 
   return createInstruction(3, value);
 }

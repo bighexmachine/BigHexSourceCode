@@ -50,6 +50,11 @@ var examples = [
     path: "nyan.x"
   },
   {
+    name: "Pacman",
+    desc: "",
+    path: "pacman.x"
+  },
+  {
     name: "Will's Automata",
     desc: "",
     path: "ca.x"
