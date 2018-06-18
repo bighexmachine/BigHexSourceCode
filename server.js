@@ -13,7 +13,7 @@ var gpioService = require('./gpioConfig/gpioService.js');
 const WebSocket = require('ws');
 const queue = require('./configure/queue');
 
-const apifunc = require('./configure/api.js');
+const api = require('./configure/api.js');
 
 const app = configureExpress();
 gpioService.setSpeed(1);
@@ -32,12 +32,32 @@ wss.on('connection', function connection(ws, req) {
 
     queue.addToQueue(ip);
 
+    let updateAllClients = function() {
+      //send message to all ip addresses further behind in queue to move up one
+      wss.clients.forEach(function each(client) {
+        if (client !== ws && client.readyState === WebSocket.OPEN)
+        {
+          if(queue.getFrontOfQueue() == getIp(client))
+          {
+            ws.send("accessAPISuccess");
+          }
+          else
+          {
+            var pos = queue.getQueuePositionOfIP(getIp(client));
+            pos = pos+1;
+            ws.send("denied " + JSON.stringify(pos));
+          }
+        }
+      });
+    };
+
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
         //get ip address of this user
         console.log("Message from IP = " + ip);
         switch (message) {
             case "askServerForAccessToAPI":
+                console.log("Ask for access");
                 if(queue.getFrontOfQueue() == ip) {
                     //user can access the Big hex, set active for queue timeout
                     queue.setActive();
@@ -52,15 +72,9 @@ wss.on('connection', function connection(ws, req) {
                 break;
             case "leaveQueue":
 
-                //send message to all ip addresses further behind in queue to move up one
-                wss.clients.forEach(function each(client) {
-                  if (client !== ws && client.readyState === WebSocket.OPEN &&
-                       queue.getQueuePositionOfIP(getIp(client)) > queue.getQueuePositionOfIP(ip)) {
-                           client.send("moveUpQueue");
-                    }
-                });
-
                 queue.removeFromQueue(ip);
+                updateAllClients();
+
                 ws.send("leaveQueueSuccess");
                 break;
             default:
@@ -71,22 +85,16 @@ wss.on('connection', function connection(ws, req) {
     ws.on('close', function close() {
         console.log('disconnected');
 
-        //send message to all ip addresses further behind in queue to move up one
-        wss.clients.forEach(function each(client) {
-          if (client !== ws && client.readyState === WebSocket.OPEN &&
-               queue.getQueuePositionOfIP(getIp(client)) > queue.getQueuePositionOfIP(ip)) {
-                   client.send("moveUpQueue");
-            }
-        });
-
         queue.removeFromQueue(ip);
+        updateAllClients();
+
     });
 });
 
 server.listen(80, function () {
     console.log('Example app listening on port 80');
 
-    apifunc('reset', undefined);
+    api.execute('reset', undefined);
     runRandomProgram();
     setInterval(runRandomProgram, 5*60000);
 });
@@ -101,8 +109,10 @@ function runRandomProgram() {
   if(queue.length() == 0)
   {
     console.log("Loading random program... " + randomPrograms[randidx]);
-    apifunc('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString());
-    apifunc('start', undefined);
-    apifunc('speed', 1000000000);
+    api.execute('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString()).then(() => {
+      return api.execute('start', undefined);
+    }).then(() => {
+      return api.execute('speed', 1000000000);
+    });
   }
 }

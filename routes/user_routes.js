@@ -1,15 +1,35 @@
 var path = require('path');
-const apifunc = require('../configure/api.js');
+const api = require('../configure/api.js');
 const queue = require('../configure/queue.js')
 
 module.exports = function (app) {
     //api function calls
     app.get('/api', function (req, res) {
-        var comm = req.query.command;
-        var data = req.query.data;
-        rep = apifunc(comm, data);
-        queue.setActive();
-        res.send(rep);
+        let comm = req.query.command;
+        let data = req.query.data;
+        let ip = req.ip.split(':')[3];
+
+        if(queue.getFrontOfQueue() == ip)
+        {
+          queue.setActive();
+        }
+
+        res.setHead
+
+        if(queue.getFrontOfQueue() == ip || !api.isCommandRestricted(comm))
+        {
+          api.execute(comm, data).then((rep) => {
+            res.send(rep);
+          }).catch((err) => {
+            res.status(500);
+            res.json(err);
+          });
+        }
+        else
+        {
+          res.status(401);
+          res.json({message:"You must be at the front of the queue to execute this command"});
+        }
     })
 
     //Queue calls

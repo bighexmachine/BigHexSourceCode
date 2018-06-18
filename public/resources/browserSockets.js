@@ -40,10 +40,36 @@ function initSocket()
               break;
       }
   };
+
+  socket.onerror = function(err) {
+    console.error(err);
+
+    queuePos = -1;
+    socket.close();
+    updateQueueUI(queuePos);
+  }
+
+  socket.onclose = function() {
+    queuePos = -1;
+    updateQueueUI(queuePos);
+  }
+
+  setInterval(function() {
+    askServerForAccessToAPI(function() {});
+  }, 20000);
 }
 
 function askServerForAccessToAPI(callback) {
-    socket.send("requestToAccessAPI");
+    if(socket.readyState === socket.OPEN)
+    {
+      socket.send("askServerForAccessToAPI");
+    }
+    else
+    {
+      queuePos = -1;
+      updateQueueUI(queuePos);
+    }
+
     if(queuePos === 1) {
         callback();
     }

@@ -4,7 +4,6 @@ var gpioServiceLibrary = require('bindings')('gpioService');
 
 var gpioServiceLibraryObj = new gpioServiceLibrary.MyObject();
 
-
 module.exports.startClock = function(){
     gpioServiceLibraryObj.startClock();
 };
