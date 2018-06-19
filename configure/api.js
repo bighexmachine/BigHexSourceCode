@@ -51,10 +51,8 @@ module.exports.execute = function (command, data) {
           compiler.compile(xCode, function(result) {
             if(result.success)
             {
-              return new Promise((resolve, reject) => {
-                WriteToRam(result.u, result.l, gpioService, function() {
-                  resolve(JSON.stringify({keys:[]}));
-                });
+              WriteToRam(result.u, result.l, gpioService, function() {
+                resolve(JSON.stringify({keys:[]}));
               });
             }
             else
