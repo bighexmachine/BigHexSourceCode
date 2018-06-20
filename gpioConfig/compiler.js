@@ -213,6 +213,8 @@ module.exports.disassemble = function(hexu, hexl, dataStart, dataEnd)
   {
     let labels = new HashMap();
 
+    dataEnd = ((dataEnd - dataStart) * 2) + dataStart;
+
     disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd);
     return disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd);
   }
@@ -246,6 +248,11 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
         {
           isData = true;
           outString += "DATA 0x" + val;
+
+          if(lineNo-1 == dataStart && !labels.has(lineNo))
+          {
+            labels.set(lineNo, "sp");
+          }
         }
         else
         {
@@ -256,10 +263,15 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
       else if(cmd == "E" || cmd == "F")
       {
         opval = opval << 4;
+
+        if(cmd == "F")
+        {
+          opval |= 0xff00;
+        }
       }
       else
       {
-        if(opval > 32767) opval = 65534 - opval;
+        if(opval > 32767) opval = -(65536 - opval);
 
         if(cmd == "9")
         {

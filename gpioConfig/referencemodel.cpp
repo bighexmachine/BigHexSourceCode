@@ -3,6 +3,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+#define PRINT_INSTRUCTIONS 0
+#define PRINT_DISPLAY 0
+
 namespace
 {
   const char* bit_rep[16] = {
@@ -22,7 +25,7 @@ ReferenceModel::ReferenceModel() :
   phase0clock(0), phase1clock(0), a_reg(0), b_reg(0), op_reg(0), pc(0), fn_reg(OpCode::LDAM),
   ram_pi_sel(RAM_PI_SELECT::RAM), pi_instr_input(0)
 {
-  mem = (uword_t*)malloc(pow(2, sizeof(uword_t) * 8) * sizeof(uword_t));
+  mem = (uword_t*)malloc(32768 * sizeof(uword_t));
 }
 
 ReferenceModel::~ReferenceModel()
@@ -76,7 +79,9 @@ void ReferenceModel::UpdateClock(bool Phase0Clock, bool Phase0Reset, bool Phase1
       DoExePhase();
       break;
     case ClockPhase::DISPLAY:
-      //DoDisplayPhase();
+    #if PRINT_DISPLAY
+      DoDisplayPhase();
+    #endif
       break;
     default:
       break;
@@ -93,6 +98,20 @@ void ReferenceModel::SetPiDataInput(uint8_t input)
   pi_instr_input = input;
 }
 
+void ReferenceModel::PrintDisplay()
+{
+  DoDisplayPhase();
+}
+
+void ReferenceModel::PrintMemory(int max)
+{
+  if(max > 32767) max = 32767;
+
+  for(int i = 0; i < max; ++i)
+  {
+    printf("%04x\n", GetMem(i));
+  }
+}
 
 void ReferenceModel::DoFetchPhase()
 {
@@ -101,10 +120,10 @@ void ReferenceModel::DoFetchPhase()
 
   if(ram_pi_sel == RAM_PI_SELECT::RAM)
   {
-    uword_t raw_mem_val = mem[(pc >> 1)];
+    uword_t raw_mem_val = GetMem(pc >> 1);
     uint8_t selectedByte;
 
-    if((pc & 1) == 1)
+    if((pc & 1) == 0)
       selectedByte = (raw_mem_val & 0x00ff);
     else
       selectedByte = (raw_mem_val & 0xff00) >> 8;
@@ -129,72 +148,79 @@ void ReferenceModel::DoIncPCPhase()
   ++pc;
 }
 
+#if PRINT_INSTRUCTIONS
+  #define PRINT_I(...) \
+    printf(__VA_ARGS__);
+#else
+  #define PRINT_I(...)
+#endif
+
 void ReferenceModel::DoExePhase()
 {
   switch (fn_reg)
   {
     case OpCode::LDAM:
-      //printf("LDAM %04x\n", op_reg);
-      a_reg = mem[op_reg];
+      PRINT_I("LDAM %04x\n", op_reg);
+      a_reg = GetMem(op_reg);
       break;
     case OpCode::LDBM:
-      //printf("LDBM %04x\n", op_reg);
-      b_reg = mem[op_reg];
+      PRINT_I("LDBM %04x\n", op_reg);
+      b_reg = GetMem(op_reg);
       break;
     case OpCode::STAM:
-      //printf("STAM %04x\n", op_reg);
-      mem[op_reg] = a_reg;
+      PRINT_I("STAM %04x\n", op_reg);
+      SetMem(op_reg, a_reg);
       break;
     case OpCode::LDAC:
-      //printf("LDAC %04x\n", op_reg);
+      PRINT_I("LDAC %04x\n", op_reg);
       a_reg = op_reg;
       break;
     case OpCode::LDBC:
-      //printf("LDBC %04x\n", op_reg);
+      PRINT_I("LDBC %04x\n", op_reg);
       b_reg = op_reg;
       break;
     case OpCode::LDAP:
-      //printf("LDAP %04x\n", op_reg);
+      PRINT_I("LDAP %04x\n", op_reg);
       a_reg = pc + op_reg;
       break;
     case OpCode::LDAI:
-      //printf("LDAI %04x\n", op_reg);
-      a_reg = mem[a_reg + op_reg];
+      PRINT_I("LDAI %04x\n", op_reg);
+      a_reg = GetMem(a_reg + op_reg);
       break;
     case OpCode::LDBI:
-      //printf("LDBI %04x\n", op_reg);
-      b_reg = mem[b_reg + op_reg];
+      PRINT_I("LDBI %04x\n", op_reg);
+      b_reg = GetMem(b_reg + op_reg);
       break;
     case OpCode::STAI:
-      //printf("STAI %04x\n", op_reg);
-      mem[b_reg + op_reg] = a_reg;
+      PRINT_I("STAI %04x\n", op_reg);
+      SetMem(b_reg + op_reg, a_reg);
       break;
     case OpCode::BR:
-      //printf("BR %04x\n", op_reg);
+      PRINT_I("BR %04x\n", op_reg);
       pc = pc + op_reg;
       break;
     case OpCode::BRZ:
-      //printf("BRZ %04x\n", op_reg);
+      PRINT_I("BRZ %04x\n", op_reg);
       if(a_reg == 0) pc = pc + op_reg;
       break;
     case OpCode::BRN:
-      //printf("BRN %04x\n", op_reg);
+      PRINT_I("BRN %04x\n", op_reg);
       if((word_t)a_reg < 0) pc = pc + op_reg;
       break;
     case OpCode::BRB:
-      //printf("BRB %04x\n", op_reg);
+      PRINT_I("BRB %04x\n", op_reg);
       pc = b_reg + op_reg;
       break;
     case OpCode::OPR:
-      //printf("OPR %04x\n", op_reg);
+      PRINT_I("OPR %04x\n", op_reg);
       DoOPR();
       break;
     case OpCode::PFIX:
-      //printf("PFIX %04x\n", op_reg & 0xf);
+      PRINT_I("PFIX %04x\n", op_reg & 0xf);
       op_reg = op_reg << 4;
       break;
     case OpCode::NFIX:
-      //printf("NFIX %04x\n", op_reg & 0xf);
+      PRINT_I("NFIX %04x\n", op_reg & 0xf);
       op_reg = 0xff00 | (op_reg << 4);
       break;
   }
@@ -211,9 +237,10 @@ void ReferenceModel::DoDisplayPhase()
 
   for(int i = 0; i < 16; ++i)
   {
-    uword_t val = mem[displayOffset + 15 - i];
+    uword_t val = GetMem(displayOffset + 15 - i);
     print_bits(val);
   }
+  printf("\n");
 }
 
 void ReferenceModel::DoOPR()

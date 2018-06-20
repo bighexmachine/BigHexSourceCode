@@ -60,6 +60,9 @@ public:
   void SetRamPiSelect(bool selectRam);
   void SetPiDataInput(uint8_t input);
 
+  void PrintDisplay();
+  void PrintMemory(int max);
+
 protected:
 
   void DoFetchPhase();
@@ -70,6 +73,17 @@ protected:
   void DoOPR();
 
 private:
+  // functions to take account of the missing top bit
+  inline uword_t GetMem(uword_t addr) const
+  {
+    return mem[addr & 0x7fff];
+  }
+
+  inline void SetMem(uword_t addr, uword_t val)
+  {
+    mem[addr & 0x7fff] = val;
+  }
+
   //memory ptr
   uword_t* mem;
 

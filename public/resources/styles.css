@@ -195,3 +195,8 @@ a:hover
 {
   border-right: none;
 }
+
+.linedwrap .codelines
+{
+  padding-top: 0;
+}

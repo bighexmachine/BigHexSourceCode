@@ -47,7 +47,9 @@ see: https://github.com/textmate/rmate
 
 ## R-Pi
 
-Pin 13 is clock. That's about all I know.
+This is the current layout of the Pi's GPIO Pins and their uses
+
+![GPIO Pin Layout Diagram](pi.jpg)
 
 
 ## Folder Structure
