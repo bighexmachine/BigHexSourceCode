@@ -1,6 +1,16 @@
-Docs on Big hex project - year 2
+Docs on Big hex project
 
 Author: Nathan Doorly
+
+Modified by: Nick Pearson
+
+## Installation
+
+```bash
+  $ git clone https://github.com/bighexmachine/BigHexSourceCode.git
+  $ cd BigHexSourceCode
+  $ npm install
+```
 
 ## Hardware
  * Raspberry PI 2 (running the webserver, compiling code and driving the clock signals)
@@ -16,14 +26,14 @@ The hostspot was created using this doc: https://www.raspberrypi.org/documentati
 
 node version: 6.11.0
 
-###Compiing the X compiler
+### Compiing the X compiler
 If the compiler gets corrupted or overritten etc. `cd` to compiler directory,
 Run all these commands:
 
-`
-  make clean
-  make
-`
+```bash
+  $ make clean
+  $ make
+```
 
 ## Working on the R-Pi
 There are a couple of ways to work on the Pi remotely. First and foremost it has ssh capability so you can
@@ -54,93 +64,39 @@ This is the current layout of the Pi's GPIO Pins and their uses
 
 ## Folder Structure
 
-Build:
+### Generated Folders
+**Build:**
+Build is created by node-gyp. Using commands 'node-gyp configure' and 'node-gyp build'. Don't really need to do much else to it.
 
--Build is created by node-gyp. Using commands 'node-gyp configure' and 'node-gyp build'.
--Don't really need to do much else to it.
+**temp:**
+This folder is created while the server is running and contains the working directories for compiling. It should be automatically cleared by the server regularly
 
-Configure:
--Configure is used for any npm packages that need to be configured (who would've guessed?).
--Also used to configure the queue system and api calls
--Other potential packages like sql or Angular should be configured here.
+**logs:**
+Contains the 50 most recent log files for the server
 
-gpioConfig:
--Control of gpio pins from this folder.
--Also contains js portion of compiler and assember. Maybe should be moved in future?
--c++ object created to run on own thread. It maintains control of the clock signal
- and regular data outputs. Needs to be c++ so clock is regular, as JS is single threaded.
+### Project Folders
+**Configure:**
+Configure is used for any npm packages that need to be configured (who would've guessed?). Also used to configure the queue system and api calls Other potential packages like sql or Angular should be configured here.
 
-public:
--All html, css and browser run js files are in public. It is the front end
--scripts are in resources sub-directory.
--gui is homepage.
+**gpioConfig:**
+Control of gpio pins from this folder. Also contains js portion of compiler and assember. Maybe should be moved in future?
+c++ object created to run on own thread. It maintains control of the clock signal and regular data outputs. Needs to be c++ so clock is regular, as JS is single threaded.
 
-routes:
--user_routes is where all http requests from a user are handled.
--If websockets etc added in future, make a weboskcet routes file here to handle it all.
+**public:**
+All html, css and browser run js files are in public. It is the front end scripts are in resources sub-directory. Everything in this directory is availible to view through the webserver so beware.
 
-xCompiler:
--David May's x compiler is here rebuilding written above.
--Also contains the old compiler if it is ever needed.
--sim2 and sim3 reside here
+**routes:**
+user_routes is where all http requests from a user are handled.
 
-xPrograms:
--All programs that can be chosen from the loadprogram page.
+**xCompiler:**
+David May's x compiler is here rebuilding written above. Also contains the old compiler if it is ever needed.
 
-serverV2:
-+-- build:
-    +-- binding.Makefile
-    +-- config.gypi
-    +-- gpioService.target.mk
-    +-- Makefile
-+-- Configure:
-    +-- api.js
-    +-- express.js
-    +-- queue.js
-+-- gpioConfig:
-    +-- build:
-        +-- config.gypi
-    +-- assembler.js
-    +-- compiler.js
-    +-- gpioService.js
-    +-- gpioService.cc
-    +-- myobject.h
-    +-- myobject.cc
-+-- node_modules:
-    +-- Too many to list.
-+-- public:
-    +-- resources:
-        +-- bootstrap.min.css
-        +-- bootstrap.min.js
-        +-- cookies.js
-        +-- jquery.js
-        +-- loadassemblyScript.js
-        +-- loadProgramScript.js
-        +-- scripts.js
-        +-- styles.css
-    +-- gui.html
-    +-- loadassembly.html
-    +-- loadprogram.html
-    +-- runinstruction.html
-+-- routes:
-    +-- user_routes.js
-+-- xCompiler:
-    +-- oldCompiler:
-        +-- Previous versions of compiler files. Kept in case of emergency
-    +-- All compiler files
-    +-- sim2 and sim3 are git ignored
-+-- xPrograms:
-    +-- all x program files
-+-- .gitignore
-+-- binding.gyp
-+-- package.json
-+-- README.txt
-+-- server.js
-
+**xPrograms:**
+Selection of example X programs that can be selected from the web UI
 
 ## NPM modules
-sleep
-bindings
-express
-node-gyp
-hashmap
+ * sleep
+ * bindings
+ * express
+ * node-gyp
+ * hashmap
