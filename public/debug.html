@@ -20,15 +20,18 @@
         <div id="container" class="container-fluid">
 
           <h2 id="debugger-title">Loading...</h2>
+          <p>
+            This page is designed to help track down faults in the Big Hex Machine. If any changes are made to the machine during debugging it is reccomended that you re-run the entire test suite as your changes may have knock on effects.
+          </p>
+            <p class="headertext">Possible Faults:</p>
           <div id="debugger">
+            <div class="failures-list">
+              <p>Loading...</p>
+            </div>
+
+            <p class="headertext">Failing Tests:</p>
             <table class="debug-table">
             </table>
-
-            <p>Calculated possible failures (in order of likelyhood):</p>
-
-            <ul class="failures-list">
-              <li>Loading...</li>
-            </ul>
           </div>
         </div>
         <script type="text/javascript" src="resources/jquery.js"></script>

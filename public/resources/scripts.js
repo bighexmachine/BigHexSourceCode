@@ -394,7 +394,12 @@ function updateQueueUI(place) {
   }
 }
 
-
+function prettyPrint(text)
+{
+  let out = text.trim();
+  out = out.replace(/_/gi, " ");
+  return out;
+}
 
 /*
  * Sends a simple command to the server @ port 8080.

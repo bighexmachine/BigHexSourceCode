@@ -177,31 +177,31 @@ function runTestCmd(suiteName, testID)
     let parts = cmd.split(" ");
     if(parts[0] == "SKIP")
     {
-      module.exports('step', undefined)
+      module.exports.execute('step', undefined)
     }
     else if(parts[0] == "RESET")
     {
-      module.exports('reset', undefined);
+      module.exports.execute('reset', undefined);
     }
     else if(parts[0] == "SPEED")
     {
       let val = parseFloat(parts[1]);
-      module.exports('speed', val);
+      module.exports.execute('speed', val);
     }
     else if(parts[0] == "START")
     {
-      module.exports('start', undefined);
+      module.exports.execute('start', undefined);
     }
     else if(parts[0] == "STOP")
     {
-      module.exports('stop', undefined);
+      module.exports.execute('stop', undefined);
     }
     else
     {
       let instr = parseInt(parts[0]);
       let opr = parseInt(parts[1]);
 
-      module.exports('runInstr', (instr << 4) + opr);
+      module.exports.execute('runInstr', (instr << 4) + opr);
     }
 
     ++idx;

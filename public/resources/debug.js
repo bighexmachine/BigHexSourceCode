@@ -11,6 +11,26 @@ var controlSignals = undefined;
 
 var scoreThreshold = -1;
 
+var failingOps = [];
+var failingControls = [];
+
+var listItemMarkup = (control, debuginfo) => `
+    <div class="fault">
+      <div class="fault-header" onclick="ToggleFaultDetails($(this));"><span class="arrow">▶</span> ${prettyPrint(control)}</div>
+      <div class="fault-body" style="display:none;">
+        <p>${debuginfo.location}</p>
+        <ul class="checklist" style="display:none;">
+          <li class="active">[ ] Perform a general check of cables in the area and ensure they are plugged in correctly</li>
+          <li>Check top chained OR is on</li>
+          <li>Check top chained OR is off</li>
+        </ul>
+        <div class="fault-footer">
+          <button type="button" class="btn btn-primary" onclick="NextChecklistItem('${control}', $(this).parent().parent());" id="btn-yes">Start Checklist</button>
+          <button type="button" class="btn btn-default" onclick="MarkControlWorking('${control}');">Dismiss Fault</button>
+        </div>
+      </div>
+    </div>`;
+
 $(document).ready(function() {
   // parse the parameters
   let inParams = window.location.search.substr(1).split('&');
@@ -45,7 +65,7 @@ function InitialiseDebugger()
 
 function OnSuiteLoaded()
 {
-  $("#debugger-title").html("Debug");
+  $("#debugger-title").html("Debugger");
 
   $(".debug-table").html("<tr><td>Test ID</td><td>Expected Result</td><td>Operations</td><td></td></tr>");
 
@@ -85,6 +105,131 @@ function ArrayRemoveSwap_Idx(arr, idx)
 function MarkControlWorking(control)
 {
   manuallyVerifiedCtrls.push(control);
+  CalculateControlSignalFailures();
+}
+
+var currentChecklistControl = "";
+var currentChecklist = [];
+var currentChecklistItem = 0;
+
+function NextChecklistItem(control, div)
+{
+  let checklistContainer = div.find(".checklist");
+
+  if(control != currentChecklistControl)
+  {
+    currentChecklistControl = control;
+
+    GenerateChecklist(control);
+    currentChecklistItem = 0;
+
+    checklistContainer.html("");
+
+    currentChecklist.forEach(function(item) {
+      checklistContainer.append("<li>" + item.msg + "</li>");
+    });
+    checklistContainer.show();
+  }
+  else
+  {
+    checklistContainer.children().eq(currentChecklistItem).removeClass("active");
+    currentChecklistItem++;
+  }
+
+  checklistContainer.children().eq(currentChecklistItem).addClass("active");
+
+  let cmd = currentChecklist[currentChecklistItem].cmd;
+
+  if(cmd != undefined)
+  {
+    sendReq('runInstr', cmd );
+  }
+}
+
+function GenerateCmd(op)
+{
+  let opcode = 0;
+  let operand = Math.floor(Math.random() * 16);
+
+  if(op == "LDAM") opcode = 0;
+  else if(op == "LDBM") opcode = 1;
+  else if(op == "STAM") opcode = 2;
+  else if(op == "LDAC") opcode = 3;
+  else if(op == "LDBC") opcode = 4;
+  else if(op == "LDAP") opcode = 5;
+  else if(op == "LDAI") opcode = 6;
+  else if(op == "LDBI") opcode = 7;
+  else if(op == "STAI") opcode = 8;
+  else if(op == "BR") opcode = 9;
+  else if(op == "BRZ") opcode = 10;
+  else if(op == "BRN") opcode = 11;
+  else if(op == "BRB") opcode = 12;
+  else if(op == "ADD") { opcode = 13; operand = 0; }
+  else if(op == "SUB") { opcode = 13; operand = 1; }
+  else if(op == "IN") { opcode = 13; operand = 2; }
+  else if(op == "OUT") { opcode = 13; operand = 3; }
+  else if(op == "PFIX") opcode = 14;
+  else if(op == "NFIX") opcode = 15;
+
+  return (opcode << 4) + operand;
+}
+
+function GenerateChecklist(control)
+{
+  let debugInfo = controlSignals.debugInfo[control];
+
+  currentChecklist = [];
+  currentChecklist.push({msg:"Perform a general check of cables in the area and ensure they are plugged in correctly"});
+
+  failingOps.forEach(function(op) {
+    let vals = debugInfo.cmdVals[op];
+    if(vals == undefined) return;
+
+    let msg = "Check that ";
+
+    debugInfo.inputs.forEach(function(input, idx) {
+      if(idx != 0) msg += " and ";
+      msg += input + " is " + (vals[idx] == 1 ? "ON" : "OFF");
+    });
+
+    currentChecklist.push({cmd:GenerateCmd(op), msg: msg});
+  });
+
+  // set the machine into a state for testing
+  let testingPhase = 2;
+  if(debugInfo.testingPhase != undefined) testingPhase = debugInfo.testingPhase;
+
+  reset();
+
+  for(let i = 0; i < testingPhase; ++i)
+  {
+    step();
+    step();
+    step();
+    step();
+  }
+
+  console.log(currentChecklist);
+}
+
+function ToggleFaultDetails(headerDiv)
+{
+  let arrow = headerDiv.find(".arrow");
+  let body = headerDiv.parent().find('.fault-body');
+
+  if(arrow.html() == "▶")
+  {
+    arrow.html("▼");
+    body.slideDown();
+    headerDiv.addClass("open");
+  }
+  else
+  {
+    arrow.html("▶");
+    body.slideUp();
+    headerDiv.removeClass("open");
+  }
+
 }
 
 function CalculateControlSignalFailures()
@@ -136,8 +281,8 @@ function CalculateControlSignalFailures()
     });
   });
 
-  let failingOps = [];
-  let failingControls = [];
+  failingOps = [];
+  failingControls = [];
 
   controlSignals.ops.forEach(function(op) {
     if(opScores[op] > 0)
@@ -180,10 +325,13 @@ function CalculateControlSignalFailures()
 
   failuresList.html("");
 
-  let listItemMarkup = (control) => `<li>${control}   (<a href="javascript:void(0);" onclick="MarkControlWorking('${control}');CalculateControlSignalFailures();">Not This</a>)</li>`;
+  likelyFailingControls.forEach(function(control, idx) {
+    let div = failuresList.append(listItemMarkup(control, controlSignals.debugInfo[control]));
 
-  likelyFailingControls.forEach(function(control) {
-    failuresList.append(listItemMarkup(control));
+    if(idx == 0)
+    {
+      ToggleFaultDetails(div.find('.fault-header'));
+    }
   });
 
   if(likelyFailingControls.length == 0)
@@ -193,22 +341,26 @@ function CalculateControlSignalFailures()
     {
       CalculateControlSignalFailures();
     }
+    else
+    {
+      failuresList.append("<p>Failed to automatically calculate faults. Try running the failing tests manually or running a different test suite</p>");
+    }
   }
 }
 
 //returns a list of the most likely controls to fail in reverse order (i.e the last control in the list is the most likely)
-function CalculateLikelyFailingControls(failingOps, failingControls)
+function CalculateLikelyFailingControls(inFailingOps, inFailingControls)
 {
-  if(failingOps.length == 0 || failingControls.length == 0) return [];
+  if(inFailingOps.length == 0 || inFailingControls.length == 0) return [];
 
   // find the control used in the most failing operations
   let highestControl = "";
   let highestCount = -1;
 
-  failingControls.forEach(function(control) {
+  inFailingControls.forEach(function(control) {
     let count = 0;
 
-    failingOps.forEach(function(op) {
+    inFailingOps.forEach(function(op) {
       if(controlSignals.opSignals[op].includes(control))
       {
         count++;
@@ -224,18 +376,21 @@ function CalculateLikelyFailingControls(failingOps, failingControls)
 
   if(highestCount == -1) return [];
 
+  let newFailingOps = inFailingOps.splice();
+
   // recursive call with the remaining ops and controls
-  for(let i = failingOps.length-1; i >= 0; i--)
+  for(let i = newFailingOps.length-1; i >= 0; i--)
   {
-    if(controlSignals.opSignals[failingOps[i]].includes(highestControl))
+    if(controlSignals.opSignals[newFailingOps[i]].includes(highestControl))
     {
-      ArrayRemoveSwap_Idx(failingOps, i);
+      ArrayRemoveSwap_Idx(newFailingOps, i);
     }
   }
 
-  ArrayRemoveSwap(failingControls, highestControl);
+  let newFailingControls = failingControls.splice();
+  ArrayRemoveSwap(newFailingControls, highestControl);
 
-  let recursiveArr = CalculateLikelyFailingControls(failingOps, failingControls);
+  let recursiveArr = CalculateLikelyFailingControls(newFailingOps, newFailingControls);
   recursiveArr.push(highestControl);
   return recursiveArr;
 }

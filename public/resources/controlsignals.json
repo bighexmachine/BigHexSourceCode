@@ -72,5 +72,46 @@
     "OUT":["FN_REGISTER", "INPUT_SELECT", "OUTPUT_VALUE", "A_MUX_SELECT", "B_MUX_SELECT", "OP_SELECT"],
     "PFIX":["FN_REGISTER", "PREFIX_SELECT", "PREFIX_WRITE"],
     "NFIX":["FN_REGISTER", "PREFIX_SELECT", "PREFIX_WRITE", "NFX_INPUT_SWITCHES"]
+  },
+  "debugInfo":{
+    "A_REG_WRITE":{
+      "location":"Control Signal found on the left side of the machine. It recieves inputs from two chained OR modules, top and bottom.",
+      "inputs":[
+        "Top chained OR",
+        "Bottom chained OR"
+      ],
+      "cmdVals":{
+        "LDAM":[1,0],
+        "LDAC":[1,0],
+        "LDAP":[1,0],
+        "LDAI":[1,0],
+        "ADD":[1,1],
+        "SUB":[1,1],
+        "IN":[1,1]
+      }
+    },
+    "CON_SELECT":{},
+    "MEM_WRITE":{},
+    "PC_REG_SHIFT":{},
+    "PC_REG_WRITE":{},
+    "A_MUX_SELECT":{},
+    "OP_SELECT":{},
+    "B_REG_WRITE":{},
+    "B_MUX_SELECT":{},
+    "DISPLAY_STEP":{},
+    "RESULT_SELECT":{},
+    "PREFIX_SELECT":{},
+    "PREFIX_WRITE":{},
+    "INST_REG_WRITE":{},
+    "BRANCH_ENABLE":{},
+    "OPN_CODE":{},
+    "INPUT_SELECT":{},
+    "OUTPUT_VALUE":{},
+    "DISPLAY_BUFFER_OFFSET":{},
+    "NFX_INPUT_SWITCHES":{},
+    "TIMING_INPUT_SWITCH":{},
+    "DISPLAY_COUNTER_INPUT_SWITCH":{},
+    "FN_REGISTER":{},
+    "CLK_REG_CONTROL":{}
   }
 }

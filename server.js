@@ -33,19 +33,18 @@ wss.on('connection', function connection(ws, req) {
     queue.addToQueue(ip);
 
     let updateAllClients = function() {
-      //send message to all ip addresses further behind in queue to move up one
       wss.clients.forEach(function each(client) {
-        if (client !== ws && client.readyState === WebSocket.OPEN)
+        if (client.readyState === WebSocket.OPEN)
         {
           if(queue.getFrontOfQueue() == getIp(client))
           {
-            ws.send("accessAPISuccess");
+            client.send("accessAPISuccess");
           }
           else
           {
             var pos = queue.getQueuePositionOfIP(getIp(client));
             pos = pos+1;
-            ws.send("denied " + JSON.stringify(pos));
+            client.send("denied " + JSON.stringify(pos));
           }
         }
       });
