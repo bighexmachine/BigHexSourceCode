@@ -36,7 +36,7 @@ function performShutdown()
   let rebootTime = calcRebootTime();
 
   console.log("... Putting the machine to sleep until " + new Date(rebootTime*1000).toString());
-  exec('sudo rtcwake --dry-run -v -m disk -t ' + rebootTime, function(err, stdout, stderr) {
+  exec('sudo rtcwake -v -m disk -t ' + rebootTime, function(err, stdout, stderr) {
     console.log(stdout.toString('utf8'));
     console.log(stderr.toString('utf8'));
     process.exit(0);
