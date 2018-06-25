@@ -6,15 +6,50 @@ Modified by: Nick Pearson
 
 ## Installation
 
+Installation requires the following dependencies
+ * GNU Make Utility
+ * GCC Compiler
+ * Node JS version 6.11.0
+
+On a raspberry pi installation is as follows
 ```bash
   $ git clone https://github.com/bighexmachine/BigHexSourceCode.git
   $ cd BigHexSourceCode
   $ npm install
 ```
 
+The software can also be build on any other linux based system with one minor change. Navigate to **/gpioConfig/wiringProxy.h** and change `#define IS_PI 1` to `#define IS_PI 0`. This will disable the GPIO portion of the code. Re-run `npm install` as above. Compiling in this way is useful for implementing features of the webserver and frontend.
+
+## Active Hours
+
+The Big Hex Machine is designed to automatically switch off out of normal working hours. These hours are defined in **configure/shutdown.js** and can be modified. They also define a truth table of days of the week when the Machine will be active.
+
+**NOTE:** If you are running code on your own machine locally there is a chance the server will try to put your machine to sleep. To combat this disable the shutdown system in `server.js` by commenting out the init function.
+
+### How to use the machine out of hours
+
+To boot the machine out of it's normal hours requires access to 2.16 MVB. Switch the machine off then on using the fuse on the wall to force the machine to boot up. Simarly this fuse can be used as a sort-of master off switch for the machine.
+
+## Running
+
+`server.js` is the main file of the server. It is recommended this is run via the provided shell script `server-start.sh` which handles log files.
+The server runs on port 80, this requires elevated privileges so run with `sudo` (There is probably a better way to do this)
+
+On the PI the node js module `forever` is used to run the server so that it automatically reboots itself if a crash occurs.
+
+Install forever globally:
+```bash
+  $ npm install forever -g
+```
+
+Run the script:
+```bash
+  $ sudo forever start -c /bin/bash server-start.sh
+```
+
 ## Hardware
  * Raspberry PI 2 (running the webserver, compiling code and driving the clock signals)
- * Briding circuit that allows R-PI GPIO pins to drive build-a-comp signals
+ * Bridging circuit that allows R-PI GPIO pins to drive build-a-comp signals
  * Build-a-comp boards (comprising the actual machine)
  * LED matrix and driver board
  * Buttons driven by custom circuit
@@ -23,8 +58,6 @@ The R-Pi has two wifi connections. One for eduroam and one to create a hotspot f
 bridge between the two, since it is not necessary for any work done or users to access. Could also create large security
 problems.
 The hostspot was created using this doc: https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md
-
-node version: 6.11.0
 
 ### Compiing the X compiler
 If the compiler gets corrupted or overritten etc. `cd` to compiler directory,
@@ -52,7 +85,6 @@ And open a file with
     rmate examplefile.js
 `
 see: https://github.com/textmate/rmate
-
 
 
 ## R-Pi

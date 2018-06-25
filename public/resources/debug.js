@@ -20,9 +20,6 @@ var listItemMarkup = (control, debuginfo) => `
       <div class="fault-body" style="display:none;">
         <p>${debuginfo.location}</p>
         <ul class="checklist" style="display:none;">
-          <li class="active">[ ] Perform a general check of cables in the area and ensure they are plugged in correctly</li>
-          <li>Check top chained OR is on</li>
-          <li>Check top chained OR is off</li>
         </ul>
         <div class="fault-footer">
           <button type="button" class="btn btn-primary" onclick="NextChecklistItem('${control}', $(this).parent().parent());" id="btn-yes">Start Checklist</button>
@@ -179,7 +176,7 @@ function GenerateChecklist(control)
   let debugInfo = controlSignals.debugInfo[control];
 
   currentChecklist = [];
-  currentChecklist.push({msg:"Perform a general check of cables in the area and ensure they are plugged in correctly"});
+  currentChecklist.push({msg:"Perform a general check of cables in the area and ensure they are not lose or unplugged"});
 
   failingOps.forEach(function(op) {
     let vals = debugInfo.cmdVals[op];
@@ -189,7 +186,7 @@ function GenerateChecklist(control)
 
     debugInfo.inputs.forEach(function(input, idx) {
       if(idx != 0) msg += " and ";
-      msg += input + " is " + (vals[idx] == 1 ? "ON" : "OFF");
+      msg += input + " is " + (vals[idx] == 1 ? "ON" : (vals[idx] == 0 ? "OFF" : vals[idx]));
     });
 
     currentChecklist.push({cmd:GenerateCmd(op), msg: msg});

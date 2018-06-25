@@ -90,16 +90,169 @@
         "IN":[1,1]
       }
     },
-    "CON_SELECT":{},
-    "MEM_WRITE":{},
-    "PC_REG_SHIFT":{},
-    "PC_REG_WRITE":{},
-    "A_MUX_SELECT":{},
-    "OP_SELECT":{},
-    "B_REG_WRITE":{},
-    "B_MUX_SELECT":{},
-    "DISPLAY_STEP":{},
-    "RESULT_SELECT":{},
+    "CON_SELECT":{
+      "location":"Control Signal found on the left side of the machine. It recieves inputs from three chained OR modules; left, middle and right. Left and middle should always have the same value.",
+      "inputs":[
+        "Left and Middle chained OR",
+        "Rightchained OR"
+      ],
+      "cmdVals":{
+        "BRZ":[0,1],
+        "BRN":[1,1]
+      }
+    },
+    "MEM_WRITE":{
+      "location":"Control Signal found on the left side of the machine. It recieves input from a single chained OR module",
+      "inputs":[
+        "chained OR"
+      ],
+      "cmdVals":{
+        "STAM":[1],
+        "STAI":[1]
+      }
+    },
+    "PC_REG_SHIFT":{
+      "location":"Control Signal found on the left side of the machine. It recieves input from a single chained OR module",
+      "inputs":[
+        "chained OR"
+      ],
+      "testingPhase":0,
+      "cmdVals":{
+      }
+    },
+    "PC_REG_WRITE":{
+      "location":"Control Signal found on the left side of the machine. It recieves input from a chained OR module and a chained or connected to a multiplexer",
+      "inputs":[
+        "top chained OR",
+        "multiplexer chained OR"
+      ],
+      "cmdVals":{
+        "BR":[1, 0],
+        "BRZ":["?", 1],
+        "BRN":["?", 1],
+        "BRB":[1, 0]
+      }
+    },
+    "A_MUX_SELECT":{
+      "location":"Control Signal found on the right side of the machine. It recieves input from two chained OR modules on the left and two on the right",
+      "inputs":[
+        "left top chained OR",
+        "left bottom chained OR",
+        "right top chained OR",
+        "right bottom chained OR"
+      ],
+      "cmdVals":{
+        "DISPLAY":[1, 0, 1, 1],
+        "STAM":[0, 0, 0, 0],
+        "LDAC":[0, 0, 0, 0],
+        "LDBC":[0, 0, 0, 0],
+        "LDAP":[0, 0, 1, 0],
+        "LDAI":[1, 0, 0, 0],
+        "LDBI":[0, 0, 0, 0],
+        "STAI":[0, 0, 0, 0],
+        "BR":[0, 0, 1, 0],
+        "BRZ":[0, 0, 1, 1],
+        "BRN":[0, 0, 1, 1],
+        "BRB":[0, 0, 0, 0],
+        "ADD":[1, 1, 0, 0],
+        "SUB":[1, 1, 0, 0],
+        "OUT":[1, 1, 1, 1]
+      }
+    },
+    "OP_SELECT":{
+      "location":"Control Signal found on the right side of the machine. It recieves input from a chained OR module on the left, two chained OR modules on the right and the OPN CODE demultiplexer",
+      "inputs":[
+        "left chained OR",
+        "right top chained OR",
+        "right bottom chained OR",
+        "OPN CODE demultiplexer"
+      ],
+      "cmdVals":{
+        "DISPLAY":[0, 0, 0, 0],
+        "STAM":[0, 1, 1, 0],
+        "LDAC":[0, 1, 0, 0],
+        "LDBC":[0, 1, 1, 0],
+        "LDAP":[0, 0, 0, 0],
+        "LDAI":[0, 0, 0, 0],
+        "LDBI":[0, 0, 0, 0],
+        "STAI":[0, 0, 0, 0],
+        "BR":[0, 0, 0, 0],
+        "BRZ":[0, 0, 0, 0],
+        "BRN":[0, 0, 0, 0],
+        "BRB":[0, 0, 0, 0],
+        "ADD":[0, 0, 0, 0],
+        "SUB":[1, 0, 0, 1],
+        "OUT":[0, 0, 0, 0]
+      }
+    },
+    "B_REG_WRITE":{
+      "location":"Control Signal found on the right side of the machine. It recieves input from a single chained OR module",
+      "inputs":[
+        "chained OR"
+      ],
+      "cmdVals":{
+        "LDBM":[1],
+        "LDBC":[1],
+        "LDBI":[1]
+      }
+    },
+    "B_MUX_SELECT":{
+      "location":"Control Signal found on the right side of the machine. It recieves input from two chained OR modules on the left and one on the right",
+      "inputs":[
+        "left top chained OR",
+        "left bottom chained OR",
+        "right chained OR"
+      ],
+      "cmdVals":{
+        "DISPLAY":[1, 0, 1],
+        "LDAP":[1, 0, 0],
+        "LDAI":[1, 1, 0],
+        "LDBI":[0, 0, 0],
+        "STAI":[0, 0, 0],
+        "BR":[1, 0, 0],
+        "BRZ":[1, 1, 0],
+        "BRN":[1, 0, 0],
+        "BRB":[0, 0, 0],
+        "ADD":[0, 0, 0],
+        "SUB":[0, 0, 0],
+        "OUT":[0, 0, 0]
+      }
+    },
+    "DISPLAY_STEP":{
+      "location":"Part of the timing system. Responsible for displaying the next line on the LED matrix display",
+      "inputs":[
+      ],
+      "testingPhase": 3,
+      "cmdVals":{
+      }
+    },
+    "RESULT_SELECT":{
+      "location":"Control signal found on the right side of the machine. It recieves input from a chained OR module on the left and two chained OR modules on the right",
+      "inputs":[
+        "left chained OR",
+        "right top chained OR",
+        "right bottom chained OR"
+      ],
+      "cmdVals":{
+        "DISPLAY":[0, 1, 1],
+        "LDAM":[0, 1, 0],
+        "LDBM":[0, 1, 0],
+        "STAM":[0, 0, 0],
+        "LDAC":[0, 0, 0],
+        "LDBC":[0, 0, 0],
+        "LDAP":[0, 0, 0],
+        "LDAI":[0, 1, 1],
+        "LDBI":[0, 1, 1],
+        "STAI":[0, 0, 0],
+        "BR":[0, 0, 0],
+        "BRZ":[0, 0, 0],
+        "BRN":[0, 0, 0],
+        "BRB":[0, 0, 0],
+        "ADD":[0, 0, 0],
+        "SUB":[0, 0, 0],
+        "IN":[1, 0, 0]
+      }
+    },
     "PREFIX_SELECT":{},
     "PREFIX_WRITE":{},
     "INST_REG_WRITE":{},

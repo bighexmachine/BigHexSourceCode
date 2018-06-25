@@ -15,6 +15,8 @@ const queue = require('./configure/queue');
 
 const api = require('./configure/api.js');
 
+const autoShutdown = require('./configure/shutdown.js')
+
 const app = configureExpress();
 gpioService.setSpeed(1);
 
@@ -51,12 +53,10 @@ wss.on('connection', function connection(ws, req) {
     };
 
     ws.on('message', function incoming(message) {
-        console.log('received: %s', message);
-        //get ip address of this user
-        console.log("Message from IP = " + ip);
+        console.log('\'' + ip + '\' => %s', message);
+        
         switch (message) {
             case "askServerForAccessToAPI":
-                console.log("Ask for access");
                 if(queue.getFrontOfQueue() == ip) {
                     //user can access the Big hex, set active for queue timeout
                     queue.setActive();
@@ -90,13 +90,38 @@ wss.on('connection', function connection(ws, req) {
     });
 });
 
+var randomProgramTimer = -1;
+
 server.listen(80, function () {
-    console.log('Example app listening on port 80');
+    console.log('Web Server listening on port 80');
 
     api.execute('reset', undefined);
     runRandomProgram();
-    setInterval(runRandomProgram, 5*60000);
+    randomProgramTimer = setInterval(runRandomProgram, 5*60000);
 });
+
+//auto-shutdown
+autoShutdown.init(function (done) {
+  clearInterval(randomProgramTimer);
+
+  //setup the machine in a low use state
+  gpioService.resetClock();
+  for(let i = 0; i < 16; i++)
+  {
+    gpioService.runInstruction((15 << 4) + 15);
+    gpioService.runInstruction((2 << 4) + i);
+  }
+  gpioService.resetClock();
+
+  wss._server.close(function() {
+    server.close(function() {
+      gpioService.kill();
+      done();
+    });
+  });
+  return true;
+});
+
 
 let randidx = 0;
 let randomPrograms = ["wink.x", "welcome.x", "nyan.x", "rotating_text.x"];

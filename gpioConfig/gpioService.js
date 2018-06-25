@@ -60,3 +60,7 @@ module.exports.runInstruction = function(instr, switchInputs){
     if(switchInputs)
       module.exports.selectRam();
 };
+
+module.exports.kill = function() {
+  gpioServiceLibraryObj = undefined;
+};

@@ -49,6 +49,7 @@ MyObject::~MyObject()
 {
   DoStopClock();
   clockThread.join();
+  cout << "Killing C++ Thread Object" << endl;
   delete refModel;
 }
 
