@@ -17,7 +17,6 @@
     "BRANCH_ENABLE",
     "OPN_CODE",
     "INPUT_SELECT",
-    "OUTPUT_VALUE",
     "DISPLAY_BUFFER_OFFSET",
     "NFX_INPUT_SWITCHES",
     "TIMING_INPUT_SWITCH",
@@ -51,8 +50,8 @@
   ],
   "opSignals":{
     "RESET":["TIMING_INPUT_SWITCH", "CLK_REG_CONTROL"],
-    "TIMING":["FN_REGISTER", "TIMING_INPUT_SWITCH"],
-    "DISPLAY":["FN_REGISTER", "DISPLAY_COUNTER_INPUT_SWITCH", "DISPLAY_STEP", "RESULT_SELECT", "A_MUX_SELECT", "B_MUX_SELECT", "OP_SELECT"],
+    "TIMING":["TIMING_INPUT_SWITCH"],
+    "DISPLAY":["DISPLAY_COUNTER_INPUT_SWITCH", "DISPLAY_BUFFER_OFFSET", "DISPLAY_STEP", "RESULT_SELECT", "A_MUX_SELECT", "B_MUX_SELECT", "OP_SELECT"],
     "LDAM":["FN_REGISTER", "A_REG_WRITE", "RESULT_SELECT"],
     "LDBM":["FN_REGISTER", "B_REG_WRITE", "RESULT_SELECT"],
     "STAM":["FN_REGISTER", "OP_SELECT", "MEM_WRITE", "RESULT_SELECT", "A_MUX_SELECT"],
@@ -69,7 +68,7 @@
     "ADD":["FN_REGISTER", "OPN_CODE", "A_REG_WRITE", "A_MUX_SELECT", "B_MUX_SELECT", "OP_SELECT", "RESULT_SELECT"],
     "SUB":["FN_REGISTER", "OPN_CODE", "A_REG_WRITE", "A_MUX_SELECT", "B_MUX_SELECT", "OP_SELECT", "RESULT_SELECT"],
     "IN":["FN_REGISTER", "INPUT_SELECT", "A_REG_WRITE", "RESULT_SELECT"],
-    "OUT":["FN_REGISTER", "INPUT_SELECT", "OUTPUT_VALUE", "A_MUX_SELECT", "B_MUX_SELECT", "OP_SELECT"],
+    "OUT":["FN_REGISTER", "INPUT_SELECT", "A_MUX_SELECT", "B_MUX_SELECT", "OP_SELECT"],
     "PFIX":["FN_REGISTER", "PREFIX_SELECT", "PREFIX_WRITE"],
     "NFIX":["FN_REGISTER", "PREFIX_SELECT", "PREFIX_WRITE", "NFX_INPUT_SWITCHES"]
   },
@@ -253,18 +252,131 @@
         "IN":[1, 0, 0]
       }
     },
-    "PREFIX_SELECT":{},
-    "PREFIX_WRITE":{},
-    "INST_REG_WRITE":{},
-    "BRANCH_ENABLE":{},
-    "OPN_CODE":{},
-    "INPUT_SELECT":{},
-    "OUTPUT_VALUE":{},
-    "DISPLAY_BUFFER_OFFSET":{},
-    "NFX_INPUT_SWITCHES":{},
-    "TIMING_INPUT_SWITCH":{},
-    "DISPLAY_COUNTER_INPUT_SWITCH":{},
-    "FN_REGISTER":{},
-    "CLK_REG_CONTROL":{}
+    "PREFIX_SELECT":{
+        "location":"Control signal found on the right side of the machine. It recieves input from a single chained OR module",
+        "testingPhase": 0,
+        "inputs":[
+          "chained OR"
+        ],
+        "cmdVals":{
+          "PFIX":[1],
+          "NFIX":[1]
+        }
+    },
+    "PREFIX_WRITE":{
+        "location":"Control signal found on the right side of the machine. It is always ENABLED during the execute phase",
+        "inputs":[],
+        "cmdVals":{
+          "PFIX":[],
+          "NFIX":[]
+        }
+    },
+    "INST_REG_WRITE":{
+      "location":"Control signal found on the right side of the machine. It is always ENABLED during the fetch phase",
+      "inputs":[],
+      "cmdVals":{}
+    },
+    "BRANCH_ENABLE":{
+      "location":"Control signal found at the bottom left of the machine. It provides input to a demultiplexer selecting nothing or a value",
+      "inputs":[
+        "demultiplexer"
+      ],
+      "cmdVals":{
+        "BRZ":["On if A reg is 0"],
+        "BRN":["On if A reg is less than 0"]
+      }
+    },
+    "OPN_CODE":{
+      "location":"Control signal found at the bottom left of the machine. It provides input to a demultiplexer selecting one of 4 values. Value 0 is at the top",
+      "inputs":[
+        "demultiplexer"
+      ],
+      "cmdVals":{
+        "ADD":[0],
+        "SUB":[1]
+      }
+    },
+    "INPUT_SELECT":{
+        "location":"Control signal found at the bottom of the machine, to the left of the buttons. It provides input to demultiplexers selecting one of 4 values. Value 0 is on the left",
+        "inputs":[
+          "demultiplexer"
+        ],
+        "cmdVals":{
+          "IN":["The same as A reg"],
+          "OUT":["The same as B reg"]
+        }
+    },
+    "DISPLAY_BUFFER_OFFSET":{
+      "location":"Set of 3 input switch modules found at the bottom right of the machine.",
+      "inputs":[
+        "switches"
+      ],
+      "cmdVals":{
+        "DISPLAY":["Switches should have values 7, 15, 15 from left to right"]
+      }
+    },
+    "NFX_INPUT_SWITCHES":{
+      "location":"Set of 2 input switch modules found at the middle right of the machine.",
+      "inputs":[
+        "switches"
+      ],
+      "cmdVals":{
+        "DISPLAY":["Switches must both have value 15"]
+      }
+    },
+    "TIMING_INPUT_SWITCH":{
+      "location":"An input switch module found at the lower left side of the machine.",
+      "inputs":[
+        "switches"
+      ],
+      "cmdVals":{
+        "DISPLAY":["Switch must have value 1"]
+      }
+    },
+    "DISPLAY_COUNTER_INPUT_SWITCH":{
+      "location":"An input switch module found at the top right side of the machine near to the raspberry pi.",
+      "inputs":[
+        "switches"
+      ],
+      "cmdVals":{
+        "DISPLAY":["Switch must have value 1"]
+      }
+    },
+    "FN_REGISTER":{
+      "location":"Single 4 bit register module found at the centre right side of the machine.",
+      "inputs":[
+        "register"
+      ],
+      "cmdVals":{
+        "LDAM":[0],
+        "LDBM":[1],
+        "STAM":[2],
+        "LDAC":[3],
+        "LDBC":[4],
+        "LDAP":[5],
+        "LDAI":[6],
+        "LDBI":[7],
+        "STAI":[8],
+        "BR":[9],
+        "BRZ":[10],
+        "BRN":[11],
+        "BRB":[12],
+        "ADD":[13],
+        "SUB":[13],
+        "IN":[13],
+        "OUT":[13],
+        "PFIX":[14],
+        "NFIX":[15]
+      }
+    },
+    "CLK_REG_CONTROL":{
+      "location":"White input cable plugged into the lower register in the timing section. Its value can be observed by following the output green cable to the next 4 WAY FAN OUT module",
+      "inputs":[
+        "value"
+      ],
+      "cmdVals":{
+        "RESET":[0]
+      }
+    }
   }
 }
