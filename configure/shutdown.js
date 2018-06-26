@@ -1,10 +1,11 @@
 var exec = require('child_process').exec;
 
-var STARTUP_HOUR = 08;
-var STARTUP_MIN  = 30;
+// NOTE:
+var STARTUP_HOUR = 10;
+var STARTUP_MIN  = 51;
 
-var SHUTDOWN_HOUR   = 18;
-var SHUTDOWN_MINUTE = 00;
+var SHUTDOWN_HOUR   = 10;
+var SHUTDOWN_MINUTE = 49;
 
 // which days the machine should be on for
 var ACTIVE_DAYS = [ false, // SUNDAY
@@ -21,7 +22,8 @@ module.exports.init = function(onshutdown) {
   let shutdownTime = calcShutdownTime();
   let shutdownInterval = shutdownTime - Math.floor(Date.now() / 1000);
 
-  console.log("Initialising server... next automatic shut down will be " + new Date(shutdownTime*1000).toString());
+  console.log("Initialising server... current system time is " + new Date(Date.now()).toString());
+  console.log("The next automatic shut down will be " + new Date(shutdownTime*1000).toString());
 
   setTimeout(function() {
     console.log("Automatic shutdown procedure started...");
@@ -35,11 +37,15 @@ function performShutdown()
 {
   let rebootTime = calcRebootTime();
 
-  console.log("... Putting the machine to sleep until " + new Date(rebootTime*1000).toString());
+  console.log("Putting the machine to sleep until " + new Date(rebootTime*1000).toString() + "...");
   exec('sudo rtcwake -v -m disk -t ' + rebootTime, function(err, stdout, stderr) {
     console.log(stdout.toString('utf8'));
     console.log(stderr.toString('utf8'));
-    process.exit(0);
+
+    setTimeout(function() {
+      console.log("Killing node process...");
+      process.exit(0);
+    }, 10*1000);
   });
 }
 
@@ -60,7 +66,7 @@ function calcRebootTime()
       break;
   }
 
-  return time;;
+  return time;
 }
 
 function calcShutdownTime()
