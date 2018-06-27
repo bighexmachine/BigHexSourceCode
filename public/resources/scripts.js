@@ -123,10 +123,12 @@ function stop()
   });
 }
 
-function step()
+function step(num)
 {
+  if(num == undefined || isNaN(num)) num = 1;
+
   askServerForAccessToAPI( function() {
-      sendReq('step' , undefined);
+      sendReq('step' , num);
   });
 }
 

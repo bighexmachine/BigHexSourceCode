@@ -36,7 +36,12 @@ module.exports.execute = function (command, data) {
     }
     else if(command === 'step' && !isWritingToRAM)
     {
+      let count = (data == undefined || isNaN(data) || data > 999 || data < 1) ? 1 : data;
+
+      for(let i = 0; i < count; ++i)
+      {
         gpioService.stepClock();
+      }
     }
     else if(command === 'reset' && !isWritingToRAM)
     {

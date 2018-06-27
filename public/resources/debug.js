@@ -137,7 +137,7 @@ function NextChecklistItem(control, div)
 
   let cmd = currentChecklist[currentChecklistItem].cmd;
 
-  if(cmd != undefined)
+  if(cmd != undefined && cmd != -1)
   {
     sendReq('runInstr', cmd );
   }
@@ -167,6 +167,11 @@ function GenerateCmd(op)
   else if(op == "OUT") { opcode = 13; operand = 3; }
   else if(op == "PFIX") opcode = 14;
   else if(op == "NFIX") opcode = 15;
+  else
+  {
+    console.warn("Tried to generate invalid command \"" + op + "\"");
+    return -1;
+  }
 
   return (opcode << 4) + operand;
 }
@@ -197,14 +202,7 @@ function GenerateChecklist(control)
   if(debugInfo.testingPhase != undefined) testingPhase = debugInfo.testingPhase;
 
   reset();
-
-  for(let i = 0; i < testingPhase; ++i)
-  {
-    step();
-    step();
-    step();
-    step();
-  }
+  step(4 * testingPhase);
 
   console.log(currentChecklist);
 }

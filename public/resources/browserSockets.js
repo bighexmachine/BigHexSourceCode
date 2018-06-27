@@ -5,7 +5,6 @@ var queuePos;
 
 function initSocket()
 {
-  console.log(location.hostname);
   socket = new WebSocket("ws://" + location.hostname + "/");
   queuePos = -1;
 
@@ -24,8 +23,10 @@ function initSocket()
               updateQueueUI(queuePos);
               break;
           case "accessAPISuccess":
+              if(queuePos != 1)
+                console.log("queue position changed to 1");
+
               queuePos = 1;
-              console.log("changed to 1");
               updateQueueUI(queuePos);
               break;
           case "moveUpQueue":
@@ -56,7 +57,7 @@ function initSocket()
 
   setInterval(function() {
     askServerForAccessToAPI(function() {});
-  }, 20000);
+  }, 30000);
 }
 
 function askServerForAccessToAPI(callback) {
