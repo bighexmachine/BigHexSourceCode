@@ -53,7 +53,11 @@ let ws = fs.createWriteStream(LOGSDIR + '/' + NewLogfileName  + ".log");
 let proc = spawn(cmd, {shell: true});
 
 let uncorkHandle = -1;
-proc.stdout.on('data', (data) => {
+proc.stdout.on('data', ondataout);
+proc.stderr.on('data', ondataout);
+
+function ondataout(data) {
+  process.stdout.write(data.toString('utf8'));
   ws.cork();
   ws.write(data.toString('utf8'));
 
@@ -61,10 +65,11 @@ proc.stdout.on('data', (data) => {
   setTimeout(function() {
     ws.uncork();
   }, 1000);
-});
+}
 
 proc.on('close', (code) => {
+  ws.uncork();
   ws.end();
-  console.log("Server proc terminated with code ${code}");
+  console.log("Server proc terminated with code " + code);
   if(code != 0) throw new Error("ServerError");
 });

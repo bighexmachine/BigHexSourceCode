@@ -1,11 +1,11 @@
 var exec = require('child_process').exec;
+const path = require('path');
 
-// NOTE:
-var STARTUP_HOUR = 10;
-var STARTUP_MIN  = 51;
+var STARTUP_HOUR = 08;
+var STARTUP_MIN  = 30;
 
-var SHUTDOWN_HOUR   = 10;
-var SHUTDOWN_MINUTE = 49;
+var SHUTDOWN_HOUR   = 17;
+var SHUTDOWN_MINUTE = 30;
 
 // which days the machine should be on for
 var ACTIVE_DAYS = [ false, // SUNDAY
@@ -18,6 +18,9 @@ var ACTIVE_DAYS = [ false, // SUNDAY
 
 
 module.exports.init = function(onshutdown) {
+  //clear any previously scheduled startups
+  exec('crontab -r', function(err, stdout, stderr) {});
+
   //calculate the next time we should shut down
   let shutdownTime = calcShutdownTime();
   let shutdownInterval = shutdownTime - Math.floor(Date.now() / 1000);
@@ -33,19 +36,20 @@ module.exports.init = function(onshutdown) {
   }, (shutdownInterval+1) * 1000);
 };
 
+var ROOT_DIR = path.normalize(__dirname + '/..');
+
 function performShutdown()
 {
-  let rebootTime = calcRebootTime();
+  let rebootTime = new Date(calcRebootTime() * 1000);
 
-  console.log("Putting the machine to sleep until " + new Date(rebootTime*1000).toString() + "...");
-  exec('sudo rtcwake -v -m disk -t ' + rebootTime, function(err, stdout, stderr) {
+  console.log("Putting the machine to sleep until " + rebootTime.toString() + "...");
+  let cmd = './server-stop.sh "' + rebootTime.getUTCMinutes() + ' ' + rebootTime.getUTCHours() + ' ' + rebootTime.getUTCDate() + ' ' + (rebootTime.getUTCMonth()+1) + ' *"';
+  console.log("$ " + cmd);
+
+  exec(cmd, function(err, stdout, stderr) {
     console.log(stdout.toString('utf8'));
     console.log(stderr.toString('utf8'));
-
-    setTimeout(function() {
-      console.log("Killing node process...");
-      process.exit(0);
-    }, 10*1000);
+    process.exit(0);
   });
 }
 
