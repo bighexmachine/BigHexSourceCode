@@ -1995,8 +1995,14 @@ proc genmain(x) is
 
   setlab(mainlab);
 
-  setprocused(x.t1);
-  namemessage("main function: ", x.t1);
+  |special case - the main function must ALWAYS be included|
+  var namenode := x;
+  {
+    while (namenode.t0) = s_semicolon do namenode := namenode.t1;
+    setprocused(namenode.t1);
+    namemessage("main function: ", namenode.t1)
+  };
+
   genprocs(x)
 }
 

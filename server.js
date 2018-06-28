@@ -123,7 +123,7 @@ autoShutdown.init(function (done) {
 });
 
 
-let randidx = 1;
+let randidx = 0;
 let randomPrograms = ["wink.x", "welcome.x", "nyan.x", "rotating_text.x"];
 function runRandomProgram() {
   // start the next program
@@ -135,7 +135,7 @@ function runRandomProgram() {
     console.log("Loading random program... " + randomPrograms[randidx]);
     api.execute('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString()).then((resultstr) => {
       let result = JSON.parse(resultstr);
-      
+
       if(result.keys.length == 0)
         return api.execute('start', undefined);
 
