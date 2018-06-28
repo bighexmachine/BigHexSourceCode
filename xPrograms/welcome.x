@@ -1,4 +1,4 @@
-val framebuff = #7FF0;
+
 
 proc main() is
   var w;
@@ -17,7 +17,6 @@ proc main() is
   var smile;
   var at;
 {
-
   w := [ #b0000000000000000
        , #b0000000000000000
        , #b0011100000011100
@@ -316,35 +315,6 @@ proc main() is
 
 proc displayLetter(s) is
 {
-  copyImage(s);
+  displayBitmap(s);
   delay()
-}
-
-
-proc copyImage(s) is
-  var n;
-{
-  n := 0;
-  while n < 16 do
-  {
-    framebuff[15-n] := s[n];
-    n := n + 1
-  }
-}
-
-proc clear() is
-  var n;
-{
-  n := 0;
-  while n < 16 do
-  {
-    framebuff[n] := 0;
-    n := n + 1
-  }
-}
-
-proc delay() is
-  var n;
-{ n := 0;
-  while n < 25 do n := n + 1
 }

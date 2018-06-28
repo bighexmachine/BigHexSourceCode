@@ -6,6 +6,7 @@ gpioConfig/source.x
 xCompiler/sim2
 xCompiler/sim3
 xCompiler/a.bin
+xCompiler/bootstrap.bin
 xPrograms/source.x
 serverPID.txt
 

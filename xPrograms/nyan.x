@@ -1,5 +1,3 @@
-val framebuff = #7FF0;
-
 proc main() is
   var a;
   var b;
@@ -24,6 +22,7 @@ proc main() is
        ];
 
   displayBitmap(a);
+  delay();
   while true do
   {
     framebuff[2] := #b1111010010010000;
@@ -35,28 +34,4 @@ proc main() is
     framebuff[0] := #b0000111100111100;
     delay()
   }
-}
-
-proc displayBitmap(s) is
-{
-  copyImage(s);
-  delay()
-}
-
-
-proc copyImage(s) is
-  var n;
-{
-  n := 0;
-  while n < 16 do
-  {
-    framebuff[15-n] := s[n];
-    n := n + 1
-  }
-}
-
-proc delay() is
-  var n;
-{ n := 0;
-  while n < 10 do n := n + 1
 }

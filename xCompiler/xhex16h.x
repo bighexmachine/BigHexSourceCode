@@ -158,6 +158,10 @@ var nameb;
 var namem;
 var nameg;
 
+| set to 1 if the name is used |
+array procs_u[100];
+var procs_uc;
+
 val pflag = #1000;
 ||
 var codesize;
@@ -244,7 +248,11 @@ func main() is
 
   prints("tree size: "); printn(treep - tree); newline();
 
-  translate(t);
+  if(errcount = 0)
+  then
+    translate(t)
+  else
+    skip;
 
   prints("program size: "); printn(codesize); newline();
 
@@ -504,10 +512,14 @@ func formtree() is
 }
 
 proc cmperror(s) is
+{
+  cmperror_internal(s); newline()
+}
+
+proc cmperror_internal(s) is
 { prints("error near line ");
   printn(linecount); prints(": ");
   prints(s);
-  newline();
   errcount := errcount + 1
 }
 
@@ -743,14 +755,27 @@ proc readstring() is
 
 | lexical analyser main procedure |
 
+proc skipwhitespace() is
+{
+  while (ch = '\n') or (ch = '\r') or (ch = '\t') or (ch = ' ') do
+  {
+    rch()
+  }
+}
+
 proc nextsymbol() is
-{ while (ch = '\n') or (ch = '\r') or (ch = '\t') or (ch = ' ') do
-    rch();
+{ skipwhitespace();
   if (ch = '|')
   then
   { rch();
-    while (ch ~= '|') do
-      rch();
+    while (ch ~= '|') and (ch ~='\n') do rch();
+
+    if (ch = '\n')
+    then
+      cmperror("missing end of comment")
+    else
+      skip;
+
     rch();
     nextsymbol()
   }
@@ -1097,6 +1122,7 @@ func rstatement() is
   var a;
   var b;
   var c;
+  var pn;
 { if (symbol = s_var) or (symbol = s_val) or (symbol = s_array)
   then
   { a := rdecl();
@@ -1155,6 +1181,10 @@ func rstatement() is
     if (a.t0) = s_fncall
     then
     { a.t0 := s_pcall;
+
+      setprocused(a.t1);
+
+      |namemessage("calling ", a.t1);|
       return a
     }
     else
@@ -1226,6 +1256,7 @@ func rprocdecl() is
     b := rformals();
   checkfor(s_rparen, "\')\' expected");
   checkfor(s_is, "\'is\' expected");
+
   return cons4(s, a, b, rstatement())
 }
 
@@ -1260,8 +1291,10 @@ func rprogram() is
 func rmodule() is
   if (symbol = s_val) or (symbol = s_var) or (symbol = s_array)
   then
+  {
     var a := rdecl();
-    return cons3(s_scope, a, rmodule())
+    return cons3(s_scope, a, rprogram())
+  }
   else
     return rprocdecls()
 
@@ -1290,6 +1323,20 @@ func rdecl() is
     checkfor(s_lbracket, "\'[\' expected");
     b := rexpression();
     checkfor(s_rbracket, "\']\' expected");
+
+    if (symbol = s_eq)
+    then
+    {
+      prints("array has initialiser");
+      newline();
+      nextsymbol();
+      checkfor(s_lbracket, "\'[\' expected");
+      |TODO : Parse and handle the array default value|
+      checkfor(s_rbracket, "\']\' expected")
+    }
+    else
+      skip;
+
     a := cons3(s_array, a, b)
   }
   else
@@ -1364,21 +1411,25 @@ proc declprocs(x) is
     declprocs(x.t2)
   }
   else
-    var n := nameg - 1;
-    var found := false;
-    { while ((found = false) and (n >= namem)) do
-        if (names_d[n].t1) = (x.t1)
-        then
-          found := true
-        else
-          n := n - 1;
-      if found
+    var n := -1;
+    {
+      n := findname_internal(x.t1);
+
+      |namemessage("adding proc ", x.t1);|
+
+      if n < 0
       then
+        addname(x, getlabel())
+      else
       { names_d[n] := x;
+
+        cmperror_internal("procedure already defined");
+        namemessage_internal(" \'", x.t1);
+        prints("\'");
+        newline();
+
         addname(x, names_v[n])
       }
-      else
-        addname(x, getlabel())
     }
 
 proc declexports(x) is
@@ -1469,7 +1520,58 @@ proc addname(x, v) is
 }
 
 
+proc setprocused(x) is
+{
+  if isprocused(x)
+  then
+    skip
+  else
+  {
+    procs_u[procs_uc] := x;
+    procs_uc := procs_uc + 1
+  }
+}
+
+func isprocused(x) is
+  var n;
+  var found;
+{
+  n := 0;
+  found := false;
+
+  while ((n < procs_uc) and (found = false))
+  do
+  {
+    if (procs_u[n]) = x
+    then
+    {
+      found := true
+    }
+    else
+      n := n + 1
+  };
+
+  return found
+}
+
 func findname(x) is
+  var n;
+{
+  n := findname_internal(x);
+
+  if n < 0
+  then
+  {
+    generror_internal(" ");
+    namemessage("name not declared ", x)
+  }
+  else
+    skip;
+
+  return n
+}
+
+func findname_internal(x) is
   var n := namep - 1;
   var found := false;
 { while ((found = false) and (n >= 0)) do
@@ -1479,14 +1581,15 @@ func findname(x) is
     else
       n := n - 1
   };
+
   if found
   then
     skip
   else
   {
-    generror_internal(" ");
-    namemessage("name not declared ", x)
+    n := -1
   };
+
   return n
 }
 
@@ -1831,24 +1934,13 @@ proc translate(t) is
   arraybase := maxaddr;
   stk_init(m_sp + 1);
 
+  initsp(arraybase - 2);
+  gen(cbf_constp, 0, 0);
+
   tprog(t);
 
   flushbuffer()
 }
-
-proc tprog(x) is
-  if (x.t0) = s_module
-  then
-  { namem := namep;
-    declexports(x.t1);
-    nameg := namep;
-    tmodule(x.t2);
-    namep := nameg;
-    tprog(x.t3)
-  }
-  else
-    tmain(x)
-
 
 proc tmodule(x) is
   if (x.t0) = s_scope
@@ -1862,16 +1954,27 @@ proc tmodule(x) is
     genprocs(x)
   }
 
-proc tmain(x) is
+proc tprog(x) is
   if (x.t0) = s_scope
   then
   { declglobal(x.t1);
-    tmain(x.t2)
+    tprog(x.t2)
   }
   else
-  { initsp(arraybase - 2);
-    gen(cbf_constp, 0, 0);
-    genmain(x)
+  {
+    if (x.t0) = s_module
+    then
+    { namem := namep;
+      declexports(x.t1);
+      nameg := namep;
+      tmodule(x.t2);
+      tprog(x.t3);
+      namep := nameg
+    }
+    else
+    {
+      genmain(x)
+    }
   }
 
 proc genmain(x) is
@@ -1892,6 +1995,8 @@ proc genmain(x) is
 
   setlab(mainlab);
 
+  setprocused(x.t1);
+  namemessage("main function: ", x.t1);
   genprocs(x)
 }
 
@@ -1907,21 +2012,32 @@ proc genprocs(x) is
   else
   { savetreep := treep;
     namep := nameb;
+
     pn := findname(x.t1);
     proclabel := names_v[pn];
     procdef := names_d[pn];
-    infunc := (procdef.t0) = s_func;
-    body := x.t3;
-    stk_init(1);
-    declformals(x.t2);
-    setlab(proclabel);
-    genentry();
-    stk_init(1);
-    setstack();
-    optimise(body);
-    genstatement(body, true, 0, true);
-    genexit();
-    treep := savetreep
+
+    if isprocused(procdef.t1)
+    then
+    {
+      |namemessage("generating ", procdef.t1);|
+
+      infunc := (procdef.t0) = s_func;
+      body := x.t3;
+      stk_init(1);
+      declformals(x.t2);
+      setlab(proclabel);
+      genentry();
+      stk_init(1);
+      setstack();
+      optimise(body);
+      genstatement(body, true, 0, true);
+      genexit();
+      treep := savetreep
+    }
+    else
+      |skip|
+      namemessage("skipping ", procdef.t1)
   }
 }
 

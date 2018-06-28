@@ -54,7 +54,7 @@ wss.on('connection', function connection(ws, req) {
 
     ws.on('message', function incoming(message) {
         console.log('\'' + ip + '\' => %s', message);
-        
+
         switch (message) {
             case "askServerForAccessToAPI":
                 if(queue.getFrontOfQueue() == ip) {
@@ -123,7 +123,7 @@ autoShutdown.init(function (done) {
 });
 
 
-let randidx = 0;
+let randidx = 1;
 let randomPrograms = ["wink.x", "welcome.x", "nyan.x", "rotating_text.x"];
 function runRandomProgram() {
   // start the next program
@@ -133,10 +133,17 @@ function runRandomProgram() {
   if(queue.length() == 0)
   {
     console.log("Loading random program... " + randomPrograms[randidx]);
-    api.execute('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString()).then(() => {
-      return api.execute('start', undefined);
+    api.execute('load', fs.readFileSync('xPrograms/' + randomPrograms[randidx]).toString()).then((resultstr) => {
+      let result = JSON.parse(resultstr);
+      
+      if(result.keys.length == 0)
+        return api.execute('start', undefined);
+
+      return Promise.reject(new Error("Failed to load program"));
     }).then(() => {
       return api.execute('speed', 1000000000);
+    }).catch((err) => {
+      throw err;
     });
   }
 }

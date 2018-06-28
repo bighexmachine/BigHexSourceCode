@@ -52,18 +52,27 @@ module.exports.compile = function(Xsource, callback){
   fs.mkdirSync(COMPILEDIR);
   fs.chmodSync(COMPILEDIR, '777');
 
-
   //writes code passed in to file source.x
   var SOURCEFILE = path.normalize(COMPILEDIR + '/source.x');
   var COMPILERFILES = path.normalize(__dirname + '/../xCompiler');
-  var COMPILECMD = "cd " + COMPILERFILES + " && " + COMPILERFILES + "/a.out " + COMPILEDIR + " < " + SOURCEFILE;
+  var STDLIB = path.normalize(COMPILERFILES + '/stdlib.x');
+  var COMPILECMD = "cd " + COMPILERFILES + " && " + COMPILERFILES + "/a.out -d=" + COMPILEDIR + " < " + SOURCEFILE;
 
   console.log("writing file to " + SOURCEFILE);
   let promise = new Promise((resolve, reject) => {
-    fs.writeFile(SOURCEFILE, Xsource, function(err) {
+    fs.readFile(STDLIB, function(err, data) {
       if(err) throw err;
-      console.log("Done writing");
-      resolve();
+
+      fs.writeFile(SOURCEFILE, data.toString('utf8'), function(err) {
+        if(err) throw err;
+
+        fs.appendFile(SOURCEFILE, Xsource, function(err) {
+          if(err) throw err;
+
+          console.log("Done writing");
+          resolve();
+        });
+      });
     });
   });
 
@@ -74,7 +83,9 @@ module.exports.compile = function(Xsource, callback){
       if(err)
       {
         console.log("Compile Failed");
-        console.log("STDOUT:" + stdout.toString('utf8'));
+        console.log("OUTPUT:");
+        console.log(stdout.toString('utf8'));
+        console.log(stderr.toString('utf8'));
         rmdirRecursive(COMPILEDIR);
         callback({success: false, output:stdout.toString('utf8')});
         return Promise.resolve();
@@ -106,7 +117,7 @@ module.exports.compile = function(Xsource, callback){
       //console.log(hexlArray + '\n');
       //console.log(hexuArray + '\n');
 
-      rmdirRecursive(COMPILEDIR);
+      //rmdirRecursive(COMPILEDIR);
 
       callback({ success: true, output: stdout.toString('utf8'), u: hexuArray, l: hexlArray, dataStart: dataSectionStart, dataEnd: dataSectionEnd });
       return Promise.resolve();
@@ -276,7 +287,7 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
         if(cmd == "9")
         {
           let addr = lineNo + 1 + opval;
-          let labelName = (labels.size == 0) ? "main" : "label" + labels.size;
+          let labelName = (labels.size == 0) ? "main_wrapper" : "label" + labels.size;
 
           if(labels.has(addr))
           {
@@ -284,6 +295,8 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
           }
           else
           {
+            if(labels.has(lineNo-1) && labels.get(lineNo-1) == "main_wrapper") labelName = "main";
+
             labels.set(addr, labelName);
           }
 

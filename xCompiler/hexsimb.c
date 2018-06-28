@@ -13,6 +13,9 @@ FILE *codefile;
 
 FILE *simio[8];
 
+char* inputname = "a.bin";
+char* targetdir = NULL;
+
 char connected[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 #define i_ldam   0x0
@@ -70,11 +73,11 @@ void load()
   int low;
   int length;
 
-  codefile = fopen("a.bin", "rb");
+  codefile = fopen(inputname, "rb");
 
   if(codefile == NULL)
   {
-    printf("Failed to open file \"a.bin\"\n");
+    printf("Failed to open file \"%s\"\n", inputname);
     exit(1);
   }
 
@@ -144,18 +147,39 @@ void svc()
 }
 }
 
-int main(int argc, char** argv)
+void parseArgs(int argc, char** argv)
 {
-    load();
+  if(argc < 1) return;
 
-  if(argc > 1)
+  for(int i = 1; i < argc; ++i)
   {
-    if(chdir(argv[1]) != 0)
+    if(argv[i][0] != '-') continue;
+
+    char cmd = argv[i][1];
+    char* val = &argv[i][3];
+
+    if(cmd == 'd')
     {
-      printf("Error setting working directory to %s\n", argv[1]);
-      exit(1);
+      targetdir = val;
+    }
+    else if(cmd == 'i')
+    {
+      inputname = val;
     }
   }
+}
+
+int main(int argc, char** argv)
+{
+    parseArgs(argc, argv);
+
+    load();
+
+    if(targetdir != NULL && chdir(targetdir) != 0)
+    {
+      printf("Error setting working directory to %s\n", targetdir);
+      exit(1);
+    }
 
     running = true;
 
