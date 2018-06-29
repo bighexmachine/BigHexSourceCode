@@ -987,7 +987,10 @@ proc nextsymbol() is
   then
     symbol := s_endfile
   else
-    cmperror_internal("illegal character ")
+  {
+    cmperror_internal("illegal character ");
+    printn(ch); newline()
+  }
 }
 
 | syntax analyser |

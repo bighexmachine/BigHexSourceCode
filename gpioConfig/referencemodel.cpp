@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define PRINT_INSTRUCTIONS 0
+#define PRINT_INSTRUCTIONS 1
 #define PRINT_DISPLAY 0
 
 namespace
@@ -217,11 +217,11 @@ void ReferenceModel::DoExePhase()
       DoOPR();
       break;
     case OpCode::PFIX:
-      PRINT_I("PFIX %04x\n", op_reg & 0xf);
+      //PRINT_I("PFIX %04x\n", op_reg & 0xf);
       op_reg = op_reg << 4;
       break;
     case OpCode::NFIX:
-      PRINT_I("NFIX %04x\n", op_reg & 0xf);
+      //PRINT_I("NFIX %04x\n", op_reg & 0xf);
       op_reg = 0xff00 | (op_reg << 4);
       break;
   }

@@ -17,6 +17,18 @@ proc delay() is
   while n < 25 do n := n + 1
 }
 
+proc longdelay() is
+var n;
+{ n := 0;
+  while n < 500 do n := n + 1
+}
+
+proc verylongdelay() is
+var n;
+{ n := 0;
+  while n < 10000 do n := n + 1
+}
+
 | copies the provided bitmat into the display buffer |
 proc displayBitmap(b) is
 {
@@ -57,7 +69,7 @@ proc clearDisplay() is
           stai #C
           stai #D
           stai #E
-          stai #FFFF",
+          stai #F",
         0,
         framebuff)
 }
@@ -176,8 +188,14 @@ var m;
     return m
 }
 
-proc genRand() is delay()
-proc genRandUpTo()  is delay()
+proc sRand(s) is randseed := s
+
+|returns a random num in range 0 <= rand < x |
+proc genRand(x) is
+{
+  randseed := mod( mul(169, randseed) + 13, 193 );
+  return mod(randseed, s)
+}
 
 | populates the array parameter with the display representation of the character |
 proc getBitmapForChar(ch,arr) is

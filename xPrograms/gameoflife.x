@@ -46,7 +46,7 @@ proc update(state) is
     while col < 16 do
     {
       newval := newval + newval;
-      
+
       if(curval >= 0)
       then
         newval := newval + 1
@@ -71,10 +71,4 @@ proc draw(state) is
     framebuff[n] := state[n];
     n := n + 1
   }
-}
-
-proc delay() is
-  var n;
-{ n := 0;
-  while n < 50 do n := n + 1
 }

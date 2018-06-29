@@ -1,7 +1,3 @@
-
-val framebuff = #7FF0;
-var mul_x;
-var seed;
 array images[2];
 
 proc main() is
@@ -59,7 +55,7 @@ proc main() is
        , #b0000000000000000
        ];
 
-    seed := 93;
+    sRand(93);
     while true do
     {
 
@@ -68,9 +64,9 @@ proc main() is
       posB := 7;
       x := 8;
       y := 3;
-      xs := randGen(2);
+      xs := genRand(2);
       if xs=0 then xs:= #FFFF else skip;
-      ys := randGen(5)-2;
+      ys := genRand(5)-2;
 
       clearDisplay();
       i:=posA;
@@ -142,72 +138,14 @@ proc main() is
       i:=0;
       while i<4 do
       {
-        displayImage(images[winner-1]);
-        delay(100);
+        displayBitmap(images[winner-1]);
+        longdelay();
         clearDisplay();
-        delay(100);
+        longdelay();
         i:=i+1
       }
     }
   }
-
-
-func lsu(x, y) is
-  if (x < 0) = (y < 0)
-  then
-    return x < y
-  else
-    return y < 0
-
-func mul_step(b, y) is
-  var r;
-{
-
-  if (b < 0) or (~lsu(b, mul_x))
-  then
-    r := 0
-  else
-    r := mul_step(b + b, y + y);
-
-  if ~lsu(mul_x, b)
-  then
-  {
-    mul_x := mul_x - b;
-    r := r + y
-  }
-  else
-    skip;
-  return r
-}
-
-func mul(n,m) is
-{ mul_x := m;
-  return mul_step(1, n)
-}
-
-proc displayImage(s) is
-  var n;
-{ n := 0;
-  while n < 16 do
-  { framebuff[15-n] := s[n];
-    n := n + 1
-  }
-}
-
-proc clearDisplay() is
-  var n;
-{ n := 0;
-  while n < 16 do
-  { framebuff[n] := 0;
-    n := n + 1
-  }
-}
-
-proc delay(t) is
-  var n;
-{ n := 0;
-  while n < t do n := n + 1
-}
 
 proc rotateFrameBuff() is
   var n;
@@ -223,10 +161,3 @@ proc rotateFrameBuff() is
     n := n + 1
   }
 }
-
-
-func randGen(s) is
- {
-    seed := mod( mul(169, seed) + 13, 193 );
-    return mod(seed, s)
- }

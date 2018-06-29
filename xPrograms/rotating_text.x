@@ -1,8 +1,3 @@
-
-
-
-val fbuff = #FFF0;
-
 array nextLetter[16];
 
 val numLetters = 8;
@@ -21,13 +16,13 @@ proc main() is
 
 proc wink() is
 {
-  fbuff[11] := #b0111001111111110;
+  framebuff[11] := #b0111001111111110;
   delay();
-  fbuff[10] := #b0111001111111110;
+  framebuff[10] := #b0111001111111110;
   delay();
-  fbuff[10] := #b0111001111001110;
+  framebuff[10] := #b0111001111001110;
   delay();
-  fbuff[11] := #b0111001111001110;
+  framebuff[11] := #b0111001111001110;
   delay()
 }
 
@@ -54,8 +49,8 @@ proc swapInNextLetter(nextLetterIndex) is
       rowCounter := 0;
       while rowCounter < 16 do
       {
-        fbuff[rowCounter] := fbuff[rowCounter] + fbuff[rowCounter];
-        if nextLetter[rowCounter] < 0 then fbuff[rowCounter] := fbuff[rowCounter] + 1 else skip;
+        framebuff[rowCounter] := framebuff[rowCounter] + framebuff[rowCounter];
+        if nextLetter[rowCounter] < 0 then framebuff[rowCounter] := framebuff[rowCounter] + 1 else skip;
         nextLetter[rowCounter] := nextLetter[rowCounter] + nextLetter[rowCounter];
         rowCounter := rowCounter + 1
       };

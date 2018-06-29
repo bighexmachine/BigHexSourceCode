@@ -134,10 +134,3 @@ proc rotate() is
     n := n + 1
   }
 }
-
-proc delay() is
-  var n;
-{ n := 0;
-  while n < 40 do n := n + 1
-}
-

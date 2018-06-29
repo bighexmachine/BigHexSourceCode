@@ -30,7 +30,7 @@ function rmdirRecursive(path)
 
 rmdirRecursive(path.normalize(__dirname + '/../temp/'));
 
-module.exports.compile = function(Xsource, callback){
+module.exports.compile = function(Xsource, callback, quiet){
   var TEMPDIR = path.normalize(__dirname + '/../temp/');
 
   if(!fs.existsSync(TEMPDIR))
@@ -58,7 +58,9 @@ module.exports.compile = function(Xsource, callback){
   var STDLIB = path.normalize(COMPILERFILES + '/stdlib.x');
   var COMPILECMD = "cd " + COMPILERFILES + " && " + COMPILERFILES + "/a.out -d=" + COMPILEDIR + " < " + SOURCEFILE;
 
-  console.log("writing file to " + SOURCEFILE);
+  if(quiet == undefined || quiet == false)
+    console.log("writing file to " + SOURCEFILE);
+
   let promise = new Promise((resolve, reject) => {
     fs.readFile(STDLIB, function(err, data) {
       if(err) throw err;
@@ -69,7 +71,9 @@ module.exports.compile = function(Xsource, callback){
         fs.appendFile(SOURCEFILE, Xsource, function(err) {
           if(err) throw err;
 
-          console.log("Done writing");
+          if(quiet == undefined || quiet == false)
+            console.log("Done writing");
+
           resolve();
         });
       });
@@ -78,23 +82,31 @@ module.exports.compile = function(Xsource, callback){
 
   // executes compile on file
   promise.then(() => {
-    console.log(COMPILECMD);
+    if(quiet == undefined || quiet == false)
+      console.log(COMPILECMD);
+
     exec(COMPILECMD, function(err, stdout, stderr) {
       if(err)
       {
-        console.log("Compile Failed");
-        console.log("OUTPUT:");
-        console.log(stdout.toString('utf8'));
-        console.log(stderr.toString('utf8'));
-        //rmdirRecursive(COMPILEDIR);
+        if(quiet == undefined || quiet == false)
+        {
+          console.log("Compile Failed");
+          console.log("OUTPUT:");
+          console.log(stdout.toString('utf8'));
+          console.log(stderr.toString('utf8'));
+        }
+        rmdirRecursive(COMPILEDIR);
         callback({success: false, output:stdout.toString('utf8')});
         return Promise.resolve();
       }
 
       let stdoutstring = stdout.toString('utf8');
 
-      console.log("Compile Successful");
-      console.log("STDOUT:" + stdoutstring);
+      if(quiet == undefined || quiet == false)
+      {
+        console.log("Compile Successful");
+        console.log("STDOUT:" + stdoutstring);
+      }
 
       let lines = stdoutstring.split("\n");
       let dataSectionStart = 3;
@@ -117,7 +129,7 @@ module.exports.compile = function(Xsource, callback){
       //console.log(hexlArray + '\n');
       //console.log(hexuArray + '\n');
 
-      //rmdirRecursive(COMPILEDIR);
+      rmdirRecursive(COMPILEDIR);
 
       callback({ success: true, output: stdout.toString('utf8'), u: hexuArray, l: hexlArray, dataStart: dataSectionStart, dataEnd: dataSectionEnd });
       return Promise.resolve();

@@ -25,7 +25,7 @@ proc main() is
       {
         copyImage(init, framebuff);
         bubbleSort();
-        delay(10000)
+        verylongdelay()
       }
    }
 
@@ -49,7 +49,7 @@ proc bubbleSort() is
            framebuff[i+1] := framebuff[i];
            framebuff[i] := tmp;
            swapped := true;
-           delay(1000)
+           verylongdelay()
          } else skip;
          i := i+1
        }
@@ -66,11 +66,3 @@ proc copyImage(s, dest) is
        n := n + 1
      }
    }
-
-proc delay(t) is
- var n;
- {
-   n := 0;
-   while n < t do n := n + 1
- }
-

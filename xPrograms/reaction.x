@@ -74,11 +74,11 @@ proc main() is
     x:=0;
     while x<4 do
     {
-     delay(100);
+     longdelay();
      winner!15;
-     copyImage(images[winner]);
-     delay(100);
-     copyImage(images[2]);
+     displayBitmap(images[winner]);
+     longdelay();
+     displayBitmap(images[2]);
      winner!0;
      x:=x+1
     }
@@ -104,15 +104,6 @@ func getfirstResponce(button) is
      }
    };
    return winner
- }
-
- proc copyImage(s) is
-   var n;
- { n := 0;
-   while n < 16 do
-   { framebuff[15-n] := s[n];
-     n := n + 1
-   }
  }
 
 func getbit(bitPattern, index) is
@@ -148,17 +139,9 @@ func getRandomNumberUpto(max) is
      if max<rand then rand:=1 else skip;
      0!rand;
      1!rand;
-     delay(10)
+     delay()
    };
    0!0;
    1!0;
    return rand
  }
-
-
-proc delay(x) is
-  var n;
-{ n := 0;
-  while n < x do n := n + 1
-}
-
