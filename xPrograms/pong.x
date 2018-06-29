@@ -22,7 +22,7 @@ proc main() is
  |0:no-one, 1:player 1, 2:player 2|
  var winner;
   {
-  
+
   images[0] := [ #b0000000000000000
         , #b0000000110000000
         , #b0000001110000000
@@ -60,9 +60,9 @@ proc main() is
        ];
 
     seed := 93;
-    while true do 
+    while true do
     {
-  
+
       winner := 0;
       posA := 7;
       posB := 7;
@@ -71,7 +71,7 @@ proc main() is
       xs := randGen(2);
       if xs=0 then xs:= #FFFF else skip;
       ys := randGen(5)-2;
-      
+
       clearDisplay();
       i:=posA;
       v:=posA+4;
@@ -80,26 +80,26 @@ proc main() is
       m:=posB+4;
       while i<m do {framebuff[i]:=framebuff[i]+#0001; i:=i+1};
       framebuff[y]:=framebuff[y]+lsh(1,x);
-      
+
       while winner=0 do
       {
         |move ball|
         framebuff[y]:=framebuff[y]-lsh(1,x);
         x:=x+xs;
         y:=y+ys;
-        if x=15 then 
+        if x=15 then
         {
           if ((y-posA)<0) or ((posA+4)<y) then winner:=2 else xs:=0-xs
         }
         else skip;
-        if x=0 then 
+        if x=0 then
         {
           if ((y-posB)<0) or ((posB+4)<y) then winner:=1 else xs:=0-xs
         }
-        else skip; 
+        else skip;
         if (y=15) or (y=14) or (y=0) or (y=1) then ys:=0-ys else skip;
         framebuff[y]:=framebuff[y]+lsh(1,x);
-        
+
         |move bars|
         j:=0;
         while j < 50 do
@@ -109,10 +109,10 @@ proc main() is
           {
             |remove old position|
             i:=posA;
-            
+
             m:=posA+4;
             while i<m do {framebuff[i]:=framebuff[i]-#8000; i:=i+1};
-            
+
             |get new position|
             if (v=2) and (posA<12) then posA:=posA-1 else skip;
             if (v=8) and (0<posA) then posA:=posA+1 else skip;
@@ -120,7 +120,7 @@ proc main() is
             m:=posA+4;
             while i<m do {framebuff[i]:=framebuff[i]+#8000; i:=i+1}
           };
-          
+
           1?v;
           if v=0 then skip else
           {
@@ -128,13 +128,13 @@ proc main() is
             i:=posB;
             m:=posB+4;
             while i<m do {framebuff[i]:=framebuff[i]-#0001; i:=i+1};
-            
+
             |get new position|
             if (v=2) and (posA<12) then posB:=posB-1 else skip;
             if (v=8) and (0<posA) then posB:=posB+1 else skip;
             i:=posB;
             m:=posB+4;
-            while i<m do {framebuff[i]:=framebuff[i]+#0001; i:=i+1}       
+            while i<m do {framebuff[i]:=framebuff[i]+#0001; i:=i+1}
           };
           j:=j+1
         }
@@ -150,35 +150,35 @@ proc main() is
       }
     }
   }
-  
-  
+
+
 func lsu(x, y) is
   if (x < 0) = (y < 0)
-  then 
+  then
     return x < y
   else
     return y < 0
 
 func mul_step(b, y) is
   var r;
-{ 
-  
+{
+
   if (b < 0) or (~lsu(b, mul_x))
   then
     r := 0
   else
     r := mul_step(b + b, y + y);
-  
+
   if ~lsu(mul_x, b)
   then
-  { 
+  {
     mul_x := mul_x - b;
     r := r + y
   }
   else
     skip;
   return r
-}  
+}
 
 func mul(n,m) is
 { mul_x := m;
@@ -209,53 +209,19 @@ proc delay(t) is
   while n < t do n := n + 1
 }
 
-proc rotateFrameBuff() is 
+proc rotateFrameBuff() is
   var n;
-  var w; 
+  var w;
 { n := 0;
   while n < 16 do
   { w := framebuff[n];
     if w < 0
-    then 
+    then
       framebuff[n] := w + w + 1
     else
       framebuff[n] := w + w;
     n := n + 1
   }
-}
-
-func isOdd(x) is
- var i;
- var sum;
-  {
-    sum:=x;
-    while i<15 do
-    {
-       sum:=sum+sum;
-       i:=i+1
-    };
-    return sum < 0
-  }
-
-func isEven(x) is return ~(isOdd(x))
-
-
-func mod(modulus, divisor) is
-var m;
-{
-    if (divisor < (modulus+1)) and (divisor < #7FFF )
-    then 
-      m := mod(modulus, divisor+divisor)
-    else 
-      m := modulus;
-
-    if divisor < (m+1)
-    then
-      m:=m-divisor
-    else
-      skip;
-
-    return m
 }
 
 
@@ -264,43 +230,3 @@ func randGen(s) is
     seed := mod( mul(169, seed) + 13, 193 );
     return mod(seed, s)
  }
-
-
-func lsh(x, n) is 
- var i;
- var y;
-  {
-    y:=x;
-    i:=0;
-    while i<n do {y:=y+y;i:=i+1};
-    return y
-  }
-
-
-
-func rotateWord(x, n) is 
-  var i;
-  var w; 
-{ i := 0;
-  w:=x;
-  while i < (16-n) do
-  {
-    if w < 0
-    then 
-      w := w + w + 1
-    else
-      w := w + w;
-    i := i + 1
-  };
-  return w
-}
-
-
-func rsh(x, n) is 
- var w;
-  {
-    w:=rotateWord(x,n);
-    if w<0 then w:=w+#8000 else skip;
-    return w
-  }
-

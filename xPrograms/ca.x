@@ -1,6 +1,3 @@
-val framebuff = #7FF0;
-var mul_x;
-
 proc main() is
   var i;
   var s1;
@@ -69,13 +66,13 @@ var ret;
   ret:=num0;
   if(num0>=8)
   then {x[0]:=invert(x[0]); num0:=num0-8}
-  else skip; 
+  else skip;
   if(num0>=4)
   then {x[1]:=invert(x[1]); num0:=num0-4}
   else skip;
   if(num0>=2)
   then {x[2]:=invert(x[2]); num0:=num0-2}
-  else skip; 
+  else skip;
   if(num0>=1)
   then {x[3]:=invert(x[3]); num0:=num0-1}
   else skip;
@@ -85,13 +82,13 @@ var ret;
   else skip;
   if(num0>=8)
   then {x[4]:=invert(x[4]); num0:=num0-8}
-  else skip; 
+  else skip;
   if(num0>=4)
   then {x[5]:=invert(x[5]); num0:=num0-4}
   else skip;
   if(num0>=2)
   then {x[6]:=invert(x[6]); num0:=num0-2}
-  else skip; 
+  else skip;
   if(num0>=1)
   then {x[7]:=invert(x[7]); num0:=num0-1}
   else skip;
@@ -127,7 +124,7 @@ proc drawrule(x) is
   if(x[7]=1)
   then {bcode2:=bcode2+1}
   else skip;
-  0!bcode1; 
+  0!bcode1;
   1!bcode2
 }
 proc getrule(x, rule) is
@@ -159,7 +156,7 @@ proc getrule(x, rule) is
   if(rule>=1)
   then {x[7]:=1; bcode2:=bcode2+1}
   else x[7]:=0;
-  1!bcode1; 
+  1!bcode1;
   0!bcode2
 }
 proc addone(x) is
@@ -190,34 +187,6 @@ proc addone(x) is
   else x[7]:=0
 }
 
-func lsu(x, y) is
-  if (x < 0) = (y < 0)
-  then 
-    return x < y
-  else
-    return y < 0
-
-func mul_step(b, y) is
-  var r;
-{ if (b < 0) or (~lsu(b, mul_x))
-  then
-    r := 0
-  else
-    r := mul_step(b + b, y + y);
-  if ~lsu(mul_x, b)
-  then
-  { mul_x := mul_x - b;
-    r := r + y
-  }
-  else
-    skip;
-  return r
-}  
-
-func mul(n, m) is
-{ mul_x := m;
-  return mul_step(1, n)
-}
 proc CA(a, b, rul) is
    var n;
    {
@@ -284,7 +253,7 @@ proc merge(s, q, i) is
    p:=1;
    q[i]:=0;
   while n<17 do
-  { 
+  {
    if (s[n]>0)
    then
      q[i]:=q[i]+p
@@ -321,12 +290,7 @@ proc empty2(s) is
  {
   s[n] := 0;
   n := n + 1
-  
+
  };
  s[8]:=1
-}
-proc delay() is
-  var n;
-{ n := 0;
-  while n < 100 do n := n + 1
 }

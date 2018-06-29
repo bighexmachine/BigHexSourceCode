@@ -86,7 +86,7 @@ module.exports.compile = function(Xsource, callback){
         console.log("OUTPUT:");
         console.log(stdout.toString('utf8'));
         console.log(stderr.toString('utf8'));
-        rmdirRecursive(COMPILEDIR);
+        //rmdirRecursive(COMPILEDIR);
         callback({success: false, output:stdout.toString('utf8')});
         return Promise.resolve();
       }

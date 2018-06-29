@@ -97,37 +97,37 @@
           <span class="small-text">TOOLBAR:</span>
           <div id="controls" style="display:none">
             <div class="row">
-              <div class="col-md-2">
+              <div class="col-md-2 col-sm-6 col-xs-6">
                 <a href="javascript:void(0);" onclick="start();">
                   <div class="button">Start</div>
                 </a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2 col-sm-6 col-xs-6">
                 <a href="javascript:void(0);" onclick="stop();">
                   <div class="button">Stop</div>
                 </a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2 col-sm-6 col-xs-6">
                 <a href="javascript:void(0);" onclick="step();">
                   <div class="button">Step</div>
                 </a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2 col-sm-6 col-xs-6">
                 <a href="javascript:void(0);" onclick="reset();">
                   <div class="button">Reset</div>
                 </a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2 col-sm-6 col-xs-6">
                 <a href="javascript:void(0);" onclick="openTestSuiteModal();">
                   <div class="button">Run Test</div>
                 </a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2 col-sm-6 col-xs-6">
                 <a href="javascript:void(0);" onclick="loadToRAM();">
                   <div class="button" id="loadToRAM">Load into RAM</div>
                 </a>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2 col-sm-6 col-xs-6">
                 <a href="javascript:void(0);" onclick="openRunInstructionModal();">
                   <div class="button">Run Instruction</div>
                 </a>
@@ -152,19 +152,19 @@
 
           <span class="small-text">CODE EDITOR:</span>
           <div class="row">
-            <div class="col-md-2">
-              <a href="javascript:void(0);" onclick="compile();">
-                <div class="button" id="compileBtn">Compile</div>
-              </a>
-            </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-sm-12  col-xs-12">
               <a href="javascript:void(0);" onclick="openExampleProgramsModal();">
                 <div class="button">Example Programs</div>
               </a>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-sm-6 col-xs-6">
+              <a href="javascript:void(0);" onclick="compile();">
+                <div class="button" id="compileBtn">Compile</div>
+              </a>
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-6">
               <a href="javascript:void(0);" onclick="getAssembly();">
-                <div class="button" id="genasmBtn">Get Assembly</div>
+                <div class="button" id="genasmBtn">View Assembly</div>
               </a>
             </div>
           </div>
@@ -177,7 +177,13 @@
               </table>
               <div class="compile-success" id="compile-success">Compile Complete!</div>
               <div class="code-editor">
+                <span class="small-text">Write code here to run it on the machine, use the button above to load example programs to get you started</span>
                 <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                <span class="small-text">Or upload file from your computer:</span>
+                <div class="file-input">
+                  <input type="file" id="files" name="files" />
+                  <output id="list"></output>
+                </div>
               </div>
             </div>
           </div>

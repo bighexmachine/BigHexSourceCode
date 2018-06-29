@@ -80,7 +80,8 @@ void ReferenceModel::UpdateClock(bool Phase0Clock, bool Phase0Reset, bool Phase1
       break;
     case ClockPhase::DISPLAY:
     #if PRINT_DISPLAY
-      DoDisplayPhase();
+      if(pc % 10 == 1)
+        DoDisplayPhase();
     #endif
       break;
     default:

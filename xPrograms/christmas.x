@@ -1,5 +1,3 @@
-
-val framebuff = #7FF0;
 array nextLetter[16];
 val numLetters = 17;
 array letters[numLetters];
@@ -316,4 +314,3 @@ proc delay() is
     n := 0;
     while n < 100 do n := n + 1
   }
-

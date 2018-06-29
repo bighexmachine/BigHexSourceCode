@@ -60,6 +60,8 @@ val s_return      = 44;
 val s_input       = 45;
 val s_output      = 46;
 ||
+val s_asm         = 47;
+||
 val s_endfile     = 60;
 ||
 val s_diadic      = 64;
@@ -637,7 +639,27 @@ proc declsyswords() is
   declare("true", s_true);
   declare("val", s_val);
   declare("var", s_var);
-  declare("while", s_while)
+  declare("while", s_while);
+  declare("__asm", s_asm);
+
+  declare("ldam", i_ldam);
+  declare("ldbm", i_ldbm);
+  declare("stam", i_stam);
+
+  declare("ldac", i_ldac);
+  declare("ldbc", i_ldbc);
+  declare("ldap", i_ldap);
+
+  declare("ldai", i_ldai);
+  declare("ldbi", i_ldbi);
+  declare("stai", i_stai);
+
+  declare("brz", i_brz);
+  declare("brn", i_brn);
+  declare("brb", i_brb);
+  declare("br", i_br);
+
+  declare("opr", i_opr)
  }
 
 func getchar() is
@@ -780,7 +802,7 @@ proc nextsymbol() is
     nextsymbol()
   }
   else
-  if ((ch >= 'A') and (ch <= 'Z')) or ((ch >= 'a') and (ch <= 'z'))
+  if ((ch >= 'A') and (ch <= 'Z')) or ((ch >= 'a') and (ch <= 'z')) or (ch = '_')
   then
   { rdtag();
     symbol := lookupword()
@@ -965,7 +987,7 @@ proc nextsymbol() is
   then
     symbol := s_endfile
   else
-    cmperror("illegal character")
+    cmperror_internal("illegal character ")
 }
 
 | syntax analyser |
@@ -1059,6 +1081,90 @@ func relement() is
   else
     cmperror("error in expression");
   return a
+}
+
+func toUpper(c) is
+  if (c >= 'a') and (c <= 'z')
+  then
+    return (c - 'a') + 'A'
+  else
+    return c
+
+func rasmstring() is
+  var valid;
+  var instr;
+  var op;
+  var out;
+  var outvalid;
+{
+  if(ch ~= '\"')
+  then
+    cmperror("string expected")
+  else
+    skip;
+
+  valid := true;
+  outvalid := false;
+  rch();
+  skipwhitespace();
+
+  while valid
+  do
+  {
+    op := 16;
+
+    nextsymbol();
+    instr := symbol;
+
+    if (instr >= i_ldam) and (instr <= i_opr) then
+    {
+      nextsymbol();
+
+      if symbol = s_number
+      then
+      {
+        op := numval
+      }
+      else
+      {
+        cmperror("invalid operand for ASM instruction");
+        valid := false
+      }
+    }
+    else
+      valid := false;
+
+    if valid
+    then
+    {
+      if outvalid
+      then
+        out := cons3(s_semicolon, cons2(instr, op), out)
+      else
+      {
+        outvalid := true;
+        out := cons2(instr, op)
+      }
+    }
+    else skip;
+
+    skipwhitespace();
+
+    if (ch = '\"') then
+      valid := false
+    else
+      skip
+  };
+
+  if(ch ~= '\"')
+  then
+    cmperror("error in asm string")
+  else
+    skip;
+
+  rch();
+
+  return out
 }
 
 func rexpression() is
@@ -1165,6 +1271,24 @@ func rstatement() is
     checkfor(s_do, "\'do\' expected");
     b := rstatement();
     return cons3(s_while, a, b)
+  }
+  else
+  if (symbol = s_asm)
+  then
+  { nextsymbol();
+    if symbol = s_lparen
+    then
+      a := rasmstring()
+    else
+      cmperror("\'(\' expected");
+
+    nextsymbol();
+    checkfor(s_comma, "\',\' expected");
+    b := rexpression();
+    checkfor(s_comma, "\',\' expected");
+    c := rexpression();
+    checkfor(s_rparen, "\')\' expected");
+    return cons4(s_asm, a, b, c)
   }
   else
   if (symbol = s_begin)
@@ -1657,6 +1781,12 @@ proc optimise(x) is
     optimise(x.t2)
   }
   else
+  if (op = s_asm)
+  then
+  { x.t2 := optimiseexpr(x.t2);
+    x.t3 := optimiseexpr(x.t3)
+  }
+  else
   if (op = s_ass)
   then
   { x.t2 := optimiseexpr(x.t2);
@@ -1999,8 +2129,8 @@ proc genmain(x) is
   var namenode := x;
   {
     while (namenode.t0) = s_semicolon do namenode := namenode.t1;
-    setprocused(namenode.t1);
-    namemessage("main function: ", namenode.t1)
+    |namemessage("main function: ", namenode.t1);|
+    setprocused(namenode.t1)
   };
 
   genprocs(x)
@@ -2042,8 +2172,8 @@ proc genprocs(x) is
       treep := savetreep
     }
     else
-      |skip|
-      namemessage("skipping ", procdef.t1)
+      skip
+      |namemessage("skipping ", procdef.t1)|
   }
 }
 
@@ -2162,6 +2292,23 @@ proc genstatement(x, seq, clab, tail) is
     genstatement(x.t2, false, lab, false)
   }
   else
+  if (op = s_asm)
+  then
+  {
+    if isval(x.t2) then
+      geni(i_ldac, getval(x.t2))
+    else
+      generror("expected constant for asm A reg initialiser");
+
+    if isval(x.t3) then
+      geni(i_ldbc, getval(x.t3))
+    else
+      generror("expected constant for asm B reg initialiser");
+
+    |TODO generate instructions for the ASM|
+    genasm_rec(x.t1)
+  }
+  else
   if (op = s_stop)
   then
   { geni(i_ldai, 1);
@@ -2187,6 +2334,18 @@ proc genstatement(x, seq, clab, tail) is
       skip;
     genbr(seq, clab)
   }
+}
+
+proc genasm_rec(x) is
+{
+  if (x.t0) = s_semicolon
+  then
+  {
+    genasm_rec(x.t2);
+    genasm_rec(x.t1)
+  }
+  else
+    geni(x.t0, x.t1)
 }
 
 proc tbool(x, cond) is

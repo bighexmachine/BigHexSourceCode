@@ -132,3 +132,22 @@ Selection of example X programs that can be selected from the web UI
  * express
  * node-gyp
  * hashmap
+
+## Useful Hex Tips
+
+Programming hex more difficult than other machines as you only have ADD and SUB operations. These are tricks I've compiled that help a little with this, some of these are probably obvious. These are used in the standard library a lot:
+
+**Check if the most significant bit is set:** check if the value is negative
+```x
+if x < 0
+then
+{
+  |bit is 1|
+}
+else
+{
+  |bit is 0|
+}
+```
+
+**Loop Unrolling isn't implemented**: As X does not support for loops it does not unroll any loops. This means a lot of optimisations can be gained by unrolling the loop manually and removing the counter variable
