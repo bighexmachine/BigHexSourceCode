@@ -6,7 +6,7 @@ var path = require('path');
 
 describe('Compile', function()
 {
-  let programs = ["ca.x", "fact.x", "gameoflife.x", "inputFaces.x", "nyan.x", "pacman.x", "pong.x", "reaction.x", "rotating_text.x", "starter.x", "tree.x", "welcome.x", "wink.x"];
+  let programs = ["stdlibtest.x", "ca.x", "fact.x", "gameoflife.x", "inputFaces.x", "nyan.x", "pacman.x", "pong.x", "reaction.x", "rotating_text.x", "starter.x", "tree.x", "welcome.x", "wink.x"];
 
   describe('all example programs should compile successfully', function() {
     programs.forEach(function(program) {

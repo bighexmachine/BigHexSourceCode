@@ -123,6 +123,8 @@ val linemax = 200;
 val nametablesize = 101;
 array nametable[nametablesize];
 ||
+var isinmodule;
+||
 var outstream;
 ||
 val treemax = 25000;
@@ -160,7 +162,12 @@ var nameb;
 var namem;
 var nameg;
 
-| set to 1 if the name is used |
+|list of all called procs and the proc they were called from|
+array procs_c[500];
+array procs_cp[500];
+var procs_cc;
+
+| set to 1 if the proc is used, created from the above lists |
 array procs_u[100];
 var procs_uc;
 
@@ -172,6 +179,8 @@ var arraybase;
 var procdef;
 var proclabel;
 var infunc;
+||
+var parentprocname;
 ||
 var stackp;
 var stk_max;
@@ -509,6 +518,8 @@ func formtree() is
   rch();
 
   nextsymbol();
+
+  isinmodule := false;
 
   return rprogram()
 }
@@ -1038,6 +1049,9 @@ func relement() is
       else
         b := rexplist();
       checkfor(s_rparen, "\')\' expected");
+
+      recordproccall(a);
+
       a := cons3(s_fncall, a, b)
     }
     else
@@ -1308,10 +1322,6 @@ func rstatement() is
     if (a.t0) = s_fncall
     then
     { a.t0 := s_pcall;
-
-      setprocused(a.t1);
-
-      |namemessage("calling ", a.t1);|
       return a
     }
     else
@@ -1375,6 +1385,17 @@ func rprocdecl() is
 { s := symbol;
   nextsymbol();
   a := rname();
+
+  if (procs_uc = 0) and (~isinmodule) then
+  {
+    |special case - the main function must ALWAYS be included|
+    namemessage("main function: ", a);
+    setprocused(a)
+  }
+  else
+    skip;
+
+  parentprocname := a;
   checkfor(s_lparen, "\'(\' expected");
   if symbol = s_rparen
   then
@@ -1407,7 +1428,9 @@ func rprogram() is
     a := rformals();
     checkfor(s_rparen, "\')\' expected");
     checkfor(s_is, "\'is\' expected");
+    isinmodule := true;
     b := rmodule();
+    isinmodule := false;
     checkfor(s_in, "\'in\' expected");
     return cons4(s_module, a, b, rprogram())
   }
@@ -1520,7 +1543,7 @@ proc namemessage_internal(s, x) is
 
 proc generror(s) is
 {
-  generror(s); newline()
+  generror_internal(s); newline()
 }
 
 proc generror_internal(s) is
@@ -1646,6 +1669,48 @@ proc addname(x, v) is
   namep := namep + 1
 }
 
+proc recordproccall(x) is
+{
+  |namemessage_internal("calling func ", x);|
+  |namemessage(" from within ", parentprocname);|
+
+  procs_c[procs_cc] := x;
+  procs_cp[procs_cc] := parentprocname;
+  procs_cc := procs_cc + 1
+}
+
+proc buildprocusedlist() is
+  var changed;
+  var idx;
+{
+  changed := true;
+
+  while changed do
+  {
+    changed := false;
+    idx := 0;
+
+    while idx < procs_cc do
+    {
+      if isprocused(procs_c[idx]) then
+        skip
+      else
+      if isprocused(procs_cp[idx]) then
+      {
+        |namemessage_internal("", procs_cp[idx]);|
+        |namemessage_internal(" is used, so ", procs_c[idx]);|
+        |prints(" is used"); newline();|
+
+        setprocused(procs_c[idx]);
+        changed := true
+      }
+      else
+        skip;
+
+      idx := idx + 1
+    }
+  }
+}
 
 proc setprocused(x) is
 {
@@ -2070,6 +2135,8 @@ proc translate(t) is
   initsp(arraybase - 2);
   gen(cbf_constp, 0, 0);
 
+  buildprocusedlist();
+
   tprog(t);
 
   flushbuffer()
@@ -2127,14 +2194,6 @@ proc genmain(x) is
   geni(i_br, -2);
 
   setlab(mainlab);
-
-  |special case - the main function must ALWAYS be included|
-  var namenode := x;
-  {
-    while (namenode.t0) = s_semicolon do namenode := namenode.t1;
-    |namemessage("main function: ", namenode.t1);|
-    setprocused(namenode.t1)
-  };
 
   genprocs(x)
 }

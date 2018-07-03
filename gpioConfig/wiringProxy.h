@@ -22,7 +22,7 @@
 // setPinIn(p) sets pin p as an input
 // write(p, v) sets pin p to the value v
 
-#define IS_PI 1
+#define IS_PI 0
 
 #define USE_WIRING_PI 0
 

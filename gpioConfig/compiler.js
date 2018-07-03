@@ -265,14 +265,14 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
       let cmd = val.charAt(0);
       opval += parseInt(val.charAt(1), 16);
 
-      if(isData || (lineNo > dataStart && lineNo < dataEnd))
+      if(isData || (lineNo > dataStart && lineNo < dataEnd && j == 0) || (lineNo >= 4 && lineNo <= 9))
       {
         if(!isData)
         {
           isData = true;
           outString += "DATA 0x" + val;
 
-          if(lineNo-1 == dataStart && !labels.has(lineNo))
+          if(lineNo == 4 && !labels.has(lineNo))
           {
             labels.set(lineNo, "sp");
           }
