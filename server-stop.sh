@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #kill the wifi
-ifconfig wlan1 down;
+#ifconfig wlan1 down;
 
 # Setup a CRON job at the specified time
 echo "PATH="$PATH > temp.txt;

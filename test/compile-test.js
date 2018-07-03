@@ -12,6 +12,8 @@ describe('Compile', function()
     programs.forEach(function(program) {
       it('prog : ' + program, function(done)
       {
+	this.timeout(15000);
+	
         let filename = path.normalize(__dirname + '/../xPrograms/' + program);
         compiler.compile(fs.readFileSync(filename).toString('utf8'), function(result) {
           if(result.success)

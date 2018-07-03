@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define PRINT_INSTRUCTIONS 1
+#define PRINT_INSTRUCTIONS 0
 #define PRINT_DISPLAY 0
 
 namespace

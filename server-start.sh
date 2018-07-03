@@ -4,7 +4,7 @@
 if ! nc -z 127.0.0.1 80
 then
   #ensure wifi network is up
-  ifconfig wlan1 up;
+  #ifconfig wlan1 up;
 
   # force a network time update
   until ping -nq -c3 8.8.8.8; do
