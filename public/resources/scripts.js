@@ -104,6 +104,9 @@ $(document).ready(function() {
     {
       loadprog('starter.x')
     }
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+      $("#fileupload-area").hide();
+    }
 });
 
 function start()

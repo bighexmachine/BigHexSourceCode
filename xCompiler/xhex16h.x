@@ -124,6 +124,7 @@ val nametablesize = 101;
 array nametable[nametablesize];
 ||
 var isinmodule;
+var globals;
 ||
 var outstream;
 ||
@@ -269,10 +270,6 @@ func main() is
 
   prints("size: ");
   printn(codesize + mul((maxaddr - arraybase), 2));
-  newline();
-
-  prints("total errors:");
-  printn(errcount);
   newline();
 
   prints("data section:");
@@ -493,7 +490,8 @@ proc printhex(n) is
 }
 
 func formtree() is
-
+  var p;
+  var g;
 { linep := 0;
   wordp := 0;
   charp := 0;
@@ -521,7 +519,19 @@ func formtree() is
 
   isinmodule := false;
 
-  return rprogram()
+  globals := 0;
+  p := rprogram();
+  if globals = 0
+  then
+    return p
+  else
+  {
+    g := globals;
+    while (g.t2) ~= 0 do g := g.t2;
+
+    g.t2 := p;
+    return globals
+  }
 }
 
 proc cmperror(s) is
@@ -1389,7 +1399,7 @@ func rprocdecl() is
   if (procs_uc = 0) and (~isinmodule) then
   {
     |special case - the main function must ALWAYS be included|
-    namemessage("main function: ", a);
+    |namemessage("main function: ", a);|
     setprocused(a)
   }
   else
@@ -1443,7 +1453,9 @@ func rmodule() is
   then
   {
     var a := rdecl();
-    return cons3(s_scope, a, rprogram())
+    globals := cons3(s_scope, a, globals);
+
+    return rprogram()
   }
   else
     return rprocdecls()
@@ -2357,17 +2369,8 @@ proc genstatement(x, seq, clab, tail) is
   if (op = s_asm)
   then
   {
-    if isval(x.t2) then
-      geni(i_ldac, getval(x.t2))
-    else
-      generror("expected constant for asm A reg initialiser");
-
-    if isval(x.t3) then
-      geni(i_ldbc, getval(x.t3))
-    else
-      generror("expected constant for asm B reg initialiser");
-
-    |TODO generate instructions for the ASM|
+    texp(x.t2);
+    tbexp(x.t3);
     genasm_rec(x.t1)
   }
   else

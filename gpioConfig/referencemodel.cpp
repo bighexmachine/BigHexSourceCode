@@ -80,7 +80,6 @@ void ReferenceModel::UpdateClock(bool Phase0Clock, bool Phase0Reset, bool Phase1
       break;
     case ClockPhase::DISPLAY:
     #if PRINT_DISPLAY
-      if(pc % 10 == 1)
         DoDisplayPhase();
     #endif
       break;
@@ -104,13 +103,16 @@ void ReferenceModel::PrintDisplay()
   DoDisplayPhase();
 }
 
-void ReferenceModel::PrintMemory(int max)
+void ReferenceModel::PrintMemory(int addr, int max)
 {
+  if(addr > 32767) addr = 32767;
   if(max > 32767) max = 32767;
 
-  for(int i = 0; i < max; ++i)
+  for(int i = addr; i <= max; ++i)
   {
-    printf("%04x\n", GetMem(i));
+    if((i-addr)%8 == 0) printf("%04x: ", i);
+    printf(" %04x", GetMem(i));
+    if((i-addr)%8 == 7 || i == max) printf("\n");
   }
 }
 
@@ -217,11 +219,11 @@ void ReferenceModel::DoExePhase()
       DoOPR();
       break;
     case OpCode::PFIX:
-      //PRINT_I("PFIX %04x\n", op_reg & 0xf);
+      PRINT_I("PFIX %04x\n", op_reg & 0xf);
       op_reg = op_reg << 4;
       break;
     case OpCode::NFIX:
-      //PRINT_I("NFIX %04x\n", op_reg & 0xf);
+      PRINT_I("NFIX %04x\n", op_reg & 0xf);
       op_reg = 0xff00 | (op_reg << 4);
       break;
   }
@@ -235,6 +237,16 @@ void ReferenceModel::DoExePhase()
 void ReferenceModel::DoDisplayPhase()
 {
   const int displayOffset = 32752;
+
+  int64_t value = 0;
+
+  for(int i = 0; i < 16; ++i)
+  {
+    value += (word_t)GetMem(displayOffset + i);
+  }
+
+  if(value == lastvalue) return;
+  lastvalue = value;
 
   for(int i = 0; i < 16; ++i)
   {

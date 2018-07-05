@@ -173,7 +173,7 @@ array strings[1000];
 var stringp;
 var stringsize;
 ||
-val labval_size  = 2000;
+val labval_size  = 3000;
 array labval[labval_size];
 var labelcount;
 ||

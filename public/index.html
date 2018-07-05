@@ -176,14 +176,24 @@
               <table class="compile-errors" id="compile-errors">
               </table>
               <div class="compile-success" id="compile-success">Compile Complete!</div>
-              <div class="code-editor">
-                <span class="small-text">Write code here to run it on the machine, use the button above to load example programs to get you started</span>
-                <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+            </div>
+          </div>
+          <div class="row code-editor">
+            <div class="col-md-9">
+              <span class="small-text">Write code here to run it on the machine, use the button above to load example programs to get you started</span>
+              <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+            </div>
+            <div class="col-md-3">
+              <div id="fileupload-area" class="visible-md visible-lg visible-xl">
                 <span class="small-text">Or upload file from your computer:</span>
                 <div class="file-input">
                   <input type="file" id="files" name="files" />
                   <output id="list"></output>
                 </div>
+
+                <p class="small-text">
+                  If you use the <a href="https://atom.io/" target="_blank">Atom</a> text editor you can download the custom package <a href="https://atom.io/packages/language-hex/" target="_blank">Language-Hex</a> which will add syntax highlighting and code snippets to *.x files
+                </p>
               </div>
             </div>
           </div>

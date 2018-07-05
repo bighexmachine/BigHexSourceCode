@@ -61,7 +61,24 @@ public:
   void SetPiDataInput(uint8_t input);
 
   void PrintDisplay();
-  void PrintMemory(int max);
+  void PrintMemory(int addr, int max);
+
+  // functions to take account of the missing top bit
+  inline uword_t GetMem(uword_t addr) const
+  {
+    return mem[addr & 0x7fff];
+  }
+
+  inline void SetMem(uword_t addr, uword_t val)
+  {
+    mem[addr & 0x7fff] = val;
+  }
+
+  uword_t GetAReg() const { return a_reg; }
+  uword_t GetBReg() const { return b_reg; }
+  uword_t GetOReg() const { return op_reg; }
+  uword_t GetPCReg() const { return pc; }
+  OpCode GetFNReg() const { return fn_reg; }
 
 protected:
 
@@ -73,16 +90,6 @@ protected:
   void DoOPR();
 
 private:
-  // functions to take account of the missing top bit
-  inline uword_t GetMem(uword_t addr) const
-  {
-    return mem[addr & 0x7fff];
-  }
-
-  inline void SetMem(uword_t addr, uword_t val)
-  {
-    mem[addr & 0x7fff] = val;
-  }
 
   //memory ptr
   uword_t* mem;
@@ -106,6 +113,8 @@ private:
 
   // PI instrction input
   uint8_t pi_instr_input;
+
+  int64_t lastvalue;
 
 };
 

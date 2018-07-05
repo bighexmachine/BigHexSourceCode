@@ -14,3 +14,8 @@ serverPID.txt
 *.out
 temp/
 temp*
+
+xdb/xdb
+xdb/sim2
+xdb/sim3
+xdb/source.x

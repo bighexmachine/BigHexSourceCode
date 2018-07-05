@@ -24,8 +24,6 @@ The software can also be build on any other linux based system with one minor ch
 
 The Big Hex Machine is designed to automatically switch off out of normal working hours. These hours are defined in **configure/shutdown.js** and can be modified. They also define a truth table of days of the week when the Machine will be active.
 
-**NOTE:** If you are running code on your own machine locally there is a chance the server will try to put your machine to sleep. To combat this disable the shutdown system in `server.js` by commenting out the init function.
-
 ### How to use the machine out of hours
 
 To boot the machine out of it's normal hours requires access to 2.16 MVB. Switch the machine off then on using the fuse on the wall to force the machine to boot up. Simarly this fuse can be used as a sort-of master off switch for the machine.

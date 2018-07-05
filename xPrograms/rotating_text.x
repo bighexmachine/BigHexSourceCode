@@ -5,7 +5,7 @@ array letters[12];
 
 proc main() is
 {
-  letters := ['H', 'E', 'L', 'L', 'O', ' ', 'W', 'O', 'R', 'L', 'D', '!'];
+  letters := ['H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'];
   clearDisplay();
   initAlphabet();
   while true do
@@ -37,10 +37,13 @@ proc swapInNextLetter(nextLetterIndex) is
   {
     rowCounter := 0;
     while rowCounter < 16 do
+      var iRowCounter;
     {
+      iRowCounter := 15 - rowCounter;
+
       framebuff[rowCounter] := framebuff[rowCounter] + framebuff[rowCounter];
-      if nextLetter[rowCounter] < 0 then framebuff[rowCounter] := framebuff[rowCounter] + 1 else skip;
-      nextLetter[rowCounter] := nextLetter[rowCounter] + nextLetter[rowCounter];
+      if nextLetter[iRowCounter] < 0 then framebuff[rowCounter] := framebuff[rowCounter] + 1 else skip;
+      nextLetter[iRowCounter] := nextLetter[iRowCounter] + nextLetter[iRowCounter];
       rowCounter := rowCounter + 1
     };
     columnCounter := columnCounter + 1
