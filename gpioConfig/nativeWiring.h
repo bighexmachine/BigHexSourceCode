@@ -31,7 +31,7 @@ volatile unsigned *gpio = NULL;
 #define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 
-void setupGPIO()
+inline void setupGPIO()
 {
   int  mem_fd;
   // open /dev/mem
@@ -61,17 +61,17 @@ void setupGPIO()
   gpio = (volatile unsigned *)gpio_map;
 }
 
-void setPinIn(int p)
+inline void setPinIn(int p)
 {
   INP_GPIO(p);
 }
 
-void setPinOut(int p)
+inline void setPinOut(int p)
 {
   OUT_GPIO(p);
 }
 
-void write(int p, int v)
+inline void write(int p, int v)
 {
   if(v == 0)
   {

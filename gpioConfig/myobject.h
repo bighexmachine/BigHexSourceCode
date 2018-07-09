@@ -9,16 +9,36 @@
 using namespace v8;
 using namespace std;
 
+// returns how many nanoseconds later ts2 is compared to ts1. If ts2 is earlier the result will be negative
+inline long diffts_nsec(const timespec& ts1, const timespec& ts2)
+{
+  return ((ts2.tv_sec - ts1.tv_sec) * 1000000000) + (ts2.tv_nsec - ts1.tv_nsec);
+}
+
 inline void nsleep(long nsecs)
 {
-  if(nsecs < 50)
+  timespec ts;
+  ts.tv_sec = 0;
+  ts.tv_nsec = 0;
+
+  if(nsecs < 250)
   {
-    sched_yield();
+    // use the high precision clock and yields as nanosleep is very unreliable
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    timespec ts2;
+    ts2.tv_sec = ts.tv_sec;
+    ts2.tv_nsec = ts.tv_nsec;
+
+    while(diffts_nsec(ts, ts2) < nsecs)
+    {
+      sched_yield();
+      clock_gettime(CLOCK_MONOTONIC, &ts2);
+    }
+
     return;
   }
 
-  timespec ts;
-  ts.tv_sec = 0;
 
   while(nsecs >= 1000000000)
   {

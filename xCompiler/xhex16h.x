@@ -3520,8 +3520,9 @@ proc flushbuffer() is
     { stksize := cbv_low;
       outinst(i_ldbm, m_sp);
       outinst(i_stai, 0);
-      outinst(i_ldac, (-stksize));
-      outinst(i_opr, o_add);
+      outinst(i_ldam, m_sp);
+      outinst(i_ldbc, stksize);
+      outinst(i_opr, o_sub);
       outinst(i_stam, m_sp);
       cb_loadpoint := cb_loadpoint + instlength(- stksize) + 4
     }

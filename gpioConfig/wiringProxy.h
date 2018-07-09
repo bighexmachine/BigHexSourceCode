@@ -59,22 +59,22 @@
     #define CE1 11
     #define MOSI 12
 
-    void setupGPIO()
+    inline void setupGPIO()
     {
       wiringPiSetup();
     }
 
-    void setPinOut(int p)
+    inline void setPinOut(int p)
     {
       pinMode (p, OUTPUT);
     }
 
-    void setPinIn(int p)
+    inline void setPinIn(int p)
     {
       pinMode (p, INPUT);
     }
 
-    void write(int p, int v)
+    inline void write(int p, int v)
     {
       digitalWrite (p, v);
     }
@@ -84,10 +84,10 @@
 
 #else
 
-  void setupGPIO() {}
-  void setPinOut(int p) {}
-  void setPinIn(int p) {}
-  void write(int p, int v) {}
+  inline void setupGPIO() {}
+  inline void setPinOut(int p) {}
+  inline void setPinIn(int p) {}
+  inline void write(int p, int v) {}
 
 #endif // IS_PI
 

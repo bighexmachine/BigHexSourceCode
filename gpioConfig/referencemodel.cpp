@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define PRINT_INSTRUCTIONS 0
-#define PRINT_DISPLAY 0
+#define PRINT_DISPLAY 1
 
 namespace
 {
