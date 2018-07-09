@@ -1,11 +1,11 @@
 array nextLetter[16];
 
-val numLetters = 12;
-array letters[12];
+val numLetters = 19;
+array letters[19];
 
 proc main() is
 {
-  letters := ['H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'];
+  letters := ['I', ' ', 'a', 'm', ' ', 'a', ' ', '1', '6', 'b', 'i', 't', ' ', 'C', 'P', 'U', '!', ' ', ' '];
   clearDisplay();
   initAlphabet();
   while true do

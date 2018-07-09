@@ -16,13 +16,13 @@ module (stdlib) is
 proc delay() is
   var n;
 { n := 0;
-  while n < 25 do n := n + 1
+  while n < 250 do n := n + 1
 }
 
 proc longdelay() is
 var n;
 { n := 0;
-  while n < 500 do n := n + 1
+  while n < 2500 do n := n + 1
 }
 
 proc verylongdelay() is
