@@ -11,6 +11,12 @@ using namespace std;
 
 inline void nsleep(long nsecs)
 {
+  if(nsecs < 50)
+  {
+    sched_yield();
+    return;
+  }
+
   timespec ts;
   ts.tv_sec = 0;
 
@@ -55,7 +61,7 @@ class MyObject : public node::ObjectWrap {
   std::thread clockThread;
   int state;
   long delay;
-  static const int minDelay = 100;
+  static const int minDelay = 40;
   void Clock();
   int signals[4];
   bool clockIsRunning;

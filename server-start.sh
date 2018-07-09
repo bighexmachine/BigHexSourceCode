@@ -6,6 +6,9 @@ then
   #ensure wifi network is up
   #ifconfig wlan1 up;
 
+  # set the timezone to London
+  TZ='Europe/London'; export TZ
+
   # force a network time update
   until ping -nq -c3 8.8.8.8; do
     echo "Waiting for network..."
@@ -14,9 +17,6 @@ then
   sudo service ntp stop;
   sudo ntpd -gq;
   sudo service ntp start;
-
-  # set the timezone to London
-  TZ='Europe/London'; export TZ
 
   echo "Server not detected... starting new instance"
   sudo node serverWrapper.js

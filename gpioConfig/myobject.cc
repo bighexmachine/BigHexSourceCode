@@ -101,7 +101,7 @@ void MyObject::WriteClock(int val)
   //phase 1 reset
   write (PIN_CLK_3, val & 32);
 
-  refModel->UpdateClock((val & 1) > 0, (val & 2) > 0, (val & 16) > 0, (val & 32) > 0);
+  refModel->UpdateClock(val & 1, val & 2, val & 16, val & 32);
 }
 
 void MyObject::Clock()
@@ -114,7 +114,7 @@ void MyObject::Clock()
       WriteClock( signals[state] );
       state = (state+1) % 4;
 
-      nsleep(minDelay);
+      nsleep(delay);
     }
   }
   cout << "Clock Service Stopped" << endl;
@@ -134,7 +134,6 @@ void MyObject::DoStartClock()
 void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  obj->refModel->PrintMemory(0, 10000);
   obj->DoStartClock();
   return;
 }
@@ -195,6 +194,8 @@ void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
     write (pins[i], ( byte & (1<<i) ) >> i);
   }
 
+  nsleep(minDelay);
+
   obj->refModel->SetPiDataInput(byte);
 
   return;
@@ -207,7 +208,7 @@ void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
   int bit = input & 1;
   write (PIN_RAM_PI_SELECT, bit);
   obj->refModel->SetRamPiSelect(bit == 0);
-  usleep(100);
+  nsleep(minDelay);
   return;
 }
 

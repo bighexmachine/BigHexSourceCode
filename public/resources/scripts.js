@@ -358,8 +358,7 @@ function loadprog(prog)
 
 function updateSpeed() {
     var base = 10;
-    var max = 49;
-    var speed = $('#speedSlider').val() / 40;
+    var speed = $('#speedSlider').val() / 32;
     if(isNaN(speed)) return;
     var speed = Math.pow(base,speed);
     speed--;
@@ -369,9 +368,12 @@ function updateSpeed() {
     } else if(speed <1000) {
       speed = Math.round(speed);
       $('#speedOut').text(speed + 'hz');
-    } else {
+    } else if (speed < 1000000) {
       var kspeed = Math.round(speed/100)/10;
       $('#speedOut').text(kspeed + 'Khz');
+    } else {
+      var kspeed = Math.round(speed/100000)/10;
+      $('#speedOut').text(kspeed + 'Mhz');
     }
     sendReq('speed',speed);
 }
