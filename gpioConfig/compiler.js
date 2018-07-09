@@ -111,12 +111,18 @@ module.exports.compile = function(Xsource, callback, quiet){
       let lines = stdoutstring.split("\n");
       let dataSectionStart = 3;
       let dataSectionEnd = 3;
+      let symbols = [];
       lines.forEach(function(line) {
         if(line.startsWith("data section:"))
         {
           let vals = line.substr(13).split(",");
           dataSectionStart = parseInt(vals[0]);
           dataSectionEnd = parseInt(vals[1]);
+        }
+        else if(line.startsWith("sym"))
+        {
+          let vals = line.substr(4).split(":");
+          symbols.push({name:vals[0], val:parseInt(vals[1])});
         }
       });
 
@@ -131,7 +137,7 @@ module.exports.compile = function(Xsource, callback, quiet){
 
       rmdirRecursive(COMPILEDIR);
 
-      callback({ success: true, output: stdout.toString('utf8'), u: hexuArray, l: hexlArray, dataStart: dataSectionStart, dataEnd: dataSectionEnd });
+      callback({ success: true, output: stdout.toString('utf8'), u: hexuArray, l: hexlArray, dataStart: dataSectionStart, dataEnd: dataSectionEnd, symbols:symbols });
       return Promise.resolve();
     });
   });
@@ -232,14 +238,19 @@ module.exports.generateReadableCommand = function(str)
     return cmdstr;
   }
 
-module.exports.disassemble = function(hexu, hexl, dataStart, dataEnd)
+module.exports.disassemble = function(compileResult)
   {
     let labels = new HashMap();
 
-    dataEnd = ((dataEnd - dataStart) * 2) + dataStart;
+    compileResult.symbols.forEach(function(symbol) {
+      labels.set(symbol.val*2, symbol.name);
+    });
 
-    disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd);
-    return disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd);
+    let dataEnd = ((compileResult.dataEnd - compileResult.dataStart) * 2) + compileResult.dataStart;
+
+    //u, result.l, result.dataStart, result.dataEnd
+    disassemble_Internal(compileResult.u, compileResult.l, labels, compileResult.dataStart, dataEnd);
+    return disassemble_Internal(compileResult.u, compileResult.l, labels, compileResult.dataStart, dataEnd);
   }
 
 function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
@@ -296,7 +307,7 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
       {
         if(opval > 32767) opval = -(65536 - opval);
 
-        if(cmd == "9")
+        if(cmd == "9" || cmd == "10" || cmd == "11")
         {
           let addr = lineNo + 1 + opval;
           let labelName = (labels.size == 0) ? "main_wrapper" : "label" + labels.size;
@@ -312,7 +323,19 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
             labels.set(addr, labelName);
           }
 
-          outString += "BR " + labelName + "\n";
+          outString += module.exports.generateReadableCommand(val) + " " + labelName + "\n";
+        }
+        else if(cmd == "0" || cmd == "1" || cmd == "2")
+        {
+          let addr = opval*2;
+          let labelName = opval + "";
+
+          if(labels.has(addr))
+          {
+            labelName = labels.get(addr);
+          }
+
+          outString += module.exports.generateReadableCommand(val) + " " + labelName + "\n";
         }
         else if(cmd == "D")
         {

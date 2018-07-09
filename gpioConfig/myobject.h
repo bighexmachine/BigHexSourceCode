@@ -33,9 +33,6 @@ class MyObject : public node::ObjectWrap {
   MyObject();
   ~MyObject();
 
-  void IncrementState();
-  void ResetState();
-
   void DoStartClock();
   void DoStopClock();
   void DoStepClock();
@@ -64,9 +61,6 @@ class MyObject : public node::ObjectWrap {
   bool clockIsRunning;
 
   class ReferenceModel* refModel;
-
-  mutex stateMutex;
-  mutex updateMutex;
 };
 
 #endif

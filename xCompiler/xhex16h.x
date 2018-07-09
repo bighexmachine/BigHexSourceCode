@@ -1035,6 +1035,21 @@ func rname() is
   return a
 }
 
+|recursive check for equality|
+func requal(a, b) is
+{
+  if (a.t0) ~= (b.t0) then
+  {
+    |prints("Two nodes NOT the same :"); printn(a.t0); newline();|
+    return false
+  }
+  else
+  {
+    |prints("Two nodes the same :"); printn(a.t0); newline();|
+    return true
+  }
+}
+
 func relement() is
   var a;
   var b;
@@ -1642,6 +1657,7 @@ proc declglobal(x) is
   then
   { geng(0);
     addname(x, stackp);
+    namemessage_internal("sym:", x.t1); prints(":"); printn(stackp); newline();
     stackp := stackp + 1
   }
   else
@@ -1667,6 +1683,7 @@ proc declglobal(x) is
     { arraybase := arraybase - getval(x.t2);
       geng(arraybase);
       addname(x, stackp);
+      namemessage_internal("sym:", x.t1); prints(":"); printn(stackp); newline();
       stackp := stackp + 1
     }
     else
@@ -2144,12 +2161,12 @@ proc translate(t) is
   arraybase := maxaddr;
   stk_init(m_sp + 1);
 
-  initsp(arraybase - 2);
   gen(cbf_constp, 0, 0);
 
   buildprocusedlist();
 
   tprog(t);
+  initsp(arraybase - 1);
 
   flushbuffer()
 }
@@ -3031,8 +3048,15 @@ proc texp2(op, op1, op2) is
     setstack();
     geni(i_ldbm, m_sp);
     gensref(i_stai, sp);
-    texp(left);
-    geni(i_ldbm, m_sp);
+    |TODO: Duplicate self optimisation|
+    |no need to load the value twice if it is the same, just use the same value from above|
+    if ~requal(left, right) then
+    {
+      texp(left);
+      geni(i_ldbm, m_sp)
+    }
+    else skip;
+    |endif|
     gensref(i_ldbi, sp);
     stackp := sp
   };

@@ -137,11 +137,11 @@ function runRandomProgram() {
       let result = JSON.parse(resultstr);
 
       if(result.keys.length == 0)
-        return api.execute('start', undefined);
+        return api.execute('speed', 1000000000);
 
       return Promise.reject(new Error("Failed to load program"));
     }).then(() => {
-      return api.execute('speed', 1000000000);
+      return api.execute('start', undefined);
     }).catch((err) => {
       throw err;
     });

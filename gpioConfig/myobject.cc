@@ -92,9 +92,6 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
 
 void MyObject::WriteClock(int val)
 {
-  static mutex clockMutex;
-  clockMutex.lock();
-
   //phase 0 clock
   write (PIN_CLK_0, val & 1);
   //phase 0 reset
@@ -104,23 +101,7 @@ void MyObject::WriteClock(int val)
   //phase 1 reset
   write (PIN_CLK_3, val & 32);
 
-  refModel->UpdateClock(val & 1, val & 2, val & 16, val & 32);
-
-  clockMutex.unlock();
-}
-
-void MyObject::IncrementState()
-{
-  stateMutex.lock();
-  state = (state+1) % 4;
-  stateMutex.unlock();
-}
-
-void MyObject::ResetState()
-{
-  stateMutex.lock();
-  state = 3;
-  stateMutex.unlock();
+  refModel->UpdateClock((val & 1) > 0, (val & 2) > 0, (val & 16) > 0, (val & 32) > 0);
 }
 
 void MyObject::Clock()
@@ -128,12 +109,13 @@ void MyObject::Clock()
   cout << "Clock Service Started" << endl;
   while(clockIsRunning)
   {
-    updateMutex.lock();
-    WriteClock( signals[state] );
-    IncrementState();
-    updateMutex.unlock();
+    for(int i = 0; i < 16; ++i)
+    {
+      WriteClock( signals[state] );
+      state = (state+1) % 4;
 
-    nsleep(delay);
+      nsleep(minDelay);
+    }
   }
   cout << "Clock Service Stopped" << endl;
 }
@@ -152,6 +134,7 @@ void MyObject::DoStartClock()
 void MyObject::StartClock(const FunctionCallbackInfo<Value>& args)
 {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
+  obj->refModel->PrintMemory(0, 10000);
   obj->DoStartClock();
   return;
 }
@@ -160,9 +143,7 @@ void MyObject::DoStopClock()
 {
   if(!clockIsRunning) return;
 
-  updateMutex.lock();
   clockIsRunning = false;
-  updateMutex.unlock();
   clockThread.join();
 }
 
@@ -175,7 +156,7 @@ void MyObject::DoStepClock()
 {
   if (clockIsRunning) DoStopClock();
   WriteClock( signals[state] );
-  IncrementState();
+  state = (state+1) % 4;
   nsleep(minDelay);
 }
 
@@ -204,6 +185,7 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
 
 void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
+  obj->DoStopClock();
   int byte = args[0]->NumberValue();
 
   static int pins[8] = {PIN_DATA_0, PIN_DATA_1, PIN_DATA_2, PIN_DATA_3, PIN_DATA_4, PIN_DATA_5, PIN_DATA_6, PIN_DATA_7};
@@ -220,6 +202,7 @@ void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
 
 void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
+  obj->DoStopClock();
   int input = args[0]->NumberValue();
   int bit = input & 1;
   write (PIN_RAM_PI_SELECT, bit);
@@ -230,8 +213,8 @@ void MyObject::RamPiSel(const FunctionCallbackInfo<Value>& args) {
 
 void MyObject::Reset(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
-  if (obj->clockIsRunning) StopClock(args);
-  obj->ResetState();
+  if (obj->clockIsRunning) obj->DoStopClock();
+  obj->state = 0;
   obj->WriteClock(34);
   nsleep(minDelay);
   return;

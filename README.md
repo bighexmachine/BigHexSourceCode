@@ -1,8 +1,19 @@
-Docs on Big hex project
+# Big Hex Source Code
 
 Author: Nathan Doorly
 
 Modified by: Nick Pearson
+
+## Introduction
+
+This repository contains the code running on the Rasbperry PI which drives the [Big Hex Machine](https://bighexmachine.github.io/), a 16 bit processor at the University of Bristol. It contains the following programs
+ * **Node JS Webserver:** The server which allows users to interact with the machine over WiFi. The entry point is server.js
+ * **xCompiler:** This compiles .x files into assemlby code that can be run on the machine. Run the executable a.out passing in your source code over stdin
+ * **xdb:** A debugger tool for .x programs on the machine. Allows you to add breakpoints and inspect memory of a simulated Big Hex machine
+
+If you use [Atom](https://atom.io/) as your text editor you may also wish to download the [language-hex](https://atom.io/packages/language-hex) package which adds syntax highlighting and snippets to hex files
+
+It also contains a number of example programs in X written for the machine. These can be found in the xPrograms folder.
 
 ## Installation
 
@@ -11,39 +22,33 @@ Installation requires the following dependencies
  * GCC Compiler
  * Node JS version 6.11.0
 
-On a raspberry pi installation is as follows
+To install the server and compiler on a Raspberry PI, use the following commands
 ```bash
   $ git clone https://github.com/bighexmachine/BigHexSourceCode.git
   $ cd BigHexSourceCode
   $ npm install
 ```
+It is also possible to build the software on any other linux based system with one minor change. Navigate to **/gpioConfig/wiringProxy.h** and change `#define IS_PI 1` to `#define IS_PI 0`. This will disable the GPIO portion of the code. Re-run `npm install` as above. Compiling in this way is useful for implementing features of the webserver and frontend.
 
-The software can also be build on any other linux based system with one minor change. Navigate to **/gpioConfig/wiringProxy.h** and change `#define IS_PI 1` to `#define IS_PI 0`. This will disable the GPIO portion of the code. Re-run `npm install` as above. Compiling in this way is useful for implementing features of the webserver and frontend.
+#### Installing XDB
+
+The XDB utility is not compiled by default. For more information visit the [xdb README page](https://github.com/bighexmachine/BigHexSourceCode/tree/master/xdb).
 
 ## Active Hours
 
 The Big Hex Machine is designed to automatically switch off out of normal working hours. These hours are defined in **configure/shutdown.js** and can be modified. They also define a truth table of days of the week when the Machine will be active.
 
-### How to use the machine out of hours
+#### How to use the machine out of hours
 
-To boot the machine out of it's normal hours requires access to 2.16 MVB. Switch the machine off then on using the fuse on the wall to force the machine to boot up. Simarly this fuse can be used as a sort-of master off switch for the machine.
+To boot the machine out of it's normal hours requires access to 2.16 MVB. Switch the machine off then on using the fuse on the wall to force the machine to boot up. Similarly this fuse can be used as a sort-of master off switch for the machine.
 
-## Running
+#### Technical Details
+Raspberry PIs do not have a battery powered hardware clock like most other machines. This means it is impossilble for the PI to reboot itself at a set time after shutdown as it will not know the current time. To get around this we leave the PI switched on but running very few programs and use a CRON job to reboot the server at the required time.
+
+## Running the Server
 
 `server.js` is the main file of the server. It is recommended this is run via the provided shell script `server-start.sh` which handles log files.
 The server runs on port 80, this requires elevated privileges so run with `sudo` (There is probably a better way to do this)
-
-On the PI the node js module `forever` is used to run the server so that it automatically reboots itself if a crash occurs.
-
-Install forever globally:
-```bash
-  $ npm install forever -g
-```
-
-Run the script:
-```bash
-  $ sudo forever start -c /bin/bash server-start.sh
-```
 
 ## Hardware
  * Raspberry PI 2 (running the webserver, compiling code and driving the clock signals)
@@ -57,14 +62,21 @@ bridge between the two, since it is not necessary for any work done or users to 
 problems.
 The hostspot was created using this doc: https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md
 
-### Compiing the X compiler
-If the compiler gets corrupted or overritten etc. `cd` to compiler directory,
-Run all these commands:
+## Compiler Information
+If the compiler becomes corrupt for any reason, navigate to **xCompiler** and run `make clean` followed by `make`. This will rebuild the compiler from scratch.
 
-```bash
-  $ make clean
-  $ make
-```
+The main compiler is written in X and is run through a simulator of a 32 bit hex processor written in C. The compiler is bootstrapped through a prebuilt binary of a working compiler. When developing new features for the compiler I suggest only the top level bootstrapped compiler be modified.
+
+Files:
+ * **Makefile** : Code to build the stages of the compiler
+ * **xhex16h.x** : The top level compiler that is used to compile user programs. Contains optimisations and features not present in the older compilers
+ * **hexsim16.c** : Simulator of the 16 bit hex machine written in C (currently unused)
+ * **hexsimb.c** : Simulator of a 32 bit sample hex machine in C
+ * **stdlib.x** : The Big Hex standard library source code
+ * **xhexb.bin** : Prebuilt compiler binary used to compiler the simple bootstrap compiler
+ * **xhexb.x** : Simple bootstrap compiler used to compile the top level compiler
+
+The top level compiler generates 2 files of instructions that should be loaded into the two memory modules of the big hex machine respectively. The simple compiler generates a single .bin file of instructions to be run through the C simulator.
 
 ## Working on the R-Pi
 There are a couple of ways to work on the Pi remotely. First and foremost it has ssh capability so you can
@@ -124,28 +136,9 @@ David May's x compiler is here rebuilding written above. Also contains the old c
 **xPrograms:**
 Selection of example X programs that can be selected from the web UI
 
-## NPM modules
- * sleep
- * bindings
- * express
- * node-gyp
- * hashmap
+**xdb:**
+Contains source code of the X Debugger
 
-## Useful Hex Tips
+## Contact
 
-Programming hex more difficult than other machines as you only have ADD and SUB operations. These are tricks I've compiled that help a little with this, some of these are probably obvious. These are used in the standard library a lot:
-
-**Check if the most significant bit is set:** check if the value is negative
-```x
-if x < 0
-then
-{
-  |bit is 1|
-}
-else
-{
-  |bit is 0|
-}
-```
-
-**Loop Unrolling isn't implemented**: As X does not support for loops it does not unroll any loops. This means a lot of optimisations can be gained by unrolling the loop manually and removing the counter variable
+For more information about the project, including help for programming in the X langauge please visit the [official project website](https://bighexmachine.github.io/) or if you are a student at UoB talk to your lab helpers and leturers.

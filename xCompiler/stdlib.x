@@ -143,10 +143,22 @@ func div(n, m) is
     return div_step(1, m)
 }
 
-func rem(n, m) is
-  var x;
-{ x := div(n, m);
-  return div_x
+func mod(modulus, divisor) is
+var m;
+{
+    if (divisor < (modulus+1)) and (divisor < #7FFF )
+    then
+      m := mod(modulus, divisor+divisor)
+    else
+      m := modulus;
+
+    if divisor < (m+1)
+    then
+      m:=m-divisor
+    else
+      skip;
+
+    return m
 }
 
 func lsh(x, n) is
@@ -184,23 +196,6 @@ func isOdd(x) is return lsh(x, 15) < 0
 
 func isEven(x) is return ~(isOdd(x))
 
-func mod(modulus, divisor) is
-var m;
-{
-    if (divisor < (modulus+1)) and (divisor < #7FFF )
-    then
-      m := mod(modulus, divisor+divisor)
-    else
-      m := modulus;
-
-    if divisor < (m+1)
-    then
-      m:=m-divisor
-    else
-      skip;
-
-    return m
-}
 
 proc sRand(s) is randseed := s
 
@@ -262,9 +257,9 @@ proc copyBitmapForChar(ch,arr) is
   arr[3] := src[3];
   arr[4] := src[4];
   arr[5] := src[5];
+  arr[8] := src[8];
   arr[6] := src[6];
   arr[7] := src[7];
-  arr[8] := src[8];
   arr[9] := src[9];
   arr[10] := src[10];
   arr[11] := src[11];

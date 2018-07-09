@@ -21,13 +21,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bighexmachine/piServerYear2.git"
+    "url": "git+https://github.com/bighexmachine/BigHexSourceCode.git"
   },
   "author": "",
   "license": "ISC",
   "gypfile": true,
   "bugs": {
-    "url": "https://github.com/bighexmachine/piServerYear2/issues"
+    "url": "https://github.com/bighexmachine/BigHexSourceCode/issues"
   },
-  "homepage": "https://github.com/bighexmachine/piServerYear2#readme"
+  "homepage": "https://github.com/bighexmachine/BigHexSourceCode#readme"
 }

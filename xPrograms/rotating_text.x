@@ -32,11 +32,11 @@ proc swapInNextLetter(nextLetterIndex) is
 {
   copyBitmapForChar(letters[nextLetterIndex], nextLetter);
 
-  columnCounter := 0;
-  while columnCounter < 16 do
+  columnCounter := 15;
+  while columnCounter >= 0 do
   {
-    rowCounter := 0;
-    while rowCounter < 16 do
+    rowCounter := 15;
+    while rowCounter >= 0 do
       var iRowCounter;
     {
       iRowCounter := 15 - rowCounter;
@@ -44,8 +44,8 @@ proc swapInNextLetter(nextLetterIndex) is
       framebuff[rowCounter] := framebuff[rowCounter] + framebuff[rowCounter];
       if nextLetter[iRowCounter] < 0 then framebuff[rowCounter] := framebuff[rowCounter] + 1 else skip;
       nextLetter[iRowCounter] := nextLetter[iRowCounter] + nextLetter[iRowCounter];
-      rowCounter := rowCounter + 1
+      rowCounter := rowCounter - 1
     };
-    columnCounter := columnCounter + 1
+    columnCounter := columnCounter - 1
   }
 }

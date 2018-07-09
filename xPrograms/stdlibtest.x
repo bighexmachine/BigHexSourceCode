@@ -17,7 +17,7 @@ proc main() is
   mul(2, 3);
 
   div(12, 7);
-  rem(12, 7);
+  mod(12, 7);
 
   lsh(2, 1);
   rsh(4, 1);
@@ -27,7 +27,6 @@ proc main() is
   isOdd(7);
   isEven(7);
 
-  mod(100, 3);
 
   sRand(112);
   genRand(10);

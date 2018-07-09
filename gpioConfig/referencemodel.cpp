@@ -25,7 +25,7 @@ ReferenceModel::ReferenceModel() :
   phase0clock(0), phase1clock(0), a_reg(0), b_reg(0), op_reg(0), pc(0), fn_reg(OpCode::LDAM),
   ram_pi_sel(RAM_PI_SELECT::RAM), pi_instr_input(0)
 {
-  mem = (uword_t*)malloc(32768 * sizeof(uword_t));
+  mem = (uword_t*)malloc(65536 * sizeof(uword_t));
 }
 
 ReferenceModel::~ReferenceModel()
@@ -171,7 +171,7 @@ void ReferenceModel::DoExePhase()
       b_reg = GetMem(op_reg);
       break;
     case OpCode::STAM:
-      PRINT_I("STAM %04x\n", op_reg);
+      PRINT_I("STAM %04x     %04x\n", op_reg, a_reg);
       SetMem(op_reg, a_reg);
       break;
     case OpCode::LDAC:
@@ -187,15 +187,15 @@ void ReferenceModel::DoExePhase()
       a_reg = pc + op_reg;
       break;
     case OpCode::LDAI:
-      PRINT_I("LDAI %04x\n", op_reg);
+      PRINT_I("LDAI %04x     %04x\n", op_reg, a_reg);
       a_reg = GetMem(a_reg + op_reg);
       break;
     case OpCode::LDBI:
-      PRINT_I("LDBI %04x\n", op_reg);
+      PRINT_I("LDBI %04x     %04x\n", op_reg, b_reg);
       b_reg = GetMem(b_reg + op_reg);
       break;
     case OpCode::STAI:
-      PRINT_I("STAI %04x\n", op_reg);
+      PRINT_I("STAI %04x     %04x, %04x\n", op_reg, a_reg, b_reg);
       SetMem(b_reg + op_reg, a_reg);
       break;
     case OpCode::BR:
@@ -211,11 +211,11 @@ void ReferenceModel::DoExePhase()
       if((word_t)a_reg < 0) pc = pc + op_reg;
       break;
     case OpCode::BRB:
-      PRINT_I("BRB %04x\n", op_reg);
+      PRINT_I("BRB %04x     %04x\n", op_reg, b_reg);
       pc = b_reg + op_reg;
       break;
     case OpCode::OPR:
-      PRINT_I("OPR %04x\n", op_reg);
+      PRINT_I("OPR %04x     %04x, %04x\n", op_reg, a_reg, b_reg);
       DoOPR();
       break;
     case OpCode::PFIX:

@@ -92,7 +92,7 @@ module.exports.execute = function (command, data) {
         compiler.compile(xCode, function(result) {
           if(result.success)
           {
-            resolve(compiler.disassemble(result.u, result.l, result.dataStart, result.dataEnd));
+            resolve(compiler.disassemble(result));
           }
           else
           {
