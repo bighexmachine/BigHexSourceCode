@@ -310,7 +310,7 @@ function disassemble_Internal(hexu, hexl, labels, dataStart, dataEnd)
         if(cmd == "9" || cmd == "10" || cmd == "11")
         {
           let addr = lineNo + 1 + opval;
-          let labelName = (labels.size == 0) ? "main_wrapper" : "label" + labels.size;
+          let labelName = (lineNo == 3) ? "main_wrapper" : "label" + labels.size;
 
           if(labels.has(addr))
           {

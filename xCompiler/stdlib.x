@@ -65,6 +65,18 @@ proc memcpy(src, dst, size) is
   }
 }
 
+proc memzero(src, size) is
+  var n;
+{
+  n := size;
+
+  while n > 0 do
+  {
+    src[n] := #0000;
+    n := n - 1
+  }
+}
+
 | sets all bits in the display buffer to 0 |
 proc clearDisplay() is
 {

@@ -1884,6 +1884,18 @@ proc optimise(x) is
     x.t3 := optimiseexpr(x.t3)
   }
   else
+  if (op = s_input)
+  then
+  { x.t1 := optimiseexpr(x.t1);
+    x.t2 := optimiseexpr(x.t2)
+  }
+  else
+  if (op = s_output)
+  then
+  { x.t1 := optimiseexpr(x.t1);
+    x.t2 := optimiseexpr(x.t2)
+  }
+  else
   if (op = s_ass)
   then
   { x.t2 := optimiseexpr(x.t2);
@@ -2391,6 +2403,14 @@ proc genstatement(x, seq, clab, tail) is
     genasm_rec(x.t1)
   }
   else
+  if (op = s_input)
+  then
+    geninput(x.t1, x.t2)
+  else
+  if (op = s_output)
+  then
+    genoutput(x.t1, x.t2)
+  else
   if (op = s_stop)
   then
   { geni(i_ldai, 1);
@@ -2414,6 +2434,7 @@ proc genstatement(x, seq, clab, tail) is
       generror("misplaced \"return\"")
     else
       skip;
+
     genbr(seq, clab)
   }
 }
@@ -2897,6 +2918,7 @@ proc geninput(ch, right) is
   var offset;
   var value;
 { rightop := right.t0;
+  prints("generating input"); newline();
   if rightop = s_name
   then
   { name := findname(right);
@@ -2934,7 +2956,9 @@ proc geninput(ch, right) is
 
 proc genoutput(ch, x) is
   var sp;
-{ if viabreg(ch)
+{
+  prints("generating output"); newline();
+  if viabreg(ch)
   then
   { texp(x);
     tbexp(ch);

@@ -1,4 +1,4 @@
-array images[2];
+array doubleBuffer[16];
 
 proc main() is
  |positions of player bars|
@@ -12,53 +12,16 @@ proc main() is
  var ys;
  |loop and value vars|
  var i;
- var v;
  var j;
  var m;
  |0:no-one, 1:player 1, 2:player 2|
  var winner;
   {
-
-  images[0] := [ #b0000000000000000
-        , #b0000000110000000
-        , #b0000001110000000
-        , #b0000011110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000000110000000
-        , #b0000011111100000
-        , #b0000011111100000
-        , #b0000000000000000
-        ];
-
-  images[1] := [ #b0000000000000000
-       , #b0000001111000000
-       , #b0011111111111000
-       , #b0111000000111100
-       , #b0000000001111000
-       , #b0000000011110000
-       , #b0000000111100000
-       , #b0000001111000000
-       , #b0000011110000000
-       , #b0000111100000000
-       , #b0001111000000000
-       , #b0011110000000000
-       , #b0111100000000000
-       , #b0111111111111110
-       , #b0111111111111110
-       , #b0000000000000000
-       ];
+    initNumbers();
 
     sRand(93);
     while true do
     {
-
       winner := 0;
       posA := 7;
       posB := 7;
@@ -68,19 +31,21 @@ proc main() is
       if xs=0 then xs:= #FFFF else skip;
       ys := genRand(5)-2;
 
-      clearDisplay();
-      i:=posA;
-      v:=posA+4;
-      while i<v do {framebuff[i]:=framebuff[i]+#8000;i:=i+1};
-      i:=posB;
-      m:=posB+4;
-      while i<m do {framebuff[i]:=framebuff[i]+#0001; i:=i+1};
-      framebuff[y]:=framebuff[y]+lsh(1,x);
+      memzero(doubleBuffer, 16);
+
+      | initialise the position of the paddles|
+      doubleBuffer[posA]   := #8001;
+      doubleBuffer[posA+1] := #8001;
+      doubleBuffer[posA+2] := #8001;
+      doubleBuffer[posA+3] := #8001;
+
+      doubleBuffer[y]:=doubleBuffer[y]+lsh(1,x);
+      displayBitmap(doubleBuffer);
 
       while winner=0 do
       {
         |move ball|
-        framebuff[y]:=framebuff[y]-lsh(1,x);
+        doubleBuffer[y]:=doubleBuffer[y]-lsh(1,x);
         x:=x+xs;
         y:=y+ys;
         if x=15 then
@@ -94,51 +59,50 @@ proc main() is
         }
         else skip;
         if (y=15) or (y=14) or (y=0) or (y=1) then ys:=0-ys else skip;
-        framebuff[y]:=framebuff[y]+lsh(1,x);
+        doubleBuffer[y]:=doubleBuffer[y]+lsh(1,x);
 
         |move bars|
-        j:=0;
-        while j < 50 do
+        j:=150;
+        while j > 0 do
+          var v;
         {
           0?v;
-          if v=0 then skip else
+          |get new position|
+          if (v=2) and (posA<12) then
           {
-            |remove old position|
-            i:=posA;
+            doubleBuffer[posA+3]:=doubleBuffer[posA+3]-#8000;
+            posA:=posA-1;
+            doubleBuffer[posA]:=doubleBuffer[posA]+#8000
+          }
+          else skip;
 
-            m:=posA+4;
-            while i<m do {framebuff[i]:=framebuff[i]-#8000; i:=i+1};
-
-            |get new position|
-            if (v=2) and (posA<12) then posA:=posA-1 else skip;
-            if (v=8) and (0<posA) then posA:=posA+1 else skip;
-            i:=posA;
-            m:=posA+4;
-            while i<m do {framebuff[i]:=framebuff[i]+#8000; i:=i+1}
-          };
+          if (v<0) and (posA>0) then
+          {
+            doubleBuffer[posA]:=doubleBuffer[posA]-#8000;
+            posA:=posA+1;
+            doubleBuffer[posA+3]:=doubleBuffer[posA+3]+#8000
+          }
+          else skip;
 
           1?v;
-          if v=0 then skip else
+          |get new position|
+          if (v=2) and (posB<12) then
           {
-            |remove old position|
-            i:=posB;
-            m:=posB+4;
-            while i<m do {framebuff[i]:=framebuff[i]-#0001; i:=i+1};
+            doubleBuffer[posB+3]:=doubleBuffer[posB+3]-#0001;
+            posB:=posB-1;
+            doubleBuffer[posB]:=doubleBuffer[posB]+#0001
+          }
+          else skip;
 
-            |get new position|
-            if (v=2) and (posA<12) then posB:=posB-1 else skip;
-            if (v=8) and (0<posA) then posB:=posB+1 else skip;
-            i:=posB;
-            m:=posB+4;
-            while i<m do {framebuff[i]:=framebuff[i]+#0001; i:=i+1}
-          };
-          j:=j+1
-        }
+          j:=j-1
+        };
+
+        displayBitmap(doubleBuffer)
       };
       i:=0;
       while i<4 do
       {
-        displayBitmap(images[winner-1]);
+        displayBitmap(getBitmapForChar(winner + '0'));
         longdelay();
         clearDisplay();
         longdelay();
@@ -152,12 +116,12 @@ proc rotateFrameBuff() is
   var w;
 { n := 0;
   while n < 16 do
-  { w := framebuff[n];
+  { w := doubleBuffer[n];
     if w < 0
     then
-      framebuff[n] := w + w + 1
+      doubleBuffer[n] := w + w + 1
     else
-      framebuff[n] := w + w;
+      doubleBuffer[n] := w + w;
     n := n + 1
   }
 }
