@@ -450,20 +450,57 @@
       ]
     },
     {
-      "title":"OUT",
+      "title":"IN",
       "cmds": [
         "RESET",
+        "14 3",
+        "14 0",
+        "14 13",
+        "3 2",
+        "2 0",
+
+        "14 2",
+        "14 15",
+        "14 1",
         "3 15",
-        "4 0",
-        "13 3",
-        "4 0",
-        "13 3"
+        "2 1",
+
+        "14 3",
+        "14 1",
+        "14 13",
+        "3 2",
+        "2 2",
+
+        "14 1",
+        "14 15",
+        "14 1",
+        "3 15",
+        "2 3",
+        "2 4",
+        "2 5",
+        "2 6",
+        "2 7",
+        "2 8",
+        "2 9",
+        "2 10",
+
+        "14 4",
+        "14 0",
+        "14 12",
+        "3 0",
+        "2 11",
+
+        "START"
       ],
-      "checkText":"Check that all buttons are lit",
+      "checkText":"Check that pushing butons causes the lowest bits to be enabled in A and B reg",
       "verifies":[
         "LDAC",
         "LDBC",
-        "OUT"
+        "STAM",
+        "LDBM",
+        "LDAC",
+        "BRB",
+        "IN"
       ]
     }
   ]

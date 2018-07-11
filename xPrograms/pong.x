@@ -73,7 +73,7 @@ proc main() is
         0?v;
 
         if amovs < 0 then skip else
-        if (v=2) and (posA>0) then
+        if (v=8) and (posA>0) then
         {
           doubleBuffer[posA+3]:=doubleBuffer[posA+3]-#8000;
           posA:=posA-1;
@@ -81,7 +81,7 @@ proc main() is
           doubleBuffer[posA]:=doubleBuffer[posA]+#8000
         }
         else
-        if (v=8) and (posA<12) then
+        if (v=2) and (posA<12) then
         {
           doubleBuffer[posA]:=doubleBuffer[posA]-#8000;
           posA:=posA+1;
@@ -93,7 +93,7 @@ proc main() is
         1?v;
 
         if bmovs < 0 then skip else
-        if (v=2) and (posB>0) then
+        if (v=8) and (posB>0) then
         {
           doubleBuffer[posB+3]:=doubleBuffer[posB+3]-#0001;
           posB:=posB-1;
@@ -101,7 +101,7 @@ proc main() is
           doubleBuffer[posB]:=doubleBuffer[posB]+#0001
         }
         else skip;
-        if (v=8) and (posB<12) then
+        if (v=2) and (posB<12) then
         {
           doubleBuffer[posB]:=doubleBuffer[posB]-#8000;
           posB:=posB+1;

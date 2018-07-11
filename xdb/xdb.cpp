@@ -248,14 +248,7 @@ void printdisassembly()
 
   for(int pc = ipc; pc < (ipc + 6); ++pc)
   {
-    uword_t mem = machine->GetMem(pc >> 1);
-
-    if(pc % 2 == 1)
-    {
-      mem = (mem >> 8);
-    }
-
-    mem &= 0x00ff;
+    uint8_t mem = machine->GetInstrByte(pc);
 
     if(pc == mpc)
     {
@@ -271,6 +264,117 @@ void printdisassembly()
     printf(" %04x\n", mem & 0x0f);
   }
 }
+
+void printbacktrace_recursive(uword_t pc, uword_t sp, unsigned int recursiveDepth = 0)
+{
+  // if we have reached the maximum depth then just print error
+  if(recursiveDepth > 20)
+  {
+    cout << "Maximum backtace depth reached" << endl;
+    return;
+  }
+
+  // the main wrapper section is NOT a function call so has no backtace, if we are there print nothing and return
+  // etc. until we reach the program entry point, create special case for detecting this - search for BR -2 perhaps?
+  bool isMainWrapper = (machine->GetInstrByte(pc) == 0x61) && (machine->GetInstrByte(pc+1) == 0xff) && (machine->GetInstrByte(pc+2) == 0x9e);
+
+  if (pc < 4 || isMainWrapper)
+  {
+    return;
+  }
+
+  // search back through the the program, to find the first instruction for the method (LDBM sp, STAI 0...)
+  bool foundStart = false;
+  uword_t startPC = pc;
+
+  while(!foundStart && startPC > 0)
+  {
+    uint8_t cur = machine->GetInstrByte(startPC);
+    uint8_t next = machine->GetInstrByte(startPC+1);
+
+    // are we at the start??
+    if(cur == 0x12 && next == 0x80)
+    {
+      foundStart = true;
+    }
+    else
+    {
+      --startPC;
+    }
+  }
+
+  if(startPC < 4)
+  {
+    cout << "Error finding start of method" << endl;
+    return;
+  }
+
+  // calculate the stack size and from this
+  uword_t stackSize = 0;
+
+  // search ahead to find the stack size
+  {
+    uword_t LDACPC = startPC + 2;
+    bool stackSizeFound = false;
+
+    while(!stackSizeFound)
+    {
+      uint8_t instr = machine->GetInstrByte(LDACPC);
+
+      OpCode op = (OpCode)((instr & 0xf0) >> 4);
+
+      if(op == OpCode::LDAC)
+      {
+        stackSize = (stackSize & 0xfff0) | (instr & 0x0f);
+        stackSizeFound = true;
+      }
+      else if(op == OpCode::NFIX)
+      {
+        stackSize = 0xff00 | ((instr & 0x0f) << 4);
+      }
+      else if(op == OpCode::PFIX)
+      {
+        stackSize = (stackSize << 4) | (instr & 0x0f);
+      }
+      else
+      {
+        cout << "Error finding stack size" << endl;
+        stackSizeFound = true;
+        stackSize = 0;
+      }
+
+      LDACPC++;
+    }
+  }
+
+  // invert
+  stackSize = -stackSize;
+
+  // TODO: Determine if we are at the start or end of a function and adjust the sp accordingly
+  bool isPreStackInit = (pc-startPC) < 6;
+  bool isPostStackInit = false;
+  if(!isPreStackInit && !isPostStackInit)
+  {
+    sp += stackSize;
+  }
+
+  uword_t returnAddr = ((pc-startPC) > 1) ? machine->GetMem(sp) : machine->GetAReg();
+
+  // recursive call for the parent method using the reutrn address
+  printf("#%02d  0x%04x  ??? \n", recursiveDepth, pc);
+  printbacktrace_recursive(returnAddr, sp, recursiveDepth + 1);
+}
+
+void printbacktrace()
+{
+  uword_t pc = machine->GetPCReg();
+  uword_t sp = machine->GetMem(0x02);
+
+  //cout << "Backtrace:" << endl;
+
+  printbacktrace_recursive(pc, sp);
+}
+
 
 // returns true if a break point was hit
 bool singleStep()
@@ -345,6 +449,7 @@ void runcommand(const std::string& input)
     cout << "  break data [addr](,addrmax)- adds a data breakpoint at the address or address range" << endl;
     cout << "  break list                 - lists all breakpoints" << endl;
     cout << "  break remove [id]          - removes the specified breakpoint using its #id" << endl;
+    cout << "  backtrace                  - generates a backtrace" << endl;
     cout << "  run                        - starts execution from the beginning" << endl;
     cout << "  continue                   - continues paused execution" << endl;
     cout << "  step                       - executes one instruction then pauses again" << endl;
@@ -355,7 +460,7 @@ void runcommand(const std::string& input)
     cout << "  disassemble                - disassembles the local commands and prints them" << endl;
     cout << endl;
   }
-  else if(cmd == 'b')
+  else if(cmd == 'b' && toLower(input[1]) == 'r')
   {
     string command;
     cin >> command;
@@ -401,6 +506,10 @@ void runcommand(const std::string& input)
     {
       cout << "Invalid Command, type help for a list of commands" << endl;
     }
+  }
+  else if(cmd == 'b' && toLower(input[1]) == 'a')
+  {
+    printbacktrace();
   }
   else if(cmd == 'd' && toLower(input[1]) == 'a')
   {

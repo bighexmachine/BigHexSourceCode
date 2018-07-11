@@ -80,6 +80,16 @@ public:
   uword_t GetPCReg() const { return pc; }
   OpCode GetFNReg() const { return fn_reg; }
 
+  uint8_t GetInstrByte(uword_t ipc) const
+  {
+    uword_t mem = GetMem(ipc >> 1);
+
+    if(ipc % 2 == 1)
+      mem = (mem >> 8);
+
+    return (uint8_t)(mem & 0x00ff);
+  }
+
 protected:
 
   void DoFetchPhase();

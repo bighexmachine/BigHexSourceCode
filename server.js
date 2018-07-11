@@ -123,8 +123,8 @@ autoShutdown.init(function (done) {
 });
 
 
-let randidx = 2;
-let randomPrograms = ["wink.x", "welcome.x", "nyan.x", "rotating_text.x"];
+let randidx = 0;
+let randomPrograms = ["wink.x", "pong.x", "welcome.x", "nyan.x", "rotating_text.x"];
 function runRandomProgram() {
   // start the next program
   randidx += 1;
