@@ -78,6 +78,11 @@
     {
       digitalWrite (p, v);
     }
+
+    inline void read(int p)
+    {
+      #error "read not implemented for wiring pi"
+    }
   #else
     #include "nativeWiring.h"
   #endif
@@ -88,6 +93,7 @@
   inline void setPinOut(int p) {}
   inline void setPinIn(int p) {}
   inline void write(int p, int v) {}
+  inline int read(int p) { return 0; }
 
 #endif // IS_PI
 
