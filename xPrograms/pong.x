@@ -38,6 +38,9 @@ proc main() is
     doubleBuffer[y]:=doubleBuffer[y]+lsh(1,x);
     displayBitmap(doubleBuffer);
 
+    0!10;
+    1!10;
+
     while winner=0 do
       var j;
       var amovs;
@@ -100,13 +103,13 @@ proc main() is
           bmovs := bmovs - 1;
           doubleBuffer[posB]:=doubleBuffer[posB]+#0001
         }
-        else skip;
+        else
         if (v=2) and (posB<12) then
         {
-          doubleBuffer[posB]:=doubleBuffer[posB]-#8000;
+          doubleBuffer[posB]:=doubleBuffer[posB]-#0001;
           posB:=posB+1;
           bmovs := bmovs - 1;
-          doubleBuffer[posB+3]:=doubleBuffer[posB+3]+#8000
+          doubleBuffer[posB+3]:=doubleBuffer[posB+3]+#0001
         }
         else skip;
 
