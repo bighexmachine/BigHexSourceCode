@@ -31,8 +31,7 @@ volatile unsigned *gpio = NULL;
 #define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 
-#define NUM_PORTS 128
-char pval[NUM_PORTS];
+#define GET_GPIO(g) ((*(gpio+13)&(1<<g)) >> g) //0 if LOW, 1 if HIGH
 
 inline void setupGPIO()
 {
@@ -84,6 +83,11 @@ inline void write(int p, int v)
   {
     GPIO_SET = 1<<p;
   }
+}
+
+inline int read(int p)
+{
+  return GET_GPIO(p);
 }
 
 #endif

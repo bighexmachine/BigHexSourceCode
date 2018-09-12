@@ -56,20 +56,23 @@ proc displayBitmap(b) is
 proc memcpy(src, dst, size) is
   var n;
 {
-  n := size;
+  n := size-1;
 
+  dst[0] := src[0];
   while n > 0 do
   {
     dst[n] := src[n];
     n := n - 1
   }
+
 }
 
 proc memzero(src, size) is
   var n;
 {
-  n := size;
+  n := size-1;
 
+  src[0] := #0000;
   while n > 0 do
   {
     src[n] := #0000;
