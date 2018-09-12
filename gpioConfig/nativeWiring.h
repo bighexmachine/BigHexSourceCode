@@ -31,6 +31,9 @@ volatile unsigned *gpio = NULL;
 #define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
 #define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 
+#define NUM_PORTS 128
+char pval[NUM_PORTS];
+
 inline void setupGPIO()
 {
   int  mem_fd;

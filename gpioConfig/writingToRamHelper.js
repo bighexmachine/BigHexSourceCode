@@ -1,4 +1,5 @@
 var sleep = require('sleep');
+var Aval = undefined;
 
 module.exports.writeToRam = function(hexu, hexl, gpioService) {
   gpioService.resetClock();
@@ -6,45 +7,25 @@ module.exports.writeToRam = function(hexu, hexl, gpioService) {
   //enable instruction input on machine
   gpioService.selectPi();
 
-  //going through every instruction
+  var pcMax = Math.min(hexl.length, hexu.length);
+  var inst = [];
+
+  for(let pc = 0; pc < pcMax; pc++)
+  {
+    inst = inst.concat(createLDACInstructions(hexu[pc], hexl[pc])); // load the instructions into the A register
+    inst = inst.concat(createLDAMInstructions(pc)); // store reg a to mem[pc]
+  }
+
+  console.log("Total Instructions : " + inst.length);
   console.log("Started writing to RAM");
 
-  /*
-  / it is length - 1 since the last element in the hex arrays are spaces
-  / we didn't want to trim the spaces since in the case that the ram lower has more instructions than the higher,
-  / its easiest to to parse the two spaces at the end of ram higher as instructions (which works because there is not error checking)
-  / since a correct program never reads from this memory address then it is fine.
-  */
-  var pcMax = hexl.length-1;
-  var totalInstructionCount = 0;
-
-  for(pc = 0; pc < pcMax; pc++)
+  for(let i = 0; i < inst.length; i++)
   {
-    // load the instruction in to reg A
-
-    //console.log("INST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+" \n");
-
-    var inst_l = createLDACInstructions(hexu[pc], hexl[pc]); // instructions to load one nibble at a time (for each RAM)
-    //var inst_l = createLDACInstructions("00", "00"); // write 00s to clear ram
-    for(j = 0; j < inst_l.length; j++)
-    { //loading nibble at a time
-     gpioService.runInstruction( inst_l[j], false);
-     totalInstructionCount++;
-    }
-
-    //console.log("INST:: upper:"+hexu[pc]+" lower:"+ hexl[pc] + " ("+parseInt(pc/(pcMax-1)*100)+"%) PC: "+pc+" \n");
-
-    // store reg a to mem[pc]
-    var inst_s = createLDAMInstructions(pc);
-    for(j = 0; j < inst_s.length; j++)
-    {
-      gpioService.runInstruction( inst_s[j], false);
-      totalInstructionCount++;
-    }
-
+    gpioService.runInstruction( inst[i], false);
+    sleep.usleep(5000);
   }
+
   console.log("Finished writing to RAM");
-  console.log("Total Instructions Written : " + totalInstructionCount);
 
   gpioService.writeData( 0 );
 
@@ -117,7 +98,15 @@ function createLDACInstructions(hexu, hexl) {
   value = value << 4;
   value += parseInt(hexl.charAt(1), 16);
 
-  return createInstruction(3, value);
+  if(value===Aval)
+  {
+    return [];
+  }
+  else
+  {
+    Aval = value;
+    return createInstruction(3, value);
+  }
 }
 
 function createLDAMInstructions(num){

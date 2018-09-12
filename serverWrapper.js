@@ -32,7 +32,7 @@ if(Logfiles.length > MAX_LOGFILES)
     return v.name;
   });
 
-  console.log(Logfiles);
+  //console.log(Logfiles);
   console.log(Logfiles.length + " logfiles detected (max " + MAX_LOGFILES + "), deleting oldest");
 }
 

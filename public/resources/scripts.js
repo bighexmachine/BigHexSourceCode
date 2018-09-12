@@ -35,11 +35,6 @@ var examples = [
     path: "rotating_text.x"
   },
   {
-    name: "Counter",
-    desc: "Demonstrates the display buffer as a binary counter",
-    path: "counter.x"
-  },
-  {
     name: "Faces",
     desc: "Faces on the display output",
     path: "inputFaces.x"

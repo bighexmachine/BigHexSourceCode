@@ -51,10 +51,9 @@ module.exports.runInstruction = function(instr, switchInputs){
 
     sleep.usleep(400);
 
-    for (i=0; i<16; i++)
+    for (let i=0; i<16; i++)
     {
-        module.exports.stepClock();
-        sleep.usleep(100);
+      module.exports.stepClock();
     }
 
     if(switchInputs)

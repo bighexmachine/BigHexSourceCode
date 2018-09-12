@@ -65,6 +65,7 @@ void MyObject::Init(Local<Object> target) {
   {
     setPinIn (allpins[i]);
     setPinOut (allpins[i]);
+    write (allpins[i], 0);
   }
 
   // Prepare constructor template
@@ -156,7 +157,7 @@ void MyObject::DoStepClock()
   if (clockIsRunning) DoStopClock();
   WriteClock( signals[state] );
   state = (state+1) % 4;
-  nsleep(minDelay);
+  nsleep(20000);
 }
 
 void MyObject::StepClock(const FunctionCallbackInfo<Value>& args) {
@@ -185,18 +186,18 @@ void MyObject::SetSpeed(const FunctionCallbackInfo<Value>& args) {
 void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
   MyObject* obj = ObjectWrap::Unwrap<MyObject>( args.This() );
   obj->DoStopClock();
-  int byte = args[0]->NumberValue();
+  int value = args[0]->NumberValue();
 
   static int pins[8] = {PIN_DATA_0, PIN_DATA_1, PIN_DATA_2, PIN_DATA_3, PIN_DATA_4, PIN_DATA_5, PIN_DATA_6, PIN_DATA_7};
 
   for (int i=0; i < 8; ++i )
   {
-    write (pins[i], ( byte & (1<<i) ) >> i);
+    write (pins[i], ( value & (1<<i) ) >> i);
   }
 
-  nsleep(minDelay);
+  nsleep(400000);
 
-  obj->refModel->SetPiDataInput(byte);
+  obj->refModel->SetPiDataInput(value);
 
   return;
 }
