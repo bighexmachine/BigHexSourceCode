@@ -70,6 +70,24 @@
           </div>
         </div>
 
+        <div class="modal fade" tabindex="-1" role="dialog" id="warnModal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Timeout</h4>
+              </div>
+              <div class="modal-body">
+                <p>You have been inactive for a while, do you still wish to stay in the queue?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="leaveQueue();">No</button>
+                <button type="button" class="btn btn-primary" onclick="stayInQueue();">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="modal fade" tabindex="-1" role="dialog" id="testSuiteModal">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -179,22 +197,12 @@
             </div>
           </div>
           <div class="row code-editor">
-            <div class="col-md-9">
+            <div class="col-md-12">
               <span class="small-text">Write code here to run it on the machine, use the button above to load example programs to get you started</span>
+              <p class="small-text">
+                If you use the <a href="https://atom.io/" target="_blank">Atom</a> text editor you can download the custom package <a href="https://atom.io/packages/language-hex/" target="_blank">Language-Hex</a> which will add syntax highlighting and code snippets to *.x files
+              </p>
               <textarea id="programInput" class="form-control" rows=20 style = "margin-bottom:10px; padding:0px !important" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-            </div>
-            <div class="col-md-3">
-              <div id="fileupload-area" class="visible-md visible-lg visible-xl">
-                <span class="small-text">Or upload file from your computer:</span>
-                <div class="file-input">
-                  <input type="file" id="files" name="files" />
-                  <output id="list"></output>
-                </div>
-
-                <p class="small-text">
-                  If you use the <a href="https://atom.io/" target="_blank">Atom</a> text editor you can download the custom package <a href="https://atom.io/packages/language-hex/" target="_blank">Language-Hex</a> which will add syntax highlighting and code snippets to *.x files
-                </p>
-              </div>
             </div>
           </div>
         </div>

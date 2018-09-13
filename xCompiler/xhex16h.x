@@ -2918,7 +2918,7 @@ proc geninput(ch, right) is
   var offset;
   var value;
 { rightop := right.t0;
-  prints("generating input"); newline();
+  |prints("generating input"); newline();|
   if rightop = s_name
   then
   { name := findname(right);
@@ -2957,7 +2957,7 @@ proc geninput(ch, right) is
 proc genoutput(ch, x) is
   var sp;
 {
-  prints("generating output"); newline();
+  |prints("generating output"); newline();|
   if viabreg(ch)
   then
   { texp(x);

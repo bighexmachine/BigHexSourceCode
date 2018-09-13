@@ -21,6 +21,7 @@ function initSocket()
               console.log("denied access to api");
               queuePos = splitMsg[1];
               updateQueueUI(queuePos);
+              $("#warnModal").modal("hide");
               break;
           case "accessAPISuccess":
               if(queuePos != 1)
@@ -39,6 +40,9 @@ function initSocket()
               updateQueueUI(queuePos);
               socket.close();
               break;
+          case "warning":
+              $("#warnModal").modal();
+              break;
       }
   };
 
@@ -54,10 +58,6 @@ function initSocket()
     queuePos = -1;
     updateQueueUI(queuePos);
   }
-
-  setInterval(function() {
-    askServerForAccessToAPI(function() {});
-  }, 30000);
 }
 
 function askServerForAccessToAPI(callback) {
@@ -89,4 +89,12 @@ function joinQueue() {
 
 function leaveQueue() {
     socket.send("leaveQueue");
+    $("#warnModal").modal("hide");
+}
+
+
+function stayInQueue()
+{
+  socket.send("stayInQueue");
+  $("#warnModal").modal("hide");
 }

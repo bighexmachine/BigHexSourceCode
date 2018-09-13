@@ -28,43 +28,29 @@ function getIp(ws) {
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+
+queue.setSocketServer(wss);
+
 wss.on('connection', function connection(ws, req) {
-    const location = url.parse(req.url, true);
-    var ip = getIp(ws);
+    let ip = getIp(ws);
 
     queue.addToQueue(ip);
-
-    let updateAllClients = function() {
-      wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN)
-        {
-          if(queue.getFrontOfQueue() == getIp(client))
-          {
-            client.send("accessAPISuccess");
-          }
-          else
-          {
-            var pos = queue.getQueuePositionOfIP(getIp(client));
-            pos = pos+1;
-            client.send("denied " + JSON.stringify(pos));
-          }
-        }
-      });
-    };
 
     ws.on('message', function incoming(message) {
         console.log('\'' + ip + '\' => %s', message);
 
         switch (message) {
+            case "requestToAccessAPI":
+              queue.addToQueue(ip);
+              // fall through
             case "askServerForAccessToAPI":
                 if(queue.getFrontOfQueue() == ip) {
                     //user can access the Big hex, set active for queue timeout
-                    queue.setActive();
                     ws.send("accessAPISuccess");
                 }
                 else {
                     //return position along with deny to ensure client is up to date
-                    var pos = queue.getQueuePositionOfIP(ip);
+                    let pos = queue.getQueuePositionOfIP(ip);
                     pos = pos+1;
                     ws.send("denied " + JSON.stringify(pos));
                 }
@@ -72,9 +58,11 @@ wss.on('connection', function connection(ws, req) {
             case "leaveQueue":
 
                 queue.removeFromQueue(ip);
-                updateAllClients();
 
                 ws.send("leaveQueueSuccess");
+                break;
+            case "stayInQueue":
+                queue.setActive();
                 break;
             default:
                 break;
@@ -85,7 +73,6 @@ wss.on('connection', function connection(ws, req) {
         console.log('disconnected');
 
         queue.removeFromQueue(ip);
-        updateAllClients();
 
     });
 });
@@ -96,7 +83,7 @@ server.listen(80, function () {
     console.log('Web Server listening on port 80');
 
     api.execute('reset', undefined);
-    runRandomProgram();
+    //runRandomProgram();
     randomProgramTimer = setInterval(runRandomProgram, 5*60000);
 });
 
@@ -124,7 +111,7 @@ autoShutdown.init(function (done) {
 
 
 let randidx = 0;
-let randomPrograms = ["wink.x", "pong.x", "welcome.x", "nyan.x", "rotating_text.x"];
+let randomPrograms = ["wink.x", "pong.x", "nyan.x", "rotating_text.x"];
 //let randomPrograms = ["rotating_text.x"];
 function runRandomProgram() {
   // start the next program

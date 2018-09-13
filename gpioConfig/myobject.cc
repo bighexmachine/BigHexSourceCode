@@ -195,7 +195,7 @@ void MyObject::WriteData(const FunctionCallbackInfo<Value>& args) {
     write (pins[i], ( value & (1<<i) ) >> i);
   }
 
-  nsleep(400000);
+  nsleep(800000);
 
   obj->refModel->SetPiDataInput(value);
 

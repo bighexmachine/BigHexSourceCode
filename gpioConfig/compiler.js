@@ -7,6 +7,8 @@ var HashMap = require('hashmap');
 
 var path = require('path');
 
+var stdliblen = 0;
+
 function rmdirRecursive(path)
 {
   if(!fs.existsSync(path)) return;
@@ -64,6 +66,8 @@ module.exports.compile = function(Xsource, callback, quiet){
   let promise = new Promise((resolve, reject) => {
     fs.readFile(STDLIB, function(err, data) {
       if(err) throw err;
+
+      stdliblen = data.toString('utf-8').split('\n').length - 1;
 
       fs.writeFile(SOURCEFILE, data.toString('utf8'), function(err) {
         if(err) throw err;
@@ -153,6 +157,13 @@ module.exports.parseCompileErrors = function(stdout) {
     let choppedLine = line.slice(11).split(':');
     if(choppedLine.length < 2) return;
 
+    if(choppedLine[0].startsWith("line "))
+    {
+      let lineNo = parseInt(choppedLine[0].substr(5));
+      lineNo -= stdliblen;
+      choppedLine[0] = "line " + lineNo;
+    }
+
     if(errors[choppedLine[0]] == undefined)
     {
       errors["keys"].push(choppedLine[0]);
@@ -165,7 +176,10 @@ module.exports.parseCompileErrors = function(stdout) {
       message += choppedLine[i];
     }
 
-    errors[choppedLine[0]].push(message);
+    if(!errors[choppedLine[0]].includes(message))
+    {
+      errors[choppedLine[0]].push(message);
+    }
   });
 
   if(errors.keys.length == 0)

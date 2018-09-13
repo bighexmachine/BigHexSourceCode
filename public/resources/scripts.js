@@ -1,8 +1,13 @@
 var examples = [
   {
     name: "Starter Program",
-    desc: "Program with an empty main function",
+    desc: "Empty program",
     path: "starter.x"
+  },
+  {
+    name: "Banner Text",
+    desc: "Displays a message",
+    path: "rotating_text.x"
   },
   {
     name: "Factorial",
@@ -11,43 +16,28 @@ var examples = [
   },
   {
     name: "Wink",
-    desc: "Displays a smiley face on a ticker tape",
+    desc: "",
     path: "wink.x"
   },
   {
-    name: "Welcome to CS",
-    desc: "Writes Welcome to CS at Bristol! ☺ on the display output",
-    path: "welcome.x"
+    name: "Faces",
+    desc: "",
+    path: "inputFaces.x"
   },
   {
     name: "Raction Game",
-    desc: "",
+    desc: "Game that tests your reactions",
     path: "reaction.x"
   },
   {
     name: "Pong Game",
-    desc: "",
+    desc: "The classic game, rewritten for Big Hex",
     path: "pong.x"
   },
   {
-    name: "Hi David",
-    desc: "Rotating Text on the display output",
-    path: "rotating_text.x"
-  },
-  {
-    name: "Faces",
-    desc: "Faces on the display output",
-    path: "inputFaces.x"
-  },
-  {
-    name: "Nayn",
-    desc: "",
+    name: "Cat",
+    desc: "A mystery cat",
     path: "nyan.x"
-  },
-  {
-    name: "Pacman",
-    desc: "",
-    path: "pacman.x"
   },
   {
     name: "Will's Automata",
@@ -55,18 +45,8 @@ var examples = [
     path: "ca.x"
   },
   {
-    name: "Game of Life",
-    desc: "Simulates Conway's Game of Life",
-    path: "gameoflife.x"
-  },
-  {
-    name: "Christmas Text",
-    desc: "",
-    path: "christmas.x"
-  },,
-  {
     name: "Christmas Tree",
-    desc: "",
+    desc: "Bubble sorting xmas tree",
     path: "tree.x"
   }
 ];
@@ -386,7 +366,7 @@ function updateQueueUI(place) {
       $("#controls").show();
       $("#controls-hidden").hide();
   }
-  else if(place == -1) {
+  else if(place <= 0) {
       $('#queueUI').text('Not waiting');
       $("#leaveQueue").hide();
       $("#joinQueue").show();

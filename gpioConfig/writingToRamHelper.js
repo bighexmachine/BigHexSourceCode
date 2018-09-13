@@ -9,6 +9,7 @@ module.exports.writeToRam = function(hexu, hexl, gpioService) {
 
   var pcMax = Math.min(hexl.length, hexu.length);
   var inst = [];
+  Aval = undefined;
 
   for(let pc = 0; pc < pcMax; pc++)
   {

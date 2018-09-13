@@ -28,12 +28,12 @@ module.exports.init = function(onshutdown) {
   console.log("Initialising server... current system time is " + new Date(Date.now()).toString());
   console.log("The next automatic shut down will be " + new Date(shutdownTime*1000).toString());
 
-  setTimeout(function() {
+  /*setTimeout(function() {
     console.log("Automatic shutdown procedure started...");
     onshutdown(function(done) {
       performShutdown();
     });
-  }, (shutdownInterval+1) * 1000);
+  }, (shutdownInterval+1) * 1000);*/
 };
 
 var ROOT_DIR = path.normalize(__dirname + '/..');

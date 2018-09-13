@@ -14,8 +14,6 @@ module.exports = function (app) {
           queue.setActive();
         }
 
-        res.setHead
-
         if(queue.getFrontOfQueue() == ip || !api.isCommandRestricted(comm))
         {
           api.execute(comm, data).then((rep) => {
