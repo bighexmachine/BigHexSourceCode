@@ -495,7 +495,7 @@
 
         "START"
       ],
-      "checkText":"Check that pushing butons causes the lowest bits to be enabled in A and B reg",
+      "checkText":"Check that pushing butons causes the lowest bits to be enabled in A reg",
       "verifies":[
         "LDAC",
         "LDBC",
