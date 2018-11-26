@@ -104,6 +104,20 @@ This is the current layout of the Pi's GPIO Pins and their uses
 ![GPIO Pin Layout Diagram](pi.jpg)
 
 
+## Button Information
+
+**Button Input:**
+
+The buttons recieve 5v VCC input and output 5v when pressed. This is sent to a debouncing circuit before being passed to the main machine
+
+**LED Output**
+
+The LEDs in the buttons are driven from the machine data lines (5v), this goes through a driver circuit up and is increased to 12v. 
+
+LEDs and Buttons have a shared ground, there are two ground 'pins' on the buttons.
+
+There are two RJ45 headers for each set of buttons. Both have button input on the left header and LED output on the right (as you face the machine).
+
 ## Folder Structure
 
 ### Generated Folders
